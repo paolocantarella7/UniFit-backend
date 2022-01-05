@@ -5,7 +5,7 @@ let path = require('path');
 let upload = require('express-fileupload');
 
 const adminRoute = require('./routes/adminRoutes');
-const userRouter = require('./routes/userRoutes');
+const utenteRouter = require('./routes/utenteRoutes');
 const prenotazioneRoute = require('./routes/prenotazioneRoutes');
 
 
@@ -20,7 +20,7 @@ app.use(cookieParser());
 
 app.use('/admin', adminRoute);
 app.use('/prenotazione', prenotazioneRoute);
-app.use('/user', userRouter);
+app.use('/user', utenteRouter);
 
 app.get('/', (req, res) => {
   res.send('Benvenuto su UniFit!')
