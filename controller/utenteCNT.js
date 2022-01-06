@@ -1,6 +1,10 @@
 let Utente = require("../model/Utente");
+let RichiestaTesseramento = require("../model/Richiesta_tesseramento");
 let crypto = require("crypto");
+let fs = require("fs");
+let expressFileUpload = require("express-fileupload");
 let { validationResult } = require("express-validator");
+let path = require("path");
 
 exports.getAllUtenti = async (req, res) => {
   await Utente.findAll({
@@ -22,6 +26,14 @@ exports.getAllUtenti = async (req, res) => {
       res.status(400).json(err);
     });
 };
+
+/**
+ * Nome metodo: Login
+ * Descrizione: Metodo che permette di effettuare il login
+ * Parametri: email e password
+ * Return: Codice, messaggio, boolean true/false in base alla riuscita dell'operazione e dati dell'utente
+ * Autore : Giuseppe Scafa
+ */
 
 exports.login = async (req, res) => {
    //Check consistenza parametri richiesta
@@ -101,6 +113,14 @@ exports.modificaPassword = async (req, res) => {
     });
 };
 
+/**
+ * Nome metodo: Cancella Account
+ * Descrizione: Metodo che permette di cancellare l'account di un utente
+ * Parametri: Id utente
+ * Return: Codice, messaggio, boolean true/false in base alla riuscita dell'operazione
+ * Autore : Giuseppe Scafa
+ */
+
 exports.cancellaAccount = async (req, res) => {
   await Utente.update(
     { isCancellato: 1 },
@@ -112,6 +132,13 @@ exports.cancellaAccount = async (req, res) => {
     });
 };
 
+/**
+ * Nome metodo: getUtenteByID
+ * Descrizione: Metodo che permette di ottenere le informazioni di un utente
+ * Parametri: Id utente
+ * Return: Codice, messaggio, boolean true/false in base alla riuscita dell'operazione e dati dell'utente
+ * Autore : Giuseppe Scafa
+ */
 exports.getUtenteByID = async (req, res) => {
   await Utente.findOne({
     attributes: [
@@ -139,3 +166,52 @@ exports.getUtenteByID = async (req, res) => {
       res.status(500).json({ code: 500, msg: err, success: false });
     });
 };
+
+/**
+ * Nome metodo: effettuaTesseramento
+ * Descrizione: Metodo che permette di creare una richiesta di tesseramento
+ * Parametri: dati dell'utente e file
+ * Return: Codice, messaggio, boolean true/false in base alla riuscita dell'operazione
+ * Autore : Giuseppe Scafa
+ */
+
+exports.effettuaTesseramento = async (req, res) =>{
+
+  let filePath = "/static/richieste_tesseramento/" + req.body.idUtente;
+  if(path.extname(req.files.file.name) != ".pdf")
+    return res.status(400).json({codice: 400, msg:"Formato file non valido", success: false});
+
+
+  let nuovaRichiesta = {
+    idRichiesta_tesseramento: req.body.idRichiesta,
+    dataRichiesta: req.body.dataRichiesta,
+    tipologiaTesseramento: req.body.tipologiaTesseramento,
+    statusRichiesta: "Eseguita",
+    certificatoAllegatoPath: filePath,
+    utente: req.body.idUtente};
+
+  if(req.body.tipologiaTesseramento == "Interno")
+    nuovaRichiesta.prezzoTesseramento = 12;
+  else 
+    nuovaRichiesta.prezzoTesseramento = 20;
+
+  await RichiestaTesseramento.create(nuovaRichiesta)
+  .then((result) =>{
+    if(result){
+      fs.mkdir("." + filePath, (err) =>{
+        if(err)
+          return res.status(400).json({codice: 400, msg:"Errore nella creazione della directory", success: false});
+      });
+      
+      req.files.file.mv("." + filePath+"/certificato.pdf");
+      return res.status(200).json({codice: 200, msg: "Operazione completata", success: true});
+    }
+    
+  })
+  .catch((err) =>{
+    return res.status(400).json({codice: 400, msg: err, success: false});
+  })
+  
+
+  
+}

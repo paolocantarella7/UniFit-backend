@@ -2,7 +2,7 @@ let express = require('express');
 let cookieParser = require('cookie-parser');
 let logger = require('morgan');
 let path = require('path');
-let upload = require('express-fileupload');
+let expressFileUpload = require("express-fileupload");
 
 const adminRoute = require('./routes/adminRoutes');
 const utenteRouter = require('./routes/utenteRoutes');
@@ -10,8 +10,8 @@ const prenotazioneRoute = require('./routes/prenotazioneRoutes');
 
 
 let app = express();
-let port = 3000
-
+let port = 3000;
+app.use(expressFileUpload());
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

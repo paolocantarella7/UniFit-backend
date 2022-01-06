@@ -106,7 +106,9 @@ router.post(
   ],
   utenteController.login
 );
+
 router.get("/cancellaAccount", utenteController.cancellaAccount);
 router.get("/datiPersonali", utenteController.getUtenteByID);
+router.post("/effettuaTesseramento", utenteController.effettuaTesseramento);
 
 module.exports = router;
