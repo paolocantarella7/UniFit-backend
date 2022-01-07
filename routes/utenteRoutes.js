@@ -111,4 +111,43 @@ router.get("/cancellaAccount", utenteController.cancellaAccount);
 router.get("/datiPersonali", utenteController.getUtenteByID);
 router.post("/effettuaTesseramento", utenteController.effettuaTesseramento);
 
+router.post(
+  "/recupero-password",
+  [
+    body("email")
+      .matches(validazione.email)
+      .withMessage("Formato e-mail non valido")
+      .bail()
+      .custom(async (value) => {
+        return await Utente.findOne({ where: { email: value } }).then(
+          (user) => {
+            if (!user) {
+              throw new Error("L'e-mail non è associata ad un account!");
+            }
+          }
+        );
+      })
+      .bail(),
+  ],
+  utenteController.recuperoPassword
+);
+
+router.post(
+  "/reset-password/:token",
+  [
+    body("password")
+      .matches(validazione.password)
+      .withMessage("Formato password non valido").bail(),
+    body("passwordConferma").custom(async (confirmPassword, { req }) => {
+      let password = req.body.password;
+      // Se le password non coincidono
+      // la modifica non può andare a buon fine e si lancia un errore
+      if (password !== confirmPassword) {
+        throw new Error("Le password devono coincidere");
+      }
+    }).bail()
+  ],
+  utenteController.resettaPasswordPerRecupero
+);
+
 module.exports = router;
