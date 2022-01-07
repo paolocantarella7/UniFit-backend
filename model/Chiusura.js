@@ -6,6 +6,7 @@ let Chiusura = singleton.define("chiusura", {
     type: DataTypes.INTEGER,
     primaryKey: true,
     allowNull: false,
+    autoIncrement: true
   },
   dataChiusura: {
     type: DataTypes.STRING,

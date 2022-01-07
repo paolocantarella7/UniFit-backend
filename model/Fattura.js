@@ -6,6 +6,7 @@ let Fattura = singleton.define("fattura", {
     type: DataTypes.INTEGER,
     primaryKey: true,
     allowNull: false,
+    autoIncrement: true
   },
   intestatario: {
     type: DataTypes.STRING,
