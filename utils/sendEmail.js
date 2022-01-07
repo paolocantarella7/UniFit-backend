@@ -13,8 +13,8 @@ exports.sendEmailWithToken = (email, token) => {
     let mail = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: 'unifit2022@gmail.com', // Inserire email UniFit
-            pass: 'UniFit@2022' // Inserire password UniFit
+            user: '', // Inserire email UniFit
+            pass: '' // Inserire password UniFit
         }
     });
  

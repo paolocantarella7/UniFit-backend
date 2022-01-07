@@ -260,11 +260,10 @@ exports.recuperoPassword = async (req, res) => {
   }
 
   let emailRicevuta = req.body.email;
-  //hash password per rendere univoco la
-  let token = crypto.createHash("sha512").update(emailRicevuta).digest("hex");
+  let token = crypto.createHash("sha512").update(emailRicevuta+new Date().toISOString()).digest("hex");
 
   await Utente.update(
-    //Il token dura 1h
+    //Il token dura 24h
     {
       tokenRecuperoPassword: token,
       dataScadenzaTokenRP: new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
