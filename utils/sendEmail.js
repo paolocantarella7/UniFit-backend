@@ -5,7 +5,7 @@ let nodemailer = require("nodemailer");
  * Nome metodo: sendEmailWithToken
  * Descrizione: Metodo utile al recupero password che permette di inviare un'email col token
  * Parametri: email destinatario, token per link di recupero
- * Return: booleano a seconda della riuscita dell'operazione
+ * Return:  Una Promise con eventuale errore da gestire
  * Autore : Matteo Della Rocca
  */
 exports.sendEmailWithToken = (email, token) => {
@@ -30,11 +30,5 @@ exports.sendEmailWithToken = (email, token) => {
  
     };
  
-    mail.sendMail(mailOptions, (error, info) => {
-        if (!error) {
-            return true
-        } else {
-            return false
-        }
-    });
+    return mail.sendMail(mailOptions);
 }

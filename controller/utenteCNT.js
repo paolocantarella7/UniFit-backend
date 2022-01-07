@@ -248,7 +248,7 @@ exports.effettuaTesseramento = async (req, res) => {
 /**
  * Nome metodo: recuperoPassword
  * Descrizione: Metodo che permette di effettuare una richiesta di recupero della password
- * Parametri: email utente 
+ * Parametri: email utente
  * Return: Codice, messaggio, boolean true/false in base alla riuscita dell'operazione
  * Autore : Matteo Della Rocca
  */
@@ -260,9 +260,12 @@ exports.recuperoPassword = async (req, res) => {
   }
 
   let emailRicevuta = req.body.email;
-  let token = crypto.createHash("sha512").update(emailRicevuta+new Date().toISOString()).digest("hex");
+  let token = crypto
+    .createHash("sha512")
+    .update(emailRicevuta + new Date().toISOString())
+    .digest("hex");
 
-  await Utente.update(
+  Utente.update(
     //Il token dura 24h
     {
       tokenRecuperoPassword: token,
@@ -272,24 +275,22 @@ exports.recuperoPassword = async (req, res) => {
     },
     { where: { email: emailRicevuta } }
   )
-    .then((result) => {
+    .then( async (result) => {
       if (result) {
-        if (senderEmail.sendEmailWithToken(emailRicevuta, token)) {
-          res
-            .status(500)
-            .json({
-              code: 500,
-              msg: "Invio email di recupero NON riuscito",
-              success: false,
-            });
-        } else {
-          res
-            .status(200)
-            .json({
-              code: 200,
-              msg: "Invio email di recupero riuscito",
-              success: true,
-            });
+        try {
+         await senderEmail.sendEmailWithToken(emailRicevuta, token);
+          res.status(200).json({
+            code: 200,
+            msg: "Invio email di recupero riuscito",
+            success: true,
+          }).end();
+        } catch (err) {
+          console.log(err);
+          res.status(500).json({
+            code: 500,
+            msg: "Invio email di recupero NON riuscito",
+            success: false,
+          });
         }
       }
     })
@@ -307,7 +308,6 @@ exports.recuperoPassword = async (req, res) => {
  * Autore : Matteo Della Rocca
  */
 exports.resettaPasswordPerRecupero = async (req, res) => {
-
   let erroriValidazione = validationResult(req);
   if (!erroriValidazione.isEmpty()) {
     return res.status(400).json({ error: erroriValidazione.array() });
@@ -328,7 +328,11 @@ exports.resettaPasswordPerRecupero = async (req, res) => {
       if (!result) {
         res
           .status(400)
-          .json({ code: 400, msg: "Token scaduto o non valido", success: false })
+          .json({
+            code: 400,
+            msg: "Token scaduto o non valido",
+            success: false,
+          })
           .end();
       }
     })
@@ -337,19 +341,23 @@ exports.resettaPasswordPerRecupero = async (req, res) => {
     });
 
   await Utente.update(
-    { password: passwordModificata , tokenRecuperoPassword: null,
-      dataScadenzaTokenRP: null}, //rendo di nuovo recuperabile la password  
+    {
+      password: passwordModificata,
+      tokenRecuperoPassword: null,
+      dataScadenzaTokenRP: null,
+    }, //rendo di nuovo recuperabile la password
     { individualHooks: true, where: { tokenRecuperoPassword: token } }
-  ).then((result) => {
-    if (result) {
-      res.status(201).json({
-        codice: 201,
-        messaggio: "Password modificata con successo",
-        success: true,
-      });
-    }
-  })
-  .catch((err) => {
-    res.status(500).json({ code: 500, msg: err, success: false });
-  });
+  )
+    .then((result) => {
+      if (result) {
+        res.status(201).json({
+          codice: 201,
+          messaggio: "Password modificata con successo",
+          success: true,
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).json({ code: 500, msg: err, success: false });
+    });
 };
