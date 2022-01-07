@@ -183,7 +183,6 @@ exports.effettuaTesseramento = async (req, res) =>{
 
 
   let nuovaRichiesta = {
-    idRichiesta_tesseramento: req.body.idRichiesta,
     dataRichiesta: req.body.dataRichiesta,
     tipologiaTesseramento: req.body.tipologiaTesseramento,
     statusRichiesta: "Eseguita",
