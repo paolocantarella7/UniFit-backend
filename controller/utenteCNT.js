@@ -211,7 +211,6 @@ exports.effettuaTesseramento = async (req, res) => {
       .json({ codice: 400, msg: "Formato file non valido", success: false });
 
   let nuovaRichiesta = {
-    idRichiesta_tesseramento: req.body.idRichiesta,
     dataRichiesta: req.body.dataRichiesta,
     tipologiaTesseramento: req.body.tipologiaTesseramento,
     statusRichiesta: "Eseguita",

@@ -8,6 +8,7 @@ let Struttura = singleton.define("struttura", {
     type: DataTypes.INTEGER,
     primaryKey: true,
     allowNull: false,
+    autoIncrement: true
   },
   nome: {
     type: DataTypes.STRING,

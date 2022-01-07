@@ -7,6 +7,7 @@ let Prenotazione = singleton.define("prenotazione", {
     type: DataTypes.INTEGER,
     primaryKey: true,
     allowNull: false,
+    autoIncrement: true
   },
   dataPrenotazione: {
     type: DataTypes.STRING,

@@ -8,6 +8,7 @@ let RichiestaTesseramento = singleton.define("richiesta_tesseramento", {
     type: DataTypes.INTEGER,
     primaryKey: true,
     allowNull: false,
+    autoIncrement: true
   },
   dataRichiesta: {
     type: DataTypes.STRING,
