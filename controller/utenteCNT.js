@@ -211,7 +211,7 @@ exports.effettuaTesseramento = async (req, res) => {
       .json({ codice: 400, msg: "Formato file non valido", success: false });
 
   let nuovaRichiesta = {
-    dataRichiesta: req.body.dataRichiesta,
+    dataRichiesta: new Date().toISOString().substring(0, 10),
     tipologiaTesseramento: req.body.tipologiaTesseramento,
     statusRichiesta: "Eseguita",
     certificatoAllegatoPath: filePath,
@@ -226,18 +226,23 @@ exports.effettuaTesseramento = async (req, res) => {
     .then((result) => {
       if (result) {
         fs.mkdir("." + filePath, (err) => {
-          if (err)
+          if (err) {
             return res.status(400).json({
               codice: 400,
               msg: "Errore nella creazione della directory",
               success: false,
             });
+          } else {
+            req.files.file.mv("." + filePath + "/certificato.pdf");
+            return res
+              .status(200)
+              .json({
+                codice: 200,
+                msg: "Operazione completata",
+                success: true,
+              });
+          }
         });
-
-        req.files.file.mv("." + filePath + "/certificato.pdf");
-        return res
-          .status(200)
-          .json({ codice: 200, msg: "Operazione completata", success: true });
       }
     })
     .catch((err) => {
