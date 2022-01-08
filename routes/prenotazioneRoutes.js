@@ -1,7 +1,7 @@
-const express = require("express");
-const router = express.Router();
-const prenotazioneCNT = require("../controller/prenotazioneCNT");
+let express = require("express");
+let router = express.Router();
+let prenotazioneCNT = require("../controller/prenotazioneCNT");
 
-router.get("/example-get", prenotazioneCNT.exampleGet);
+router.get("/prenotazioniUtente", prenotazioneCNT.getPrenotazioniByUtente);
 
 module.exports = router;
