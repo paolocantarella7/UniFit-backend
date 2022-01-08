@@ -1,10 +1,159 @@
+let Struttura = require("../model/Struttura");
+let Chiusura = require("../model/Chiusura");
+let Prenotazione = require("../model/Prenotazione");
+let Utente = require("../model/Utente");
+const Richiesta_tesseramento = require("../model/Richiesta_tesseramento");
+/**
+ * Nome metodo: visualizzaStrutture
+ * Descrizione: Metodo che permette all'amministratore di visualizzare la lista di strutture disponibili
+ * Parametri: void
+ * Return: Codice, lista strutture, boolean true/false in base alla riuscita dell'operazione
+ * Autore : Matteo Della Rocca
+ */
+exports.visualizzaStrutture = async (req, res) => {
+  await Struttura.findAll()
+    .then((result) => {
+      if (result) {
+        res.status(200).json({ code: 200, strutture: result, success: true });
+      }
+    })
+    .catch((err) => {
+      res.status(400).json(err);
+    });
+};
 
-exports.exampleGet = async (req, res) => {
-    console.log(req.query)
-    res.send('Chiamata di esempio GET')
-}
+/**
+ * Nome metodo: visualizzaDettagliStruttura
+ * Descrizione: Metodo che permette all'amministratore di visualizzare i dettagli di una struttura compreso giorni di chiusura
+ * Parametri: ID della struttura
+ * Return: Codice, Struttura richiesta/Messaggio d'errore, boolean true/false in base alla riuscita dell'operazione
+ * Autore : Matteo Della Rocca
+ */
+exports.visualizzaDettagliStruttura = async (req, res) => {
+  let idStruttura = req.params.id;
 
-exports.examplePost = async (req, res) => {
-    console.log(req.query)
-    res.send('Chiamata di esempio POST')
-}
+  await Struttura.findOne({
+    include: {
+      model: Chiusura,
+      as: "giorniChiusura",
+    },
+    where: { idStruttura: idStruttura },
+  })
+    .then((result) => {
+      if (result) {
+        res.status(200).json({ code: 200, struttura: result, success: true });
+      } else {
+        res
+          .status(404)
+          .json({ code: 404, msg: "Struttura non trovata!", success: false });
+      }
+    })
+    .catch((err) => {
+      res
+        .status(500)
+        .json({ code: 500, msg: "Qualcosa è andato storto..", success: false });
+    });
+};
+
+/**
+ * Nome metodo: visualizzaPrenotazioniStruttura
+ * Descrizione: Metodo che permette all'amministratore di visualizzare la lista di prenotazioni di una struttura in particolare con utente associato
+ * Parametri: ID della struttura
+ * Return: Codice, Lista di prenotazioni della struttura richiesta/Messaggio d'errore, boolean true/false in base alla riuscita dell'operazione
+ * Autore : Matteo Della Rocca
+ */
+exports.visualizzaPrenotazioniStruttura = async (req, res) => {
+  let idStruttura = req.params.id;
+
+  await Struttura.findOne({
+    include: [
+      {
+        model: Prenotazione,
+        as: "listaPrenotazioniStruttura",
+        attributes: [
+          "idPrenotazione",
+          "dataPrenotazione",
+          "oraInizio",
+          "oraFine",
+          "totalePagato",
+        ],
+        include: [
+          {
+            model: Utente,
+            as: "utentePrenotato",
+            attributes: ["email", "nome", "cognome"],
+          },
+        ],
+      },
+    ],
+    where: { idStruttura: idStruttura },
+  })
+    .then((result) => {
+      if (result) {
+        res.status(200).json({ code: 200, struttura: result, success: true });
+      } else {
+        res
+          .status(404)
+          .json({ code: 404, msg: "Struttura non trovata!", success: false });
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res
+        .status(500)
+        .json({ code: 500, msg: "Qualcosa è andato storto..", success: false });
+    });
+};
+
+/**
+ * Nome metodo: visualizzaUtentiRegistrati
+ * Descrizione: Metodo che permette all'amministratore di visualizzare la lista di utenti registrati
+ * Parametri: void
+ * Return: Codice, lista utenti, boolean true/false in base alla riuscita dell'operazione e dati dell'utente
+ * Autore : Matteo Della Rocca
+ */
+ exports.visualizzaUtentiRegistrati = async (req, res) => {
+    await Utente.findAll({
+        attributes : [
+            "idUtente", "nome", "cognome", "email", "isCancellato", "isTesserato" 
+        ], where : {isAdmin : 0} //solo utenti registrati
+    }).then((result) => {
+        if(result){
+            res.status(200).json({code : 200, utentiRegistrati: result, success : true });
+        }
+      })
+      .catch((err) => {
+        console.error(err)
+        res.status(500).json({code : 500, msg : "Qualcosa è andato storto...", success : false });
+    });
+};
+
+/**
+ * Nome metodo: visualizzaRichiesteTesseramento
+ * Descrizione: Metodo che permette all'amministratore di visualizzare la lista delle richieste di tesseramento DA VALIDARE 
+ * Parametri: void
+ * Return: Codice, lista utenti, boolean true/false in base alla riuscita dell'operazione e dati dell'utente
+ * Autore : Matteo Della Rocca
+ */
+exports.visualizzaRichiesteTesseramento = async (req, res) => {
+
+    await Richiesta_tesseramento.findAll({
+        attributes : [
+            "idRichiesta_tesseramento", "tipologiaTesseramento", "dataRichiesta", "statusRichiesta", "certificatoAllegatoPath" 
+        ], include : {
+            model: Utente,
+            as: "utenteRichiedente",
+            attributes : [
+                "idUtente", "nome", "cognome", "email", "isCancellato", "isTesserato"
+            ]
+        }, where : {statusRichiesta : "Eseguita"} //solo le richiesta da valutare
+    }).then((result) => {
+        if(result){
+            res.status(200).json({code : 200, richiesteTess: result, success : true });
+        }
+      })
+      .catch((err) => {
+        console.error(err)
+        res.status(500).json({code : 500, msg : "Qualcosa è andato storto...", success : false });
+    });
+};
