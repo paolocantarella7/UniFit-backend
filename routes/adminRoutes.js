@@ -8,6 +8,7 @@ router.get("/strutture/dettagliStruttura/:id", adminCNT.visualizzaDettagliStrutt
 router.get("/strutture/prenotazioniStruttura/:id", adminCNT.visualizzaPrenotazioniStruttura);
 router.get("/utenti/visualizzautenti", adminCNT.visualizzaUtentiRegistrati);
 router.get("/reqtess/visualizzareqtess", adminCNT.visualizzaRichiesteTesseramento)
-
+router.post("/reqtess/validatesseramento", adminCNT.validaTesseramento)
+router.get("/strutture/eliminastruttura", adminCNT.eliminaStruttura)
 
 module.exports = router;
