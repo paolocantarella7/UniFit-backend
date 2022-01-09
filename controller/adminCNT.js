@@ -2,7 +2,9 @@ let Struttura = require("../model/Struttura");
 let Chiusura = require("../model/Chiusura");
 let Prenotazione = require("../model/Prenotazione");
 let Utente = require("../model/Utente");
-const Richiesta_tesseramento = require("../model/Richiesta_tesseramento");
+let Richiesta_tesseramento = require("../model/Richiesta_tesseramento");
+let { validationResult } = require("express-validator");
+
 /**
  * Nome metodo: visualizzaStrutture
  * Descrizione: Metodo che permette all'amministratore di visualizzare la lista di strutture disponibili
@@ -133,13 +135,11 @@ exports.visualizzaUtentiRegistrati = async (req, res) => {
     })
     .catch((err) => {
       console.error(err);
-      res
-        .status(500)
-        .json({
-          code: 500,
-          msg: "Qualcosa è andato storto...",
-          success: false,
-        });
+      res.status(500).json({
+        code: 500,
+        msg: "Qualcosa è andato storto...",
+        success: false,
+      });
     });
 };
 
@@ -182,13 +182,11 @@ exports.visualizzaRichiesteTesseramento = async (req, res) => {
     })
     .catch((err) => {
       console.error(err);
-      res
-        .status(500)
-        .json({
-          code: 500,
-          msg: "Qualcosa è andato storto...",
-          success: false,
-        });
+      res.status(500).json({
+        code: 500,
+        msg: "Qualcosa è andato storto...",
+        success: false,
+      });
     });
 };
 
@@ -213,34 +211,25 @@ exports.validaTesseramento = async (req, res) => {
     )
     .then((result) => {
       if (result) {
-        res
-          .status(200)
-          .json({
-            code: 200,
-            msg: "Richiesta di tesseramento validata con successo!",
-            success: true,
-          });
-      }
-      else
-      {
-        res
-          .status(400)
-          .json({
-            code: 400,
-            msg: "Richiesta di tesseramento NON validata!",
-            success: false,
-          });
-
+        res.status(200).json({
+          code: 200,
+          msg: "Richiesta di tesseramento validata con successo!",
+          success: true,
+        });
+      } else {
+        res.status(400).json({
+          code: 400,
+          msg: "Richiesta di tesseramento NON validata!",
+          success: false,
+        });
       }
     })
     .catch((err) => {
-      res
-        .status(500)
-        .json({
-          code: 500,
-          msg: "Qualcosa è andato storto...",
-          success: false,
-        });
+      res.status(500).json({
+        code: 500,
+        msg: "Qualcosa è andato storto...",
+        success: false,
+      });
     });
 };
 
@@ -252,24 +241,112 @@ exports.validaTesseramento = async (req, res) => {
  * Autore : Matteo Della Rocca
  */
 exports.eliminaStruttura = async (req, res) => {
-
   let idStruttura = req.query.idStrutt;
 
   await Struttura.update(
-    {isCancellata : 1},
-    {where : {idStruttura : idStruttura},
-    returning: true,
-    plain: true}
-  ).then((result) => {
-    if(result[1]){ //result contiene un campo che è 1 quando la riga è modificata, 0 altrimenti
-      res.status(200).json({code : 200, msg: "Cancellazione struttura riuscita", success : true });
-    }
-    else
-    {
-      res.status(400).json({code : 400, msg : "Cancellazione struttura NON riuscita", success : false });
-    }
-  }).catch((err) => {
-    res.status(500).json({code : 500, msg : "Qualcosa è andato storto...", success : false})
-  })
+    { isCancellata: 1 },
+    { where: { idStruttura: idStruttura }, returning: true, plain: true }
+  )
+    .then((result) => {
+      if (result[1]) {
+        //result contiene un campo che è 1 quando la riga è modificata, 0 altrimenti
+        res.status(200).json({
+          code: 200,
+          msg: "Cancellazione struttura riuscita",
+          success: true,
+        });
+      } else {
+        res.status(400).json({
+          code: 400,
+          msg: "Cancellazione struttura NON riuscita",
+          success: false,
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).json({
+        code: 500,
+        msg: "Qualcosa è andato storto...",
+        success: false,
+      });
+    });
+};
 
+exports.aggiungiStruttura = async (req, res) => {
+  let erroriValidaizone = validationResult(req);
+  if (!erroriValidaizone.isEmpty()) {
+    return res.status(400).json({ error: erroriValidaizone.array() });
+  }
+
+  let { ...strutturaDaCreare } = { ...req.body };
+  let dateChiusura = JSON.parse(req.body.dateChiusura).dateChiusura;
+
+  await Struttura.create(strutturaDaCreare)
+    .then((result) => {
+      if (result) {
+        if (dateChiusura !== []) {
+          //Ci sono date chiusure da inserire nel DB
+
+          dateChiusura.forEach((dataChiusura) => {
+            let chiusura = {
+              dataChiusura: dataChiusura,
+              struttura: result.idStruttura,
+            };
+
+            Chiusura.create(chiusura);
+          });
+        }
+
+        res.status(201).json({
+          code: 201,
+          msg: "Struttura creata con successo",
+          success: true,
+        });
+      } else {
+        res
+          .status(400)
+          .json({ code: 400, msg: "Struttura NON creata", success: false });
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res
+        .status(500)
+        .json({ code: 500, msg: "Qualcosa è andato storto..", success: false });
+    });
+};
+
+exports.modificaStruttura = async (req, res) => {
+  let erroriValidaizone = validationResult(req);
+  if (!erroriValidaizone.isEmpty()) {
+    return res.status(400).json({ error: erroriValidaizone.array() });
+  }
+  let idStruttura = req.params.idStruttura;
+  let { ...strutturaDaCreare } = { ...req.body };
+  let dateChiusura = JSON.parse(req.body.dateChiusura).dateChiusura;
+
+  await Struttura.update(strutturaDaCreare, {
+    where: { idStruttura: idStruttura },
+    returning: true,
+    plain: true
+  })
+    .then((resultStruttura) => {
+     
+      Chiusura.destroy({ where: { struttura: idStruttura }});
+      dateChiusura.forEach((dataChiusura) => {
+        let chiusura = {
+          dataChiusura: dataChiusura,
+          struttura: idStruttura,
+        };
+        Chiusura.create(chiusura).then()
+
+      });
+      res.status(201).json({code: 201, msg: "Struttura modificata con successo", success: true});
+    
+    })
+    .catch((err) => {
+      res
+        .status(500)
+        .json({ code: 500, msg: "Qualcosa è andato storto..", success: false });
+    });
 };
