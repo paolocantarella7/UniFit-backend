@@ -25,7 +25,7 @@ exports.sendEmailWithToken = (email, token) => {
         html: '<p>Gentile Utente, <br>' 
         +'è stato richiesto un recupero della password, '+
         'usi questo <a href="http://localhost:3000/user/reset-password/' + token + '">link</a> per resettare la password'+
-        ' altrimenti <b>ignora</b> questa e-mail. <br>'+
+        ' altrimenti <b>ignori</b> questa e-mail. <br>'+
         '<br>Cordiali saluti, <br> il team UniFit.</p>'
  
     };

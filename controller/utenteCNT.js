@@ -234,13 +234,11 @@ exports.effettuaTesseramento = async (req, res) => {
             });
           } else {
             req.files.file.mv("." + filePath + "/certificato.pdf");
-            return res
-              .status(200)
-              .json({
-                codice: 200,
-                msg: "Operazione completata",
-                success: true,
-              });
+            return res.status(200).json({
+              codice: 200,
+              msg: "Operazione completata",
+              success: true,
+            });
           }
         });
       }
@@ -280,15 +278,18 @@ exports.recuperoPassword = async (req, res) => {
     },
     { where: { email: emailRicevuta } }
   )
-    .then( async (result) => {
+    .then(async (result) => {
       if (result) {
         try {
-         await senderEmail.sendEmailWithToken(emailRicevuta, token);
-          res.status(200).json({
-            code: 200,
-            msg: "Invio email di recupero riuscito",
-            success: true,
-          }).end();
+          await senderEmail.sendEmailWithToken(emailRicevuta, token);
+          res
+            .status(200)
+            .json({
+              code: 200,
+              msg: "Invio email di recupero riuscito",
+              success: true,
+            })
+            .end();
         } catch (err) {
           console.log(err);
           res.status(500).json({
@@ -339,27 +340,27 @@ exports.resettaPasswordPerRecupero = async (req, res) => {
             success: false,
           })
           .end();
-      }
-    })
-    .catch((err) => {
-      res.status(500).json({ code: 500, msg: err, success: false });
-    });
-
-  await Utente.update(
-    {
-      password: passwordModificata,
-      tokenRecuperoPassword: null,
-      dataScadenzaTokenRP: null,
-    }, //rendo di nuovo recuperabile la password
-    { individualHooks: true, where: { tokenRecuperoPassword: token } }
-  )
-    .then((result) => {
-      if (result) {
-        res.status(201).json({
-          codice: 201,
-          messaggio: "Password modificata con successo",
-          success: true,
-        });
+      } else {
+         Utente.update(
+          {
+            password: passwordModificata,
+            tokenRecuperoPassword: null,
+            dataScadenzaTokenRP: null,
+          }, //rendo di nuovo recuperabile la password
+          { individualHooks: true, where: { tokenRecuperoPassword: token } }
+        )
+          .then((result) => {
+            if (result) {
+              res.status(200).json({
+                codice: 200,
+                messaggio: "Password modificata con successo",
+                success: true,
+              });
+            }
+          })
+          .catch((err) => {
+            res.status(500).json({ code: 500, msg: err, success: false });
+          });
       }
     })
     .catch((err) => {
