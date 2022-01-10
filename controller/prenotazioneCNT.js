@@ -175,7 +175,12 @@ let getListaFasce = (oraInizioMattina, oraFineMattina, oraInizioPomeriggio, oraF
  */
 
 exports.modificaPrenotazione = async (req, res) =>{
+    let erroriValidazione = validationResult(req);
     let capacita, postiOccupati;
+
+    if (!erroriValidazione.isEmpty()) {
+        return res.status(400).json({ code: 400, error: erroriValidazione.array(), success:false});}
+        
     await Struttura.findByPk(req.query.idStruttura, {
         attributes:["capacitaPerFascia"]
     }).then((result) =>{
