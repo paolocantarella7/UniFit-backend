@@ -204,11 +204,15 @@ exports.getUtenteByID = async (req, res) => {
  */
 
 exports.effettuaTesseramento = async (req, res) => {
+
+  let erroriValidazione = validationResult(req);
+  if (!erroriValidazione.isEmpty()) {
+    return res.status(400).json({ error: erroriValidazione.array() });
+  }
+
   let filePath = "/static/richieste_tesseramento/" + req.body.idUtente;
-  if (path.extname(req.files.file.name) != ".pdf")
-    return res
-      .status(400)
-      .json({ codice: 400, msg: "Formato file non valido", success: false });
+  //if (path.extname(req.files.file.name) != ".pdf")
+    
 
   let nuovaRichiesta = {
     dataRichiesta: new Date().toISOString().substring(0, 10),

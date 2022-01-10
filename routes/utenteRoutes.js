@@ -14,6 +14,8 @@ let validazione = {
   cognome: /^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/,
   data: /^\d{4}(-\d\d(-\d\d(T\d\d:\d\d(:\d\d)?(\.\d+)?(([+-]\d\d:\d\d)|Z)?)?)?)?$/,
   dataLimite: new Date().toDateString(),
+  numeroCarta: /^([0-9]{16})$/,
+  cvvCarta: /^[0-9]{3,4}$/,
 };
 
 router.get("/all", utenteController.getAllUtenti);
@@ -109,7 +111,41 @@ router.post(
 
 router.get("/cancellaAccount", utenteController.cancellaAccount);
 router.get("/datiPersonali", utenteController.getUtenteByID);
-router.post("/effettuaTesseramento", utenteController.effettuaTesseramento);
+
+router.post("/effettuaTesseramento", [
+  body("intestatarioCarta")
+  .matches(validazione.nome)
+  .withMessage("Formato intestatario carta non valido"),
+  body("numeroCarta")
+  .matches(validazione.numeroCarta)
+  .withMessage("Formato numero carta non valido"),
+  body("cvvCarta")
+  .matches(validazione.cvvCarta)
+  .withMessage("Formato CVV carta non valido"),
+  body("scadenzaCarta")
+    .matches(validazione.data)
+    .withMessage("Formato scadenza carta errato")
+    .custom(async(value) =>{
+        
+        if(new Date(new Date().getTime()) > new Date(new Date(value))){
+            throw new Error("Carta scaduta!")
+        }
+    }),
+    body("tipologiaTesseramento")
+    .custom(async (value) =>{
+      if(value != "Interno" && value != "Esterno")
+        throw new Error("Valore tipologia tesseramento non valido")
+    }),
+    body("idUtente")
+    .custom(async (value) =>{
+      await Utente.findByPk(value)
+      .then((result) =>{
+        if(!result)
+          throw new Error("Utente non esistente")
+      })
+    })
+],
+utenteController.effettuaTesseramento);
 
 router.post(
   "/recupero-password",
