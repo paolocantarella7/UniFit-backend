@@ -3,7 +3,10 @@ let router = express.Router();
 let prenotazioneCNT = require("../controller/prenotazioneCNT");
 let Chiusura = require("../model/Chiusura");
 let { query } = require("express-validator");
-const Prenotazione = require("../model/Prenotazione");
+let { body } = require("express-validator");
+let Prenotazione = require("../model/Prenotazione");
+let Utente = require("../model/Utente");
+let Struttura = require("../model/Struttura");
 
 let validazione = {
     email: /[a-zA-Z0-9\._-]+[@][a-zA-Z0-9\._-]+[.][a-zA-Z]{2,6}/,
@@ -17,17 +20,36 @@ let validazione = {
 router.get("/prenotazioniUtente", prenotazioneCNT.getPrenotazioniByUtente);
 router.get("/getFasce", prenotazioneCNT.getFasceOrarie);
 
-router.get("/effettuaPrenotazione", [
-    query("intestatarioCarta")
+router.post("/effettuaPrenotazione", [
+    body("idStruttura")
+    .custom(async (value) =>{
+        await Struttura.findByPk(value)
+        .then((result) =>{
+            if(!result)
+                throw new Error("Struttura non esistente");
+        })
+    }),
+    body("fascia")
+    .matches(validazione.fasciaOraria)
+    .withMessage("Formato fascia oraria non valido!"),
+    body("idUtente")
+    .custom(async (value) =>{
+        await Utente.findByPk(value)
+        .then((result) =>{
+            if(!result)
+                throw new Error("Utente non esistente");
+        })
+    }),
+    body("intestatarioCarta")
     .matches(validazione.nome)
     .withMessage("Formato nome non valido"),
-    query("numeroCarta")
+    body("numeroCarta")
     .matches(validazione.numeroCarta)
     .withMessage("Formato numero carta non valido"),
-    query("cvvCarta")
+    body("cvvCarta")
     .matches(validazione.cvvCarta)
     .withMessage("Formato CVV non valido"),
-    query("dataPrenotazione")
+    body("dataPrenotazione")
     .matches(validazione.data)
     .withMessage("Formato data prenotazione non valido")
     .custom(async (value) =>{
@@ -42,7 +64,7 @@ router.get("/effettuaPrenotazione", [
                 throw new Error("Struttura chiusa nel giorno selezionato");
         })
     }),
-    query("scadenzaCarta")
+    body("scadenzaCarta")
     .matches(validazione.data)
     .withMessage("Formato scadenza carta errato")
     .custom(async(value) =>{
@@ -50,11 +72,9 @@ router.get("/effettuaPrenotazione", [
         if(new Date(new Date().getTime()) > new Date(new Date(value))){
             throw new Error("Carta scaduta!")
         }
-    }),
-    query("fascia")
-    .matches(validazione.fasciaOraria)
-    .withMessage("Formato fascia oraria non valido!")
-
+    })
+    
+    
 ], prenotazioneCNT.effettuaPrenotazione);
 
 router.get("/modificaPrenotazione", [

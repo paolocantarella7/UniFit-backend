@@ -76,7 +76,7 @@ exports.effettuaPrenotazione = async(req, res) =>{
   if (!erroriValidazione.isEmpty()) {
     return res.status(400).json({ code: 400, error: erroriValidazione.array(), success:false});}
     
-    await Struttura.findByPk(req.query.idStruttura, {
+    await Struttura.findByPk(req.body.idStruttura, {
         attributes:["capacitaPerFascia", "prezzoPerFascia"]
     }).then((result) =>{
         if(result){
@@ -90,10 +90,10 @@ exports.effettuaPrenotazione = async(req, res) =>{
         return res.status(400).json({code: 400, msg:err, success:false});
     });
     
-    let fasciaOraria = req.query.fascia.split("-");
+    let fasciaOraria = req.body.fascia.split("-");
     await Prenotazione.count({where: {
-        struttura: req.query.idStruttura,
-        dataPrenotazione: req.query.dataPrenotazione,
+        struttura: req.body.idStruttura,
+        dataPrenotazione: req.body.dataPrenotazione,
         oraInizio: fasciaOraria[0],
         oraFine: fasciaOraria[1]
     }}).then((result) =>{
@@ -104,12 +104,12 @@ exports.effettuaPrenotazione = async(req, res) =>{
 
     if(postiOccupati < capacita){
         let newPrenotazione = {
-            dataPrenotazione:req.query.dataPrenotazione,
+            dataPrenotazione:req.body.dataPrenotazione,
             oraInizio: fasciaOraria[0],
             oraFine: fasciaOraria[1], 
             totalePagato: prezzo,
-            utente: req.query.idUtente,
-            struttura: req.query.idStruttura
+            utente: req.body.idUtente,
+            struttura: req.body.idStruttura
         };
         await Prenotazione.create(newPrenotazione)
         .then((result) =>{
