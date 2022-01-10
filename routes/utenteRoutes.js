@@ -3,6 +3,7 @@ let router = express.Router();
 let utenteController = require("../controller/UtenteCNT");
 let Utente = require("../model/Utente");
 let { body } = require("express-validator");
+let moment = require("moment");
 
 let validazione = {
   email: /[a-zA-Z0-9\._-]+[@][a-zA-Z0-9\._-]+[.][a-zA-Z]{2,6}/,
@@ -13,7 +14,7 @@ let validazione = {
   telefono: /\d{10}$/,
   cognome: /^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/,
   data: /^\d{4}(-\d\d(-\d\d(T\d\d:\d\d(:\d\d)?(\.\d+)?(([+-]\d\d:\d\d)|Z)?)?)?)?$/,
-  dataLimite: new Date().toDateString(),
+  dataLimite: new Date().setHours(0, 0, 0, 0),
   numeroCarta: /^([0-9]{16})$/,
   cvvCarta: /^[0-9]{3,4}$/,
 };
@@ -59,11 +60,15 @@ router.post(
       .withMessage("Formato password non valido"),
     body("dataNascita")
       .matches(validazione.data)
-      .withMessage("Formato data non valido, formato supportato yyyy-mm-gg")
-      .isBefore(validazione.dataLimite)
-      .withMessage(
-        "Formato data di nascita non valido, viaggiatore nel tempo?"
-      ),
+      .withMessage("Formato data non valido, formato supportato yyyy-mm-gg").bail()
+      .custom(async (dataNascita) => {
+
+        if (!moment(dataNascita).isValid() ||
+          Date.parse(dataNascita) > Date.parse(new Date(validazione.dataLimite))
+        ) {
+          throw new Error("Formato data non valido!");
+        }
+      }),
     body("indirizzoResidenza")
       .matches(validazione.indirizzo)
       .withMessage("Formato indirizzo non valido"),
@@ -83,7 +88,7 @@ router.post(
   [
     body("password")
       .matches(validazione.password)
-      .withMessage("Formato password non valido"),
+      .withMessage("Formato password non valido").bail(),
     body("passwordConferma").custom(async (confirmPassword, { req }) => {
       let password = req.body.password;
       // Se le password non coincidono
@@ -91,7 +96,7 @@ router.post(
       if (password !== confirmPassword) {
         throw new Error("Le password devono coincidere");
       }
-    }),
+    }).bail()
   ],
   utenteController.modificaPassword
 );
