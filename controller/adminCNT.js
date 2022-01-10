@@ -204,18 +204,29 @@ exports.validaTesseramento = async (req, res) => {
 
   await Richiesta_tesseramento.update(
     { statusRichiesta: "Accettata" },
-    { where: { idRichiesta_tesseramento: idRichiestaTess, utente: idUtente } }
+    {
+      where: { idRichiesta_tesseramento: idRichiestaTess, utente: idUtente },
+      returning: true,
+      plain: true,
+    }
   )
-    .then(
-      await Utente.update({ isTesserato: 1 }, { where: { idUtente: idUtente } })
-    )
     .then((result) => {
-      if (result) {
-        res.status(200).json({
-          code: 200,
-          msg: "Richiesta di tesseramento validata con successo!",
-          success: true,
-        });
+      if (result[1]) {
+        Utente.update({ isTesserato: 1 }, { where: { idUtente: idUtente } })
+          .then(
+            res.status(200).json({
+              code: 200,
+              msg: "Richiesta di tesseramento validata con successo!",
+              success: true,
+            })
+          )
+          .catch((err) => {
+            res.status(500).json({
+              code: 500,
+              msg: "Qualcosa è andato storto...",
+              success: false,
+            });
+          });
       } else {
         res.status(400).json({
           code: 400,
@@ -328,21 +339,30 @@ exports.modificaStruttura = async (req, res) => {
   await Struttura.update(strutturaDaCreare, {
     where: { idStruttura: idStruttura },
     returning: true,
-    plain: true
+    plain: true,
   })
     .then((resultStruttura) => {
-     
-      Chiusura.destroy({ where: { struttura: idStruttura }});
+      Chiusura.destroy({ where: { struttura: idStruttura } });
       dateChiusura.forEach((dataChiusura) => {
         let chiusura = {
           dataChiusura: dataChiusura,
           struttura: idStruttura,
         };
-        Chiusura.create(chiusura).then()
-
+        Chiusura.create(chiusura).catch((err) => {
+          res.status(500).json({
+            code: 500,
+            msg: "Qualcosa è andato storto..",
+            success: false,
+          });
+        });
       });
-      res.status(201).json({code: 201, msg: "Struttura modificata con successo", success: true});
-    
+
+      res.status(201).json({
+        code: 201,
+        msg: "Struttura modificata con successo",
+        success: true,
+      });
+      
     })
     .catch((err) => {
       res
