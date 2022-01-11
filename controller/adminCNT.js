@@ -192,56 +192,83 @@ exports.visualizzaRichiesteTesseramento = async (req, res) => {
 
 /**
  * Nome metodo: validaTesseramento
- * Descrizione: Metodo che permette all'amministratore di validare/accettare la richiesta di tesseramento di un utente
- * Parametri: ID Utente e ID Richiesta Tesseramento
+ * Descrizione: Metodo che permette all'amministratore di validare(accettare o rifiutare) la richiesta di tesseramento di un utente
+ * Parametri: ID Utente, ID Richiesta Tesseramento e azione scelta (rifiuto, accettazione)
  * Return: Codice, Messaggio successo/errore, boolean true/false in base alla riuscita dell'operazione
  * Autore : Matteo Della Rocca
  */
 exports.validaTesseramento = async (req, res) => {
+  let erroriValidaizone = validationResult(req);
+  if (!erroriValidaizone.isEmpty()) {
+    return res.status(400).json({ error: erroriValidaizone.array() });
+  }
+
   let idUtente = req.body.idUtente;
   let idRichiestaTess = req.body.idReqTess;
-  console.log("Arrivata richiesta " + idRichiestaTess + "da: " + idUtente);
+  let azione = req.body.azione;
 
-  await Richiesta_tesseramento.update(
-    { statusRichiesta: "Accettata" },
-    {
-      where: { idRichiesta_tesseramento: idRichiestaTess, utente: idUtente },
-      returning: true,
-      plain: true,
-    }
-  )
-    .then((result) => {
-      if (result[1]) {
-        Utente.update({ isTesserato: 1 }, { where: { idUtente: idUtente } })
-          .then(
-            res.status(200).json({
-              code: 200,
-              msg: "Richiesta di tesseramento validata con successo!",
-              success: true,
-            })
-          )
-          .catch((err) => {
-            res.status(500).json({
-              code: 500,
-              msg: "Qualcosa è andato storto...",
-              success: false,
+  if (azione === "accetta") {
+    //caso di accettazione richiesta
+    await Richiesta_tesseramento.update(
+      { statusRichiesta: "Accettata" },
+      {
+        where: { idRichiesta_tesseramento: idRichiestaTess, utente: idUtente },
+        returning: true,
+        plain: true
+      }
+    )
+      .then((result) => {
+        if (result[1]) {
+          Utente.update({ isTesserato: 1 }, { where: { idUtente: idUtente } })
+            .then(
+              res.status(200).json({
+                code: 200,
+                msg: "Richiesta di tesseramento accettata con successo!",
+                success: true
+              })
+            )
+            .catch((err) => {
+              res.status(500).json({
+                code: 500,
+                msg: "Qualcosa è andato storto...",
+                success: false
+              });
             });
+        } else {
+          res.status(400).json({
+            code: 400,
+            msg: "Richiesta di tesseramento NON validata!",
+            success: false
           });
-      } else {
-        res.status(400).json({
-          code: 400,
-          msg: "Richiesta di tesseramento NON validata!",
+        }
+      })
+      .catch((err) => {
+        res.status(500).json({
+          code: 500,
+          msg: "Qualcosa è andato storto...",
           success: false,
         });
-      }
-    })
-    .catch((err) => {
-      res.status(500).json({
-        code: 500,
-        msg: "Qualcosa è andato storto...",
-        success: false,
       });
-    });
+  } //rifiuto, la richiesta va cancellata
+  else {
+    await Richiesta_tesseramento.destroy({
+      where: { idRichiesta_tesseramento: idRichiestaTess, utente: idUtente },
+    })
+      .then(
+        res.status(200).json({
+          code: 200,
+          msg: "Richiesta di tesseramento rifiutata con successo!",
+          success: true,
+        })
+      )
+      .catch((err) => {
+        res.status(500).json({
+          code: 500,
+          msg: "Qualcosa è andato storto...",
+          success: false,
+        });
+      });
+  }
 };
 
 /**
@@ -362,7 +389,6 @@ exports.modificaStruttura = async (req, res) => {
         msg: "Struttura modificata con successo",
         success: true,
       });
-      
     })
     .catch((err) => {
       res

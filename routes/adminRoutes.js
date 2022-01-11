@@ -3,6 +3,7 @@ const router = express.Router();
 const adminCNT = require("../controller/adminCNT");
 let { body } = require("express-validator");
 let moment = require("moment");
+const RichiestaTesseramento = require("../model/Richiesta_tesseramento");
 
 let validazione = {
   nomeStruttura: /[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/,
@@ -29,7 +30,31 @@ router.get(
   "/reqtess/visualizzareqtess",
   adminCNT.visualizzaRichiesteTesseramento
 );
-router.post("/reqtess/validatesseramento", adminCNT.validaTesseramento);
+router.post(
+  "/reqtess/validatesseramento",
+  [
+    body("azione").custom((azione) => {
+      let azioniValide = ["accetta", "rifiuta"];
+      if (!azioniValide.includes(azione)) {
+        throw new Error("Azione sconosciuta!");
+      }
+      return true;
+    }),
+    body("idReqTess").custom(async (idReqTess, { req }) => {
+      let idRT = idReqTess;
+      let idUtente = req.body.idUtente;
+
+      return await RichiestaTesseramento.findOne({
+        where: { idRichiesta_tesseramento: idRT, utente: idUtente },
+      }).then((result) => {
+        if (!result || ((result) && (result.statusRichiesta === "Accettata")) ) { //richieste non trovate o già accettate
+          throw new Error("Richiesta di tesseramento non trovata!");
+        }
+      });
+    }),
+  ],
+  adminCNT.validaTesseramento
+);
 router.get("/strutture/eliminastruttura", adminCNT.eliminaStruttura);
 
 router.post(
