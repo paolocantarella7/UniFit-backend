@@ -19,7 +19,7 @@ let Struttura = singleton.define("struttura", {
     allowNull: false,
   },
   durataPerFascia: {
-    type: DataTypes.STRING,
+    type: DataTypes.INTEGER,
     allowNull: false,
   },
   capacitaPerFascia: {
