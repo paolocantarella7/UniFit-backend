@@ -9,7 +9,6 @@ let validazione = {
   nomeStruttura: /[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/,
   prezzo: /^\d{0,8}[.]?\d{1,2}$/,
   capacita: /^\b([1-9]|[1-9][0-9]|100)\b/,
-  orario: /^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/,
   data: /^\d{4}(-\d\d(-\d\d(T\d\d:\d\d(:\d\d)?(\.\d+)?(([+-]\d\d:\d\d)|Z)?)?)?)?$/,
   dataLimite: new Date().setHours(0, 0, 0, 0),
   orarioMattinaLimite: new Date().setHours(7, 0, 0, 0), //07:00:00
@@ -47,7 +46,8 @@ router.post(
       return await RichiestaTesseramento.findOne({
         where: { idRichiesta_tesseramento: idRT, utente: idUtente },
       }).then((result) => {
-        if (!result || ((result) && (result.statusRichiesta === "Accettata")) ) { //richieste non trovate o già accettate
+        if (!result || (result && result.statusRichiesta === "Accettata")) {
+          //richieste non trovate o già accettate
           throw new Error("Richiesta di tesseramento non trovata!");
         }
       });
@@ -72,7 +72,7 @@ router.post(
       .matches(validazione.capacita)
       .withMessage("Formato capacita non valido"),
     body("durataPerFascia")
-      .matches(validazione.orario)
+      .isInt({ min: 1, max: 5 })
       .withMessage("Formato durata non valido"),
     body("dataInizioDisponibilita")
       .matches(validazione.data)
@@ -215,7 +215,7 @@ router.post(
       .matches(validazione.capacita)
       .withMessage("Formato capacita non valido"),
     body("durataPerFascia")
-      .matches(validazione.orario)
+      .isInt({ min: 1, max: 5 })
       .withMessage("Formato durata non valido"),
     body("dataInizioDisponibilita")
       .matches(validazione.data)
