@@ -7,6 +7,7 @@ let Fattura = require("../model/Fattura");
 let { Sequelize } = require("../singleton/singleton");
 let senderEmail = require("../utils/sendEmail");
 let { validationResult } = require("express-validator");
+let generatoreFasce = require("../utils/generatoreFasce");
 
 /**
  * Nome metodo: getPrenotazioniByUtente
@@ -52,7 +53,7 @@ exports.getFasceOrarie = async(req, res) =>{
         attributes:["oraInizioMattina", "oraFineMattina", "oraInizioPomeriggio", "oraFinePomeriggio", "durataPerFascia"]
     }).then((result) =>{
         if(result){
-            listaFasce = getListaFasce(result.oraInizioMattina, result.oraFineMattina, result.oraInizioPomeriggio, result.oraFinePomeriggio, result.durataPerFascia);
+            listaFasce = generatoreFasce.getListaFasce(result.oraInizioMattina, result.oraFineMattina, result.oraInizioPomeriggio, result.oraFinePomeriggio, result.durataPerFascia);
             res.status(200).json({code: 200, listaFasce: listaFasce, success:true});
         }
         else
@@ -143,44 +144,6 @@ exports.effettuaPrenotazione = async(req, res) =>{
 
 
 
-/**
- * Nome metodo: getListaFasce
- * Descrizione: Metodo che permette di ottenere la lista delle fasce orarie prenotabili
- * Parametri: orari di apertura di una struttura
- * Return: lista di fasce orarie prenotabili
- * Autore : Giuseppe Scafa
- */
-
-let getListaFasce = (oraInizioMattina, oraFineMattina, oraInizioPomeriggio, oraFinePomeriggio, durataPerFascia) =>{
-    let listaFasce = [];
-    let inizioFascia, fineFascia;
-    fineFascia = oraInizioMattina;
-        do{
-            
-            inizioFascia = fineFascia.slice(0,5);
-            fineFascia = (parseInt(fineFascia.slice(0,2)) + durataPerFascia).toString().concat(":00");
-           
-            if(fineFascia > oraFineMattina.slice(0,5))
-                fineFascia = oraFineMattina.slice(0,5);
-            listaFasce.push(inizioFascia + "-" + fineFascia);
-            
-        }while(fineFascia != oraFineMattina.slice(0,5));
-        
-
-        fineFascia = oraInizioPomeriggio;
-        do{
-            
-            inizioFascia = fineFascia.slice(0,5);
-            fineFascia = (parseInt(fineFascia.slice(0,2)) + durataPerFascia).toString().concat(":00");
-           
-            if(fineFascia > oraFinePomeriggio.slice(0,5))
-                fineFascia = oraFinePomeriggio.slice(0,5);
-            listaFasce.push(inizioFascia + "-" + fineFascia);
-
-            
-        }while(fineFascia != oraFinePomeriggio.slice(0,5));
-        return listaFasce;
-}
 
 
 
