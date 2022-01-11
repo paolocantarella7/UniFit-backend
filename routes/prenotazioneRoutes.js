@@ -63,6 +63,11 @@ router.post("/effettuaPrenotazione", [
             if(result>0)
                 throw new Error("Struttura chiusa nel giorno selezionato");
         })
+    })
+    .custom(async (value) =>{
+        if(new Date(new Date().getTime()) > new Date(new Date(value))){
+            throw new Error("Data prenotazione e' nel passato")
+        }
     }),
     body("scadenzaCarta")
     .matches(validazione.data)

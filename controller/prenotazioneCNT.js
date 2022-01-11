@@ -3,6 +3,7 @@ let RichiestaTesseramento = require("../model/Richiesta_tesseramento");
 let Prenotazione = require("../model/Prenotazione");
 let Chiusura = require("../model/Chiusura");
 let Struttura = require("../model/Struttura");
+let Fattura = require("../model/Fattura");
 let { Sequelize } = require("../singleton/singleton");
 let senderEmail = require("../utils/sendEmail");
 let { validationResult } = require("express-validator");
@@ -83,8 +84,6 @@ exports.effettuaPrenotazione = async(req, res) =>{
             capacita = result.capacitaPerFascia;
             prezzo = result.prezzoPerFascia;
         }
-        else
-           return res.status(400).json({code: 400, msg:"Struttura non esistente", success:false});
 
     }).catch((err) =>{
         return res.status(400).json({code: 400, msg:err, success:false});
@@ -112,11 +111,30 @@ exports.effettuaPrenotazione = async(req, res) =>{
             struttura: req.body.idStruttura
         };
         await Prenotazione.create(newPrenotazione)
-        .then((result) =>{
-            return res.status(200).json({code: 200, msg:"Operazione effettuata con successo", success:true});
-        }).catch((err) =>{
-            return res.status(400).json({code: 400, msg:err, success:false});
-        })
+        .then(async (result) =>{
+            if(result){
+            let nuovaFattura = {
+                intestatario: req.body.intestatarioCarta,
+                totalePagamento: result.totalePagato,
+                dataRilascio: new Date(new Date().getTime()).toISOString().substring(0,10),
+                statusFattura: "Pagata",
+                prenotazione: result.idPrenotazione
+            };
+            await Fattura.create(nuovaFattura)
+            .then( (reslt) =>{
+                if(reslt)
+                    return res.status(200).json({code: 200, msg:"Operazione effettuata con successo", success:true});
+            })
+            .catch((err) =>{
+                return res.status(400).json({code: 400, msg:err, success:false});
+            })
+        }
+        }).catch((error) =>{
+            return res.status(400).json({code: 400, msg:error, success:false});
+        });
+    }
+    else{
+        return res.status(400).json({code: 400, msg:"Fascia oraria piena!", success:false});
     }
     
 
