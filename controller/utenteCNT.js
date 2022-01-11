@@ -8,6 +8,7 @@ let path = require("path");
 let senderEmail = require("../utils/sendEmail");
 let { Op, DATE } = require("sequelize");
 const { Sequelize } = require("../singleton/singleton");
+const Fattura = require("../model/Fattura");
 
 exports.getAllUtenti = async (req, res) => {
   await Utente.findAll({
@@ -238,11 +239,26 @@ exports.effettuaTesseramento = async (req, res) => {
             });
           } else {
             req.files.file.mv("." + filePath + "/certificato.pdf");
-            return res.status(200).json({
-              codice: 200,
-              msg: "Operazione completata",
-              success: true,
-            });
+            let nuovaFattura = {
+              intestatario: req.body.intestatarioCarta,
+              totalePagamento: result.prezzoTesseramento,
+              dataRilascio: new Date(new Date().getTime()).toISOString().substring(0,10),
+              statusFattura: "Pagata",
+              richiesta: result.idRichiesta_tesseramento
+          };
+
+           Fattura.create(nuovaFattura)
+          .then((reslt) =>{
+            if(reslt)
+              return res.status(200).json({code: 200, msg:"Operazione effettuata con successo", success:true});
+          })
+          .catch((error) =>{
+            console.log("bp2");
+            console.log(error);
+            return res.status(400).json({ codice: 400, msg: error, success: false });
+
+          })
+
           }
         });
       }
