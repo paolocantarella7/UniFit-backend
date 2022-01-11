@@ -52,11 +52,11 @@ router.post("/effettuaPrenotazione", [
     body("dataPrenotazione")
     .matches(validazione.data)
     .withMessage("Formato data prenotazione non valido")
-    .custom(async (value) =>{
+    .custom(async (value, { req }) =>{
         
         return await Chiusura.count({
             where:{
-                struttura: 1,
+                struttura: req.body.idStruttura,
                 dataChiusura:value
             }
         }).then((result) =>{
