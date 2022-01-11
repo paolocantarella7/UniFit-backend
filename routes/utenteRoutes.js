@@ -4,6 +4,7 @@ let utenteController = require("../controller/UtenteCNT");
 let Utente = require("../model/Utente");
 let { body } = require("express-validator");
 let moment = require("moment");
+const RichiestaTesseramento = require("../model/Richiesta_tesseramento");
 
 let validazione = {
   email: /[a-zA-Z0-9\._-]+[@][a-zA-Z0-9\._-]+[.][a-zA-Z]{2,6}/,
@@ -60,10 +61,11 @@ router.post(
       .withMessage("Formato password non valido"),
     body("dataNascita")
       .matches(validazione.data)
-      .withMessage("Formato data non valido, formato supportato yyyy-mm-gg").bail()
+      .withMessage("Formato data non valido, formato supportato yyyy-mm-gg")
+      .bail()
       .custom(async (dataNascita) => {
-
-        if (!moment(dataNascita).isValid() ||
+        if (
+          !moment(dataNascita).isValid() ||
           Date.parse(dataNascita) > Date.parse(new Date(validazione.dataLimite))
         ) {
           throw new Error("Formato data non valido!");
@@ -88,15 +90,18 @@ router.post(
   [
     body("password")
       .matches(validazione.password)
-      .withMessage("Formato password non valido").bail(),
-    body("passwordConferma").custom(async (confirmPassword, { req }) => {
-      let password = req.body.password;
-      // Se le password non coincidono
-      // la modifica non può andare a buon fine e si lancia un errore
-      if (password !== confirmPassword) {
-        throw new Error("Le password devono coincidere");
-      }
-    }).bail()
+      .withMessage("Formato password non valido")
+      .bail(),
+    body("passwordConferma")
+      .custom(async (confirmPassword, { req }) => {
+        let password = req.body.password;
+        // Se le password non coincidono
+        // la modifica non può andare a buon fine e si lancia un errore
+        if (password !== confirmPassword) {
+          throw new Error("Le password devono coincidere");
+        }
+      })
+      .bail(),
   ],
   utenteController.modificaPassword
 );
@@ -117,40 +122,59 @@ router.post(
 router.get("/cancellaAccount", utenteController.cancellaAccount);
 router.get("/datiPersonali", utenteController.getUtenteByID);
 
-router.post("/effettuaTesseramento", [
-  body("intestatarioCarta")
-  .matches(validazione.nome)
-  .withMessage("Formato intestatario carta non valido"),
-  body("numeroCarta")
-  .matches(validazione.numeroCarta)
-  .withMessage("Formato numero carta non valido"),
-  body("cvvCarta")
-  .matches(validazione.cvvCarta)
-  .withMessage("Formato CVV carta non valido"),
-  body("scadenzaCarta")
-    .matches(validazione.data)
-    .withMessage("Formato scadenza carta errato")
-    .custom(async(value) =>{
-        
-        if(new Date(new Date().getTime()) > new Date(new Date(value))){
-            throw new Error("Carta scaduta!")
+router.post(
+  "/effettuaTesseramento",
+  [
+    body("intestatarioCarta")
+      .matches(validazione.nome)
+      .withMessage("Formato intestatario carta non valido"),
+    body("numeroCarta")
+      .matches(validazione.numeroCarta)
+      .withMessage("Formato numero carta non valido"),
+    body("cvvCarta")
+      .matches(validazione.cvvCarta)
+      .withMessage("Formato CVV carta non valido"),
+    body("scadenzaCarta")
+      .matches(validazione.data)
+      .withMessage("Formato scadenza carta errato")
+      .bail()
+      .custom(async (value) => {
+        if (
+          !moment(value).isValid() ||
+          new Date(new Date().getTime()) > new Date(new Date(value))
+        ) {
+          throw new Error("Carta scaduta!");
         }
+      }),
+    body("tipologiaTesseramento").custom(async (value) => {
+      if (value != "Interno" && value != "Esterno")
+        throw new Error("Valore tipologia tesseramento non valido");
     }),
-    body("tipologiaTesseramento")
-    .custom(async (value) =>{
-      if(value != "Interno" && value != "Esterno")
-        throw new Error("Valore tipologia tesseramento non valido")
-    }),
-    body("idUtente")
-    .custom(async (value) =>{
-      await Utente.findByPk(value)
-      .then((result) =>{
-        if(!result)
-          throw new Error("Utente non esistente")
-      })
-    })
-],
-utenteController.effettuaTesseramento);
+    body("idUtente").custom(async (value) => {
+      await Utente.findByPk(value).then((result) => {
+        if (!result) throw new Error("Utente non esistente");
+      });
+    }).bail()
+    .custom(async (value)=> { //check per evitatare utente con doppie richieste
+      await RichiestaTesseramento.findOne({where: {utente:value}}).then((result) => {
+        if (result) throw new Error("L'utente ha già effettuato una richiesta!");
+      }
+    )}).bail(),
+    body("file")
+      .custom((value, { req }) => {
+        if(!req.files)
+        {
+          throw new Error("Inserimento file obbligatorio!");
+        }
+        else if (req.files.file.mimetype !== "application/pdf" ) {
+          throw new Error("Formato file non valido!");
+        }
+
+        return true;
+      }).bail()
+  ],
+  utenteController.effettuaTesseramento
+);
 
 router.post(
   "/recupero-password",
@@ -178,15 +202,18 @@ router.post(
   [
     body("password")
       .matches(validazione.password)
-      .withMessage("Formato password non valido").bail(),
-    body("passwordConferma").custom(async (confirmPassword, { req }) => {
-      let password = req.body.password;
-      // Se le password non coincidono
-      // la modifica non può andare a buon fine e si lancia un errore
-      if (password !== confirmPassword) {
-        throw new Error("Le password devono coincidere");
-      }
-    }).bail()
+      .withMessage("Formato password non valido")
+      .bail(),
+    body("passwordConferma")
+      .custom(async (confirmPassword, { req }) => {
+        let password = req.body.password;
+        // Se le password non coincidono
+        // la modifica non può andare a buon fine e si lancia un errore
+        if (password !== confirmPassword) {
+          throw new Error("Le password devono coincidere");
+        }
+      })
+      .bail(),
   ],
   utenteController.resettaPasswordPerRecupero
 );
