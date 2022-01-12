@@ -2,13 +2,10 @@ let Utente = require("../model/Utente");
 let RichiestaTesseramento = require("../model/Richiesta_tesseramento");
 let crypto = require("crypto");
 let fs = require("fs");
-let expressFileUpload = require("express-fileupload");
 let { validationResult } = require("express-validator");
-let path = require("path");
 let senderEmail = require("../utils/sendEmail");
-let { Op, DATE } = require("sequelize");
-const { Sequelize } = require("../singleton/singleton");
-const Fattura = require("../model/Fattura");
+let { Op } = require("sequelize");
+let Fattura = require("../model/Fattura");
 
 /**
  * Nome metodo: Login
@@ -19,9 +16,9 @@ const Fattura = require("../model/Fattura");
  */
 exports.login = async (req, res) => {
   //Check consistenza parametri richiesta
-  let erroriValidaizone = validationResult(req);
-  if (!erroriValidaizone.isEmpty()) {
-    return res.status(400).json({ error: erroriValidaizone.array() });
+  let erroriValidazione = validationResult(req);
+  if (!erroriValidazione.isEmpty()) {
+    return res.status(400).json({code: 400, error: erroriValidazione.array(), success : false });
   }
 
   let pw = crypto.createHash("sha512").update(req.body.password).digest("hex");
@@ -36,7 +33,8 @@ exports.login = async (req, res) => {
       }
     })
     .catch((err) => {
-      res.status(500).json({ code: 500, msg: err, success: false });
+      console.error(err);
+      res.status(500).json({ code: 500, msg: "Qualcosa è andato storto...", success: false });
     });
 };
 
@@ -49,9 +47,9 @@ exports.login = async (req, res) => {
  */
 exports.registrazione = async (req, res) => {
   //Check consistenza parametri richiesta
-  let erroriValidaizone = validationResult(req);
-  if (!erroriValidaizone.isEmpty()) {
-    return res.status(400).json({ error: erroriValidaizone.array() });
+  let erroriValidazione = validationResult(req);
+  if (!erroriValidazione.isEmpty()) {
+    return res.status(400).json({ code: 400, error: erroriValidazione.array(), success : false });
   }
 
   let { ...utenteDaRegistrare } = { ...req.body };
@@ -66,12 +64,12 @@ exports.registrazione = async (req, res) => {
       }
     })
     .catch((err) => {
+      console.error(err);
       res.status(500).json({
         codice: 500,
         messaggio: "Qualcosa è andato storto...",
         success: false,
       });
-      console.log(err);
     });
 };
 
@@ -86,7 +84,7 @@ exports.modificaPassword = async (req, res) => {
   //Check consistenza parametri richiesta
   let erroriValidazione = validationResult(req);
   if (!erroriValidazione.isEmpty()) {
-    return res.status(400).json({ error: erroriValidazione.array() });
+    return res.status(400).json({ code: 400, error: erroriValidazione.array(), success : false});
   }
 
   let idUtente = req.body.idUtente;
@@ -106,6 +104,7 @@ exports.modificaPassword = async (req, res) => {
       }
     })
     .catch((err) => {
+      console.error(err);
       res.status(500).json({
         codice: 500,
         messaggio: "Qualcosa è andato storto...",
@@ -133,7 +132,8 @@ exports.cancellaAccount = async (req, res) => {
         .json({ code: 200, msg: "Cancellazione riuscita", success: true })
     )
     .catch((err) => {
-      res.status(500).json({ code: 500, msg: err, success: false });
+      console.error(err);
+      res.status(500).json({ code: 500, msg: "Qualcosa è andato storto..", success: false });
     });
 };
 
@@ -170,7 +170,8 @@ exports.getUtenteByID = async (req, res) => {
       }
     })
     .catch((err) => {
-      res.status(500).json({ code: 500, msg: err, success: false });
+      console.error(err);
+      res.status(500).json({ code: 500, msg: "Qualcosa è andato storto...", success: false });
     });
 };
 
@@ -186,13 +187,10 @@ exports.effettuaTesseramento = async (req, res) => {
 
   let erroriValidazione = validationResult(req);
   if (!erroriValidazione.isEmpty()) {
-    return res.status(400).json({ error: erroriValidazione.array() });
+    return res.status(400).json({ code: 400, error: erroriValidazione.array(), success : false });
   }
 
   let filePath = "/static/richieste_tesseramento/" + req.body.idUtente;
-  //if (path.extname(req.files.file.name) != ".pdf")
-    
-
   let nuovaRichiesta = {
     dataRichiesta: new Date().toISOString().substring(0, 10),
     tipologiaTesseramento: req.body.tipologiaTesseramento,
@@ -201,9 +199,9 @@ exports.effettuaTesseramento = async (req, res) => {
     utente: req.body.idUtente,
   };
 
-  if (req.body.tipologiaTesseramento == "Interno")
-    nuovaRichiesta.prezzoTesseramento = 12;
-  else nuovaRichiesta.prezzoTesseramento = 20;
+  if (req.body.tipologiaTesseramento === "Interno")
+    nuovaRichiesta.prezzoTesseramento = 12.00;
+  else nuovaRichiesta.prezzoTesseramento = 20.00;
 
   await RichiestaTesseramento.create(nuovaRichiesta)
     .then((result) => {
@@ -242,6 +240,7 @@ exports.effettuaTesseramento = async (req, res) => {
       }
     })
     .catch((err) => {
+      console.error(err);
       return res.status(400).json({ codice: 400, msg: err, success: false });
     });
 };
@@ -257,7 +256,7 @@ exports.recuperoPassword = async (req, res) => {
   //Check consistenza parametri richiesta
   let erroriValidazione = validationResult(req);
   if (!erroriValidazione.isEmpty()) {
-    return res.status(400).json({ error: erroriValidazione.array() });
+    return res.status(400).json({ code: 400, error: erroriValidazione.array(), success : false});
   }
 
   let emailRicevuta = req.body.email;
@@ -289,7 +288,7 @@ exports.recuperoPassword = async (req, res) => {
             })
             .end();
         } catch (err) {
-          console.log(err);
+          console.error(err);
           res.status(500).json({
             code: 500,
             msg: "Invio email di recupero NON riuscito",
@@ -299,8 +298,8 @@ exports.recuperoPassword = async (req, res) => {
       }
     })
     .catch((err) => {
+      console.error(err);
       res.status(500).json({ code: 500, msg: err, success: false });
-      console.log(err);
     });
 };
 
@@ -314,7 +313,7 @@ exports.recuperoPassword = async (req, res) => {
 exports.resettaPasswordPerRecupero = async (req, res) => {
   let erroriValidazione = validationResult(req);
   if (!erroriValidazione.isEmpty()) {
-    return res.status(400).json({ error: erroriValidazione.array() });
+    return res.status(400).json({ code: 400, error: erroriValidazione.array(), success : false});
   }
 
   let token = req.params.token;
@@ -357,11 +356,13 @@ exports.resettaPasswordPerRecupero = async (req, res) => {
             }
           })
           .catch((err) => {
-            res.status(500).json({ code: 500, msg: err, success: false });
+            console.error(err);
+            res.status(500).json({ code: 500, msg: "Qualcosa è andato storto..", success: false });
           });
       }
     })
     .catch((err) => {
-      res.status(500).json({ code: 500, msg: err, success: false });
+      console.error(err);
+      res.status(500).json({ code: 500, msg: "Qualcosa è andato storto..", success: false });
     });
 };
