@@ -23,13 +23,13 @@ app.use('/prenotazione', prenotazioneRoute);
 app.use('/user', utenteRouter);
 
 app.get('/', (req, res) => {
-  res.send('Benvenuto su UniFit!')
-})
+    res.send('Benvenuto su UniFit!');
+});
 
-let server = app.listen(3000, "127.0.0.1", function () {
-  let address = server.address().address;
-  let port = server.address().port;
-  console.log("Listening on " + address + ":" + port);
+let server = app.listen(port, "127.0.0.1", function () {
+    let address = server.address().address;
+    let port = server.address().port;
+    console.log("Listening on " + address + ":" + port);
 });
 
 module.exports = app;
