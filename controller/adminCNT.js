@@ -20,7 +20,10 @@ exports.visualizzaStrutture = async (req, res) => {
       }
     })
     .catch((err) => {
-      res.status(400).json(err);
+      console.error(err);
+      res
+        .status(500)
+        .json({ code: 500, msg: "Qualcosa è andato storto..", success: false });
     });
 };
 
@@ -51,6 +54,7 @@ exports.visualizzaDettagliStruttura = async (req, res) => {
       }
     })
     .catch((err) => {
+      console.error(err);
       res
         .status(500)
         .json({ code: 500, msg: "Qualcosa è andato storto..", success: false });
@@ -111,7 +115,7 @@ exports.visualizzaPrenotazioniStruttura = async (req, res) => {
  * Nome metodo: visualizzaUtentiRegistrati
  * Descrizione: Metodo che permette all'amministratore di visualizzare la lista di utenti registrati
  * Parametri: void
- * Return: Codice, lista utenti, boolean true/false in base alla riuscita dell'operazione e dati dell'utente
+ * Return: Codice, lista utenti, boolean true/false in base alla riuscita dell'operazione
  * Autore : Matteo Della Rocca
  */
 exports.visualizzaUtentiRegistrati = async (req, res) => {
@@ -147,7 +151,7 @@ exports.visualizzaUtentiRegistrati = async (req, res) => {
  * Nome metodo: visualizzaRichiesteTesseramento
  * Descrizione: Metodo che permette all'amministratore di visualizzare la lista delle richieste di tesseramento DA VALIDARE
  * Parametri: void
- * Return: Codice, lista utenti, boolean true/false in base alla riuscita dell'operazione e dati dell'utente
+ * Return: Codice, lista utenti, boolean true/false in base alla riuscita dell'operazione
  * Autore : Matteo Della Rocca
  */
 exports.visualizzaRichiesteTesseramento = async (req, res) => {
@@ -198,9 +202,12 @@ exports.visualizzaRichiesteTesseramento = async (req, res) => {
  * Autore : Matteo Della Rocca
  */
 exports.validaTesseramento = async (req, res) => {
-  let erroriValidaizone = validationResult(req);
-  if (!erroriValidaizone.isEmpty()) {
-    return res.status(400).json({ error: erroriValidaizone.array() });
+  let erroriValidazione = validationResult(req);
+
+  if (!erroriValidazione.isEmpty()) {
+    return res
+      .status(400)
+      .json({ code: 400, error: erroriValidazione.array(), success: false });
   }
 
   let idUtente = req.body.idUtente;
@@ -214,7 +221,7 @@ exports.validaTesseramento = async (req, res) => {
       {
         where: { idRichiesta_tesseramento: idRichiestaTess, utente: idUtente },
         returning: true,
-        plain: true
+        plain: true,
       }
     )
       .then((result) => {
@@ -224,25 +231,27 @@ exports.validaTesseramento = async (req, res) => {
               res.status(200).json({
                 code: 200,
                 msg: "Richiesta di tesseramento accettata con successo!",
-                success: true
+                success: true,
               })
             )
             .catch((err) => {
+              console.error(err);
               res.status(500).json({
                 code: 500,
                 msg: "Qualcosa è andato storto...",
-                success: false
+                success: false,
               });
             });
         } else {
           res.status(400).json({
             code: 400,
             msg: "Richiesta di tesseramento NON validata!",
-            success: false
+            success: false,
           });
         }
       })
       .catch((err) => {
+        console.error(err);
         res.status(500).json({
           code: 500,
           msg: "Qualcosa è andato storto...",
@@ -262,6 +271,7 @@ exports.validaTesseramento = async (req, res) => {
         })
       )
       .catch((err) => {
+        console.error(err);
         res.status(500).json({
           code: 500,
           msg: "Qualcosa è andato storto...",
@@ -302,6 +312,7 @@ exports.eliminaStruttura = async (req, res) => {
       }
     })
     .catch((err) => {
+      console.error(err);
       res.status(500).json({
         code: 500,
         msg: "Qualcosa è andato storto...",
@@ -311,9 +322,11 @@ exports.eliminaStruttura = async (req, res) => {
 };
 
 exports.aggiungiStruttura = async (req, res) => {
-  let erroriValidaizone = validationResult(req);
-  if (!erroriValidaizone.isEmpty()) {
-    return res.status(400).json({ error: erroriValidaizone.array() });
+  let erroriValidazione = validationResult(req);
+  if (!erroriValidazione.isEmpty()) {
+    return res
+      .status(400)
+      .json({ code: 400, error: erroriValidazione.array(), success: false });
   }
 
   let { ...strutturaDaCreare } = { ...req.body };
@@ -355,9 +368,11 @@ exports.aggiungiStruttura = async (req, res) => {
 };
 
 exports.modificaStruttura = async (req, res) => {
-  let erroriValidaizone = validationResult(req);
-  if (!erroriValidaizone.isEmpty()) {
-    return res.status(400).json({ error: erroriValidaizone.array() });
+  let erroriValidazione = validationResult(req);
+  if (!erroriValidazione.isEmpty()) {
+    return res
+      .status(400)
+      .json({ code: 400, error: erroriValidazione.array(), success: false });
   }
   let idStruttura = req.params.idStruttura;
   let { ...strutturaDaCreare } = { ...req.body };
@@ -368,7 +383,7 @@ exports.modificaStruttura = async (req, res) => {
     returning: true,
     plain: true,
   })
-    .then((resultStruttura) => {
+    .then(() => {
       Chiusura.destroy({ where: { struttura: idStruttura } });
       dateChiusura.forEach((dataChiusura) => {
         let chiusura = {
@@ -376,6 +391,7 @@ exports.modificaStruttura = async (req, res) => {
           struttura: idStruttura,
         };
         Chiusura.create(chiusura).catch((err) => {
+          console.error(err);
           res.status(500).json({
             code: 500,
             msg: "Qualcosa è andato storto..",
@@ -391,6 +407,7 @@ exports.modificaStruttura = async (req, res) => {
       });
     })
     .catch((err) => {
+      console.error(err);
       res
         .status(500)
         .json({ code: 500, msg: "Qualcosa è andato storto..", success: false });
