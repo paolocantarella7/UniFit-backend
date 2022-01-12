@@ -4,8 +4,5 @@ node_js:
 cache:
   directories:
     - node_modules
-before_install: 
- - cd server 
- - mysql -u root --password="" < test/travis.sql
 script:
 - npm run lint
