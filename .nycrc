@@ -1,0 +1,22 @@
+{
+    "all": true,
+    "cache": false,
+    "include": [
+         "**/routes/**.js",
+         "**/controller/**.js"
+    ],
+    "exclude": [
+        "**/app.js",
+        "**/model/"
+      ],
+    "extensions": [
+        ".js"
+    ],
+    "report-dir": "./coverage",
+    "reporter": [
+        "html",
+        "text",
+        "text-summary"
+    ],
+    "temp-directory": "./coverage/.nyc_output"
+}
