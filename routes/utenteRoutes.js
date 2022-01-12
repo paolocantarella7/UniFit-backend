@@ -20,9 +20,7 @@ let validazione = {
   cvvCarta: /^[0-9]{3,4}$/,
 };
 
-router.get("/all", utenteController.getAllUtenti);
 
-/* ----------- Registrazione ------------*/
 router.post(
   "/registrati",
   [
@@ -84,7 +82,6 @@ router.post(
   utenteController.registrazione
 );
 
-/* ----------- Modifica password -----------*/
 router.post(
   "/modificaPassword",
   [

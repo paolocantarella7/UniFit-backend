@@ -10,27 +10,6 @@ let { Op, DATE } = require("sequelize");
 const { Sequelize } = require("../singleton/singleton");
 const Fattura = require("../model/Fattura");
 
-exports.getAllUtenti = async (req, res) => {
-  await Utente.findAll({
-    /*include: [
-     {
-        model: Prenotazione,
-        as: "listaPrenotazioni",
-      },
-      {
-        model: RichiestaTesseramento,
-        as: "dettagliTesseramento",
-      }, 
-    ],*/
-  })
-    .then((result) => {
-      res.status(200).json({ utenti: result });
-    })
-    .catch((err) => {
-      res.status(400).json(err);
-    });
-};
-
 /**
  * Nome metodo: Login
  * Descrizione: Metodo che permette di effettuare il login
@@ -38,7 +17,6 @@ exports.getAllUtenti = async (req, res) => {
  * Return: Codice, messaggio, boolean true/false in base alla riuscita dell'operazione e dati dell'utente
  * Autore : Giuseppe Scafa
  */
-
 exports.login = async (req, res) => {
   //Check consistenza parametri richiesta
   let erroriValidaizone = validationResult(req);
