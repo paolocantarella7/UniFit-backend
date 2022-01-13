@@ -18,6 +18,10 @@ let generatoreFasce = require("../utils/generatoreFasce");
  */
 
 exports.getPrenotazioniByUtente = async (req, res) =>{
+    let erroriValidazione = validationResult(req);
+  if (!erroriValidazione.isEmpty()) {
+    return res.status(400).json({ code: 400, error: erroriValidazione.array(), success:false});}
+    
     await Prenotazione.findAll(
       {
         include:{
@@ -48,6 +52,10 @@ exports.getPrenotazioniByUtente = async (req, res) =>{
  */
 
 exports.getFasceOrarie = async(req, res) =>{
+    let erroriValidazione = validationResult(req);
+  if (!erroriValidazione.isEmpty()) {
+    return res.status(400).json({ code: 400, error: erroriValidazione.array(), success:false});}
+
     let listaFasce;
     await Struttura.findByPk(req.query.idStruttura, {
         attributes:["oraInizioMattina", "oraFineMattina", "oraInizioPomeriggio", "oraFinePomeriggio", "durataPerFascia"]

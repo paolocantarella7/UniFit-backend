@@ -18,15 +18,34 @@ let validazione = {
     fasciaOraria: /^[0-9]+:[0-9]+-[0-9]+:[0-9]+$/
   };
 
-router.get("/prenotazioniUtente", prenotazioneCNT.getPrenotazioniByUtente);
-router.get("/getFasce", prenotazioneCNT.getFasceOrarie);
+router.get("/prenotazioniUtente", [
+    query("idUtente")
+    .custom(async (value) =>{
+        await Utente.findByPk(value)
+        .then((result) =>{
+            if(!result || result.isCancellato)
+                throw new Error("Utente non esistente!");
+        })
+    })
+], prenotazioneCNT.getPrenotazioniByUtente);
+
+router.get("/getFasce", [
+    query("idStruttura")
+    .custom(async (value) =>{
+        await Struttura.findByPk(value)
+        .then((result) =>{
+            if(!result || result.isCancellata)
+                throw new Error("Struttura non esistente");
+        })
+    })
+], prenotazioneCNT.getFasceOrarie);
 
 router.post("/effettuaPrenotazione", [
     body("idStruttura")
     .custom(async (value) =>{
         await Struttura.findByPk(value)
         .then((result) =>{
-            if(!result)
+            if(!result || result.isCancellata)
                 throw new Error("Struttura non esistente");
         })
     }),
@@ -128,7 +147,15 @@ router.get("/modificaPrenotazione", [
 router.get("/cancellaPrenotazione", [
     query("email")
     .matches(validazione.email)
-    .withMessage("Formato email errato")
+    .withMessage("Formato email errato"),
+    query("idPrenotazione")
+    .custom(async (value) =>{
+        await Prenotazione.findByPk(value)
+        .then((result) =>{
+            if(!result)
+                throw new Error("Prenotazione non esistente");
+        })
+    })
 ],
 prenotazioneCNT.cancellaPrenotazione);
 module.exports = router;
