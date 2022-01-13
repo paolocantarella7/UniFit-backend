@@ -289,6 +289,14 @@ exports.validaTesseramento = async (req, res) => {
  * Autore : Matteo Della Rocca
  */
 exports.eliminaStruttura = async (req, res) => {
+  let erroriValidazione = validationResult(req);
+
+  if (!erroriValidazione.isEmpty()) {
+    return res
+      .status(400)
+      .json({ code: 400, error: erroriValidazione.array(), success: false });
+  }
+
   let idStruttura = req.query.idStrutt;
 
   await Struttura.update(
@@ -302,12 +310,6 @@ exports.eliminaStruttura = async (req, res) => {
           code: 200,
           msg: "Cancellazione struttura riuscita",
           success: true,
-        });
-      } else {
-        res.status(400).json({
-          code: 400,
-          msg: "Cancellazione struttura NON riuscita",
-          success: false,
         });
       }
     })

@@ -4,6 +4,8 @@ const adminCNT = require("../controller/adminCNT");
 let { body } = require("express-validator");
 let moment = require("moment");
 const RichiestaTesseramento = require("../model/Richiesta_tesseramento");
+const Struttura = require("../model/Struttura");
+const { query } = require('express-validator');
 
 let validazione = {
   nomeStruttura: /[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/,
@@ -55,7 +57,17 @@ router.post(
   ],
   adminCNT.validaTesseramento
 );
-router.get("/strutture/eliminastruttura", adminCNT.eliminaStruttura);
+
+router.get("/strutture/eliminastruttura", [
+  query("idStrutt")
+  .custom(async (value) =>{
+    await Struttura.findByPk(value)
+    .then((result) =>{
+      if(!result || result.isCancellata)
+        throw new Error("Struttura non esistente!")
+    })
+  })
+], adminCNT.eliminaStruttura);
 
 router.post(
   "/strutture/aggiungistruttura",
