@@ -14,7 +14,8 @@ let validazione = {
   data: /^\d{4}(-\d\d(-\d\d(T\d\d:\d\d(:\d\d)?(\.\d+)?(([+-]\d\d:\d\d)|Z)?)?)?)?$/,
   dataLimite: new Date().setHours(0, 0, 0, 0),
   orarioMattinaLimite: new Date().setHours(7, 0, 0, 0), //07:00:00
-  orarioPomeriggioLimite: new Date().setHours(21, 0, 0, 0), //21:00:00
+  orarioPomeriggioLimite: new Date().setHours(21, 0, 0, 0), //21:00:00,
+  orario: /[0-9]+:[0-9]+/
 };
 
 router.get("/strutture/visualizzastrutture", adminCNT.visualizzaStrutture);
