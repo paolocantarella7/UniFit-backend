@@ -26,7 +26,7 @@ exports.login = async (req, res) => {
 
   let pw = crypto.createHash("sha512").update(req.body.password).digest("hex");
   await Utente.findOne({
-    where: { email: req.body.email, password: pw },
+    where: { email: req.body.email, password: pw, isCancellato : 0 },
     attributes: {
       exclude: [
         "password",
@@ -37,7 +37,7 @@ exports.login = async (req, res) => {
     },
   })
     .then((result) => {
-      if (result && !result.isCancellato) {
+      if (result) {
         res.status(200).json({ code: 200, utente: result, success: true });
       } else {
         res
