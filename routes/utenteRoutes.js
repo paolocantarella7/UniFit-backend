@@ -4,7 +4,8 @@ let utenteController = require("../controller/UtenteCNT");
 let Utente = require("../model/Utente");
 let { body } = require("express-validator");
 let moment = require("moment");
-const RichiestaTesseramento = require("../model/Richiesta_tesseramento");
+let RichiestaTesseramento = require("../model/Richiesta_tesseramento");
+let { query } = require("express-validator");
 
 let validazione = {
   email: /[a-zA-Z0-9\._-]+[@][a-zA-Z0-9\._-]+[.][a-zA-Z]{2,6}/,
@@ -30,7 +31,7 @@ router.post(
       .custom(async (value) => {
         return await Utente.findOne({ where: { email: value } }).then(
           (user) => {
-            if (user) {
+            if (user && !user.isCancellato) {
               throw new Error("E-mail già in uso!");
             }
           }
@@ -42,7 +43,7 @@ router.post(
       .custom(async (value) => {
         return await Utente.findOne({ where: { codiceFiscale: value } }).then(
           (user) => {
-            if (user) {
+            if (user && !user.isCancellato) {
               throw new Error("Codice fiscale già presente nel database!");
             }
           }
@@ -116,7 +117,17 @@ router.post(
   utenteController.login
 );
 
-router.get("/cancellaAccount", utenteController.cancellaAccount);
+router.get("/cancellaAccount", [
+  query("idUtente")
+  .custom(async (value) =>{
+    await Utente.findByPk(value)
+    .then((result) =>{
+      if(!result || result.isCancellato)
+        throw new Error("Utente non esistente!")
+    })
+  })
+],utenteController.cancellaAccount);
+
 router.get("/datiPersonali", utenteController.getUtenteByID);
 
 router.post(
@@ -149,7 +160,7 @@ router.post(
     }),
     body("idUtente").custom(async (value) => {
       await Utente.findByPk(value).then((result) => {
-        if (!result) throw new Error("Utente non esistente");
+        if (!result || result.isCancellato) throw new Error("Utente non esistente");
       });
     }).bail()
     .custom(async (value)=> { //check per evitatare utente con doppie richieste

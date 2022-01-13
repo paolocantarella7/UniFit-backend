@@ -6,6 +6,7 @@ let { validationResult } = require("express-validator");
 let senderEmail = require("../utils/sendEmail");
 let { Op } = require("sequelize");
 let Fattura = require("../model/Fattura");
+const { update } = require("../model/Fattura");
 
 /**
  * Nome metodo: Login
@@ -51,8 +52,52 @@ exports.registrazione = async (req, res) => {
   if (!erroriValidazione.isEmpty()) {
     return res.status(400).json({ code: 400, error: erroriValidazione.array(), success : false });
   }
-
+  let user;
   let { ...utenteDaRegistrare } = { ...req.body };
+
+  try{
+    user = await Utente.findOne({
+    where:{
+      codiceFiscale: utenteDaRegistrare.codiceFiscale,
+      email: utenteDaRegistrare.email
+    }})
+  }
+  catch(err){
+    res.status(500).json({
+      codice: 500,
+      messaggio: "Qualcosa è andato storto...",
+      success: false,
+    });
+  }
+
+  if(user){
+    await Utente.update({
+      isCancellato: 0,
+      password: utenteDaRegistrare.password,
+      indirizzoResidenza: utenteDaRegistrare.indirizzoResidenza,
+      numeroTelefono: utenteDaRegistrare.numeroTelefono,
+    }, {individualHooks: true, where:{
+      idUtente: user.idUtente
+    }})
+    .then((result) =>{
+      if(result)
+        res.status(201).json({
+          codice: 201,
+          messaggio: "Registrazione effettuata con successo",
+          success: true,
+        });
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).json({
+        codice: 500,
+        messaggio: "Qualcosa è andato storto...",
+        success: false,
+      });
+    });
+  }
+
+  else{
   await Utente.create(utenteDaRegistrare)
     .then((result) => {
       if (result) {
@@ -71,6 +116,7 @@ exports.registrazione = async (req, res) => {
         success: false,
       });
     });
+  }
 };
 
 /**
@@ -122,6 +168,11 @@ exports.modificaPassword = async (req, res) => {
  */
 
 exports.cancellaAccount = async (req, res) => {
+  let erroriValidazione = validationResult(req);
+  if (!erroriValidazione.isEmpty()) {
+    return res.status(400).json({ code: 400, error: erroriValidazione.array(), success : false });
+  }
+
   await Utente.update(
     { isCancellato: 1 },
     { where: { idUtente: req.query.id } }
@@ -165,8 +216,8 @@ exports.getUtenteByID = async (req, res) => {
         res.status(200).json({ codice: 200, utente: result, success: true });
       } else {
         res
-          .status(404)
-          .json({ codice: 404, msg: "Utente non trovato", success: false });
+          .status(400)
+          .json({ codice: 400, msg: "Utente non trovato", success: false });
       }
     })
     .catch((err) => {
