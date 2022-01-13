@@ -8,12 +8,12 @@ let RichiestaTesseramento = require("../model/Richiesta_tesseramento");
 let { query } = require("express-validator");
 
 let validazione = {
-  email: /[a-zA-Z0-9\._-]+[@][a-zA-Z0-9\._-]+[.][a-zA-Z]{2,6}/,
-  password: /[A-Z0-9a-z.!@_-]{8,16}/,
-  nome: /[A-zÀ-ù ‘-]{2,45}$/,
+  email: /^[a-zA-Z0-9\._-]+[@][a-zA-Z0-9\._-]+[.][a-zA-Z]{2,6}/,
+  password: /^[A-Z0-9a-z.!@_-]{8,16}/,
+  nome: /^[A-zÀ-ù ‘-]{2,45}$/,
   codiceFiscale: /^[A-Z]{6}\d{2}[A-Z]\d{2}[A-Z]\d{3}[A-Z]$/,
-  indirizzo: /[0-9A-zÀ-ù ‘-]{2,30}$/,
-  telefono: /\d{10}$/,
+  indirizzo: /^[0-9A-zÀ-ù ‘-]{2,30}/,
+  telefono: /^\d{10}$/,
   cognome: /^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/,
   data: /^\d{4}(-\d\d(-\d\d(T\d\d:\d\d(:\d\d)?(\.\d+)?(([+-]\d\d:\d\d)|Z)?)?)?)?$/,
   dataLimite: new Date().setHours(0, 0, 0, 0),
@@ -28,10 +28,16 @@ router.post(
     body("email")
       .matches(validazione.email)
       .withMessage("Formato e-mail non valido")
-      .custom(async (value) => {
+      .custom(async (value, {req}) => {
         return await Utente.findOne({ where: { email: value } }).then(
           (user) => {
-            if (user && !user.isCancellato) {
+            //Utente con email già esistente  
+            //oppure in caso di utente cancellato con CF diverso da quello associato a quell'email 
+            if ((user && !user.isCancellato)) {
+              throw new Error("E-mail già in uso!");
+            }
+            else if(user && user.isCancellato && (user.codiceFiscale !== req.body.codiceFiscale))
+            {
               throw new Error("E-mail già in uso!");
             }
           }
@@ -40,12 +46,19 @@ router.post(
     body("codiceFiscale")
       .matches(validazione.codiceFiscale)
       .withMessage("Formato codice fiscale non valido")
-      .custom(async (value) => {
+      .custom(async (value, {req}) => {
         return await Utente.findOne({ where: { codiceFiscale: value } }).then(
           (user) => {
-            if (user && !user.isCancellato) {
+            //Utente con email già esistente  
+            //oppure in caso di utente cancellato con email diversa da quella associata a quel CF 
+            if ((user && !user.isCancellato)) {
               throw new Error("Codice fiscale già presente nel database!");
             }
+            else if(user && user.isCancellato && (user.email !== req.body.email))
+            {
+              throw new Error("Codice fiscale già presente nel database!");
+            }
+    
           }
         );
       }),

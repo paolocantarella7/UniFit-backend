@@ -26,14 +26,14 @@ exports.login = async (req, res) => {
 
   let pw = crypto.createHash("sha512").update(req.body.password).digest("hex");
   await Utente.findOne({
-    where: { email: req.body.email, password: pw, isCancellato : 0 },
+    where: { email: req.body.email, password: pw, isCancellato: 0 },
     attributes: {
       exclude: [
         "password",
         "isCancellato",
         "tokenRecuperoPassword",
         "dataScadenzaTokenRP",
-      ]
+      ],
     },
   })
     .then((result) => {
@@ -70,75 +70,82 @@ exports.registrazione = async (req, res) => {
       .status(400)
       .json({ code: 400, error: erroriValidazione.array(), success: false });
   }
-  let user;
   let { ...utenteDaRegistrare } = { ...req.body };
 
-  try {
-    user = await Utente.findOne({
-      where: {
-        codiceFiscale: utenteDaRegistrare.codiceFiscale,
-        email: utenteDaRegistrare.email,
-      },
-    });
-  } catch (err) {
-    res.status(500).json({
-      codice: 500,
-      messaggio: "Qualcosa è andato storto...",
-      success: false,
-    });
-  }
+  await Utente.findOne({
+    where: {
+      codiceFiscale: utenteDaRegistrare.codiceFiscale,
+      email: utenteDaRegistrare.email,
+    },
+  })
+    .then(async (userCheck) => {
+      if (userCheck && userCheck.isCancellato) {
+        //Utente già registrato, ma cancellato
 
-  if (user) {
-    await Utente.update(
-      {
-        isCancellato: 0,
-        password: utenteDaRegistrare.password,
-        indirizzoResidenza: utenteDaRegistrare.indirizzoResidenza,
-        numeroTelefono: utenteDaRegistrare.numeroTelefono,
-      },
-      {
-        individualHooks: true,
-        where: {
-          idUtente: user.idUtente,
-        },
+        await Utente.update(
+          //Modifico soltanto i campi e riattivo l'utente
+          {
+            nome: utenteDaRegistrare.nome,
+            cognome: utenteDaRegistrare.cognome,
+            dataNascita: utenteDaRegistrare.dataNascita,
+            nazionalita: utenteDaRegistrare.nazionalita,
+            isCancellato: 0,
+            password: utenteDaRegistrare.password,
+            indirizzoResidenza: utenteDaRegistrare.indirizzoResidenza,
+            numeroTelefono: utenteDaRegistrare.numeroTelefono,
+          },
+          {
+            individualHooks: true,
+            where: {
+              idUtente: userCheck.idUtente,
+            },
+          }
+        )
+          .then((result) => {
+            if (result)
+              res.status(201).json({
+                codice: 201,
+                messaggio: "Registrazione effettuata con successo",
+                success: true,
+              });
+          })
+          .catch((err) => {
+            console.error(err);
+            res.status(500).json({
+              codice: 500,
+              messaggio: "Qualcosa è andato storto...",
+              success: false,
+            });
+          });
+      } else {
+        await Utente.create(utenteDaRegistrare)
+          .then((result) => {
+            if (result) {
+              res.status(201).json({
+                codice: 201,
+                messaggio: "Registrazione effettuata con successo",
+                success: true,
+              });
+            }
+          })
+          .catch((err) => {
+            console.error(err);
+            res.status(500).json({
+              codice: 500,
+              messaggio: "Qualcosa è andato storto...",
+              success: false,
+            });
+          });
       }
-    )
-      .then((result) => {
-        if (result)
-          res.status(201).json({
-            codice: 201,
-            messaggio: "Registrazione effettuata con successo",
-            success: true,
-          });
-      })
-      .catch((err) => {
-        console.error(err);
-        res.status(500).json({
-          codice: 500,
-          messaggio: "Qualcosa è andato storto...",
-          success: false,
-        });
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).json({
+        codice: 500,
+        messaggio: "Qualcosa è andato storto...",
+        success: false,
       });
-  } else {
-    await Utente.create(utenteDaRegistrare)
-      .then((result) => {
-        if (result) {
-          res.status(201).json({
-            codice: 201,
-            messaggio: "Registrazione effettuata con successo",
-            success: true,
-          });
-        }
-      })
-      .catch((err) => {
-        console.error(err);
-        res.status(500).json({
-          codice: 500,
-          messaggio: "Qualcosa è andato storto...",
-          success: false,
-        });
-      });
-  }
+    });
 };
 
 /**
