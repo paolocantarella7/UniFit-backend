@@ -175,7 +175,7 @@ exports.cancellaAccount = async (req, res) => {
 
   await Utente.update(
     { isCancellato: 1 },
-    { where: { idUtente: req.query.id } }
+    { where: { idUtente: req.query.idUtente } }
   )
     .then(
       res
