@@ -7,7 +7,7 @@ cache:
 services:
 - mysql
 before_install: 
-- mysql -u root --password="" < test/travis.sql
+- mysql -e 'CREATE DATABASE IF NOT EXISTS unifit;'
 script:
 - npm run lint
 - npm run test
