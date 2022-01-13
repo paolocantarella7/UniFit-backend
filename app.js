@@ -10,7 +10,7 @@ const prenotazioneRoute = require('./routes/prenotazioneRoutes');
 
 
 let app = express();
-let port = 3000;
+let port = 5000;
 app.use(expressFileUpload());
 app.use(logger('dev'));
 app.use(express.json());
@@ -27,7 +27,7 @@ app.get('/', (req, res) => {
     res.send('Benvenuto su UniFit!');
 });
 
-let server = app.listen(port, "127.0.0.1", function () {
+let server = app.listen(port, function () {
     let address = server.address().address;
     let port = server.address().port;
     console.log("Listening on " + address + ":" + port);
