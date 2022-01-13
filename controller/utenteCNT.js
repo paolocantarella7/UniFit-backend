@@ -19,11 +19,23 @@ exports.login = async (req, res) => {
   //Check consistenza parametri richiesta
   let erroriValidazione = validationResult(req);
   if (!erroriValidazione.isEmpty()) {
-    return res.status(400).json({code: 400, error: erroriValidazione.array(), success : false });
+    return res
+      .status(400)
+      .json({ code: 400, error: erroriValidazione.array(), success: false });
   }
 
   let pw = crypto.createHash("sha512").update(req.body.password).digest("hex");
-  await Utente.findOne({ where: { email: req.body.email, password: pw } })
+  await Utente.findOne({
+    where: { email: req.body.email, password: pw },
+    attributes: {
+      exclude: [
+        "password",
+        "isCancellato",
+        "tokenRecuperoPassword",
+        "dataScadenzaTokenRP",
+      ]
+    },
+  })
     .then((result) => {
       if (result && !result.isCancellato) {
         res.status(200).json({ code: 200, utente: result, success: true });
@@ -35,7 +47,11 @@ exports.login = async (req, res) => {
     })
     .catch((err) => {
       console.error(err);
-      res.status(500).json({ code: 500, msg: "Qualcosa è andato storto...", success: false });
+      res.status(500).json({
+        code: 500,
+        msg: "Qualcosa è andato storto...",
+        success: false,
+      });
     });
 };
 
@@ -50,19 +66,21 @@ exports.registrazione = async (req, res) => {
   //Check consistenza parametri richiesta
   let erroriValidazione = validationResult(req);
   if (!erroriValidazione.isEmpty()) {
-    return res.status(400).json({ code: 400, error: erroriValidazione.array(), success : false });
+    return res
+      .status(400)
+      .json({ code: 400, error: erroriValidazione.array(), success: false });
   }
   let user;
   let { ...utenteDaRegistrare } = { ...req.body };
 
-  try{
+  try {
     user = await Utente.findOne({
-    where:{
-      codiceFiscale: utenteDaRegistrare.codiceFiscale,
-      email: utenteDaRegistrare.email
-    }})
-  }
-  catch(err){
+      where: {
+        codiceFiscale: utenteDaRegistrare.codiceFiscale,
+        email: utenteDaRegistrare.email,
+      },
+    });
+  } catch (err) {
     res.status(500).json({
       codice: 500,
       messaggio: "Qualcosa è andato storto...",
@@ -70,52 +88,56 @@ exports.registrazione = async (req, res) => {
     });
   }
 
-  if(user){
-    await Utente.update({
-      isCancellato: 0,
-      password: utenteDaRegistrare.password,
-      indirizzoResidenza: utenteDaRegistrare.indirizzoResidenza,
-      numeroTelefono: utenteDaRegistrare.numeroTelefono,
-    }, {individualHooks: true, where:{
-      idUtente: user.idUtente
-    }})
-    .then((result) =>{
-      if(result)
-        res.status(201).json({
-          codice: 201,
-          messaggio: "Registrazione effettuata con successo",
-          success: true,
-        });
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).json({
-        codice: 500,
-        messaggio: "Qualcosa è andato storto...",
-        success: false,
-      });
-    });
-  }
-
-  else{
-  await Utente.create(utenteDaRegistrare)
-    .then((result) => {
-      if (result) {
-        res.status(201).json({
-          codice: 201,
-          messaggio: "Registrazione effettuata con successo",
-          success: true,
-        });
+  if (user) {
+    await Utente.update(
+      {
+        isCancellato: 0,
+        password: utenteDaRegistrare.password,
+        indirizzoResidenza: utenteDaRegistrare.indirizzoResidenza,
+        numeroTelefono: utenteDaRegistrare.numeroTelefono,
+      },
+      {
+        individualHooks: true,
+        where: {
+          idUtente: user.idUtente,
+        },
       }
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).json({
-        codice: 500,
-        messaggio: "Qualcosa è andato storto...",
-        success: false,
+    )
+      .then((result) => {
+        if (result)
+          res.status(201).json({
+            codice: 201,
+            messaggio: "Registrazione effettuata con successo",
+            success: true,
+          });
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).json({
+          codice: 500,
+          messaggio: "Qualcosa è andato storto...",
+          success: false,
+        });
       });
-    });
+  } else {
+    await Utente.create(utenteDaRegistrare)
+      .then((result) => {
+        if (result) {
+          res.status(201).json({
+            codice: 201,
+            messaggio: "Registrazione effettuata con successo",
+            success: true,
+          });
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).json({
+          codice: 500,
+          messaggio: "Qualcosa è andato storto...",
+          success: false,
+        });
+      });
   }
 };
 
@@ -130,7 +152,9 @@ exports.modificaPassword = async (req, res) => {
   //Check consistenza parametri richiesta
   let erroriValidazione = validationResult(req);
   if (!erroriValidazione.isEmpty()) {
-    return res.status(400).json({ code: 400, error: erroriValidazione.array(), success : false});
+    return res
+      .status(400)
+      .json({ code: 400, error: erroriValidazione.array(), success: false });
   }
 
   let idUtente = req.body.idUtente;
@@ -170,7 +194,9 @@ exports.modificaPassword = async (req, res) => {
 exports.cancellaAccount = async (req, res) => {
   let erroriValidazione = validationResult(req);
   if (!erroriValidazione.isEmpty()) {
-    return res.status(400).json({ code: 400, error: erroriValidazione.array(), success : false });
+    return res
+      .status(400)
+      .json({ code: 400, error: erroriValidazione.array(), success: false });
   }
 
   await Utente.update(
@@ -184,7 +210,9 @@ exports.cancellaAccount = async (req, res) => {
     )
     .catch((err) => {
       console.error(err);
-      res.status(500).json({ code: 500, msg: "Qualcosa è andato storto..", success: false });
+      res
+        .status(500)
+        .json({ code: 500, msg: "Qualcosa è andato storto..", success: false });
     });
 };
 
@@ -222,7 +250,11 @@ exports.getUtenteByID = async (req, res) => {
     })
     .catch((err) => {
       console.error(err);
-      res.status(500).json({ code: 500, msg: "Qualcosa è andato storto...", success: false });
+      res.status(500).json({
+        code: 500,
+        msg: "Qualcosa è andato storto...",
+        success: false,
+      });
     });
 };
 
@@ -235,10 +267,11 @@ exports.getUtenteByID = async (req, res) => {
  */
 
 exports.effettuaTesseramento = async (req, res) => {
-
   let erroriValidazione = validationResult(req);
   if (!erroriValidazione.isEmpty()) {
-    return res.status(400).json({ code: 400, error: erroriValidazione.array(), success : false });
+    return res
+      .status(400)
+      .json({ code: 400, error: erroriValidazione.array(), success: false });
   }
 
   let filePath = "/static/richieste_tesseramento/" + req.body.idUtente;
@@ -251,8 +284,8 @@ exports.effettuaTesseramento = async (req, res) => {
   };
 
   if (req.body.tipologiaTesseramento === "Interno")
-    nuovaRichiesta.prezzoTesseramento = 12.00;
-  else nuovaRichiesta.prezzoTesseramento = 20.00;
+    nuovaRichiesta.prezzoTesseramento = 12.0;
+  else nuovaRichiesta.prezzoTesseramento = 20.0;
 
   await RichiestaTesseramento.create(nuovaRichiesta)
     .then((result) => {
@@ -269,23 +302,29 @@ exports.effettuaTesseramento = async (req, res) => {
             let nuovaFattura = {
               intestatario: req.body.intestatarioCarta,
               totalePagamento: result.prezzoTesseramento,
-              dataRilascio: new Date(new Date().getTime()).toISOString().substring(0,10),
+              dataRilascio: new Date(new Date().getTime())
+                .toISOString()
+                .substring(0, 10),
               statusFattura: "Pagata",
-              richiesta: result.idRichiesta_tesseramento
-          };
+              richiesta: result.idRichiesta_tesseramento,
+            };
 
-           Fattura.create(nuovaFattura)
-          .then((reslt) =>{
-            if(reslt)
-              return res.status(200).json({code: 200, msg:"Operazione effettuata con successo", success:true});
-          })
-          .catch((error) =>{
-            console.log("bp2");
-            console.log(error);
-            return res.status(400).json({ codice: 400, msg: error, success: false });
-
-          })
-
+            Fattura.create(nuovaFattura)
+              .then((reslt) => {
+                if (reslt)
+                  return res.status(200).json({
+                    code: 200,
+                    msg: "Operazione effettuata con successo",
+                    success: true,
+                  });
+              })
+              .catch((error) => {
+                console.log("bp2");
+                console.log(error);
+                return res
+                  .status(400)
+                  .json({ codice: 400, msg: error, success: false });
+              });
           }
         });
       }
@@ -307,7 +346,9 @@ exports.recuperoPassword = async (req, res) => {
   //Check consistenza parametri richiesta
   let erroriValidazione = validationResult(req);
   if (!erroriValidazione.isEmpty()) {
-    return res.status(400).json({ code: 400, error: erroriValidazione.array(), success : false});
+    return res
+      .status(400)
+      .json({ code: 400, error: erroriValidazione.array(), success: false });
   }
 
   let emailRicevuta = req.body.email;
@@ -364,7 +405,9 @@ exports.recuperoPassword = async (req, res) => {
 exports.resettaPasswordPerRecupero = async (req, res) => {
   let erroriValidazione = validationResult(req);
   if (!erroriValidazione.isEmpty()) {
-    return res.status(400).json({ code: 400, error: erroriValidazione.array(), success : false});
+    return res
+      .status(400)
+      .json({ code: 400, error: erroriValidazione.array(), success: false });
   }
 
   let token = req.params.token;
@@ -389,7 +432,7 @@ exports.resettaPasswordPerRecupero = async (req, res) => {
           })
           .end();
       } else {
-         Utente.update(
+        Utente.update(
           {
             password: passwordModificata,
             tokenRecuperoPassword: null,
@@ -408,12 +451,18 @@ exports.resettaPasswordPerRecupero = async (req, res) => {
           })
           .catch((err) => {
             console.error(err);
-            res.status(500).json({ code: 500, msg: "Qualcosa è andato storto..", success: false });
+            res.status(500).json({
+              code: 500,
+              msg: "Qualcosa è andato storto..",
+              success: false,
+            });
           });
       }
     })
     .catch((err) => {
       console.error(err);
-      res.status(500).json({ code: 500, msg: "Qualcosa è andato storto..", success: false });
+      res
+        .status(500)
+        .json({ code: 500, msg: "Qualcosa è andato storto..", success: false });
     });
 };
