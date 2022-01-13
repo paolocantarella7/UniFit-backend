@@ -1,6 +1,6 @@
 let express = require("express");
 let router = express.Router();
-let utenteController = require("../controller/UtenteCNT");
+let utenteController = require("../controller/utenteCNT");
 let Utente = require("../model/Utente");
 let { body } = require("express-validator");
 
