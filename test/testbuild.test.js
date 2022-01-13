@@ -18,7 +18,7 @@ describe('test per la build', function(){
         chai.request(server)
             .get('/')
             .end(function(err, res){
-                res.should.have.status(404);
+                res.should.have.status(200);
                 done();
             });
     })
