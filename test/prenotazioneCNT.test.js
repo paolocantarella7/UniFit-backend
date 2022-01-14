@@ -546,9 +546,9 @@ describe("Metodo che permette di modificare la prenotazione di una struttura", (
   it("Modifica prenotazione riuscita", (done) => {
     let parametri = {
       idStruttura: 3,
-      dataPrenotazione: "2022-02-25",
-      fascia: "20:00-21:00",
-      idPrenotazione: 124,
+      dataPrenotazione: "2022-04-30",
+      fascia: "18:00-19:00",
+      idPrenotazione: 115,
     };
     chai
       .request(server)
@@ -865,12 +865,29 @@ describe("Metodo che permette di modificare la prenotazione di una struttura", (
         done();
       });
   });
+
+  it("Prenotazione scaduta", (done) => {
+    let parametri = {
+      idStruttura: "1",
+      dataPrenotazione: "2022-01-14",
+      fascia: "17:00-18:00",
+      idPrenotazione: 75,
+    };
+    chai
+      .request(server)
+      .post("/prenotazione/modificaPrenotazione")
+      .send(parametri)
+      .end((err, res) => {
+        res.should.have.status(400);
+        done();
+      });
+  });
 });
 
 describe("Metodo che permette di cancellare la prenotazione di una struttura", () => {
   it("Cancellazione prenotazione riuscita con rimborso", (done) => {
     let parametri = {
-      idPrenotazione: 146,
+      idPrenotazione: 152,
       idUtente: 11,
     };
     chai
@@ -885,7 +902,7 @@ describe("Metodo che permette di cancellare la prenotazione di una struttura", (
 
   it("Cancellazione prenotazione riuscita senza rimborso", (done) => {
     let parametri = {
-      idPrenotazione: 147, //Scegliere prenotazione con la data di oggi e ora inizio < 24 
+      idPrenotazione: 153, //Scegliere prenotazione con la data di oggi e ora inizio < 24 
       idUtente: 11,
     };
     chai
