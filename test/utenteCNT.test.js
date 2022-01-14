@@ -1024,4 +1024,491 @@ describe("Metodo che permette di effettuare una richiesta di tesseramento", func
       });
   });
 
+describe('Recupero password', () =>{
+  it('Dovrebbe iniziare la procedura di recupero passowrd', (done) =>{
+    let data = {
+      'email': 'erminio@gmail.com'
+    };
+
+    chai.request(server)
+    .post('/user/recupero-password')
+    .send(data)
+    .end((err, res) =>{
+      res.should.have.status(200);
+      done();
+    });
+  });
+
+  it('Formato email non valido', (done) =>{
+    let data = {
+      'email': 'erminio75.it'
+    };
+
+    chai.request(server)
+    .post('/user/recupero-password')
+    .send(data)
+    .end((err, res) =>{
+      res.should.have.status(400);
+      done();
+    });
+  });
+
+  it('Email non associata a nessun account', (done) =>{
+    let data = {
+      'email': 'giancarlo23@gmail.com'
+    };
+
+    chai.request(server)
+    .post('/user/recupero-password')
+    .send(data)
+    .end((err, res) =>{
+      res.should.have.status(400);
+      done();
+    });
+  });
+
+
+});
+
+
+describe('Reset password', () =>{
+
+  it('Formato password non corretto', (done) =>{
+    let data = {
+      'password': 'ghh',
+      'passwordConferma': 'Ciaociao.1'
+    };
+    let token = 'f912d68dad4a6174afcf488c96304dee7159ac8b9a31cab9895b62f5ef353d964b1d4a4f7a372057e51d5e53931cbbb9b9aec2f3ae729879aa0488f603c952c9';
+
+    chai.request(server)
+    .post('/user/reset-password/' + token)
+    .send(data)
+    .end((err, res) =>{
+      res.should.have.status(400);
+      done();
+    });
+  });
+
+  it('Le password non coincidono', (done) =>{
+    let data = {
+      'password': 'Ciaociao.1',
+      'passwordConferma': 'Ciaociao.15d'
+    };
+    let token = 'f912d68dad4a6174afcf488c96304dee7159ac8b9a31cab9895b62f5ef353d964b1d4a4f7a372057e51d5e53931cbbb9b9aec2f3ae729879aa0488f603c952c9';
+
+    chai.request(server)
+    .post('/user/reset-password/' + token)
+    .send(data)
+    .end((err, res) =>{
+      res.should.have.status(400);
+      done();
+    });
+  });
+
+  it('Token scaduto o non valido', (done) =>{
+    let data = {
+      'password': 'Ciaociao.1',
+      'passwordConferma': 'Ciaociao.1'
+    };
+    let token = 'gyugiulhlò';
+
+    chai.request(server)
+    .post('/user/reset-password/' + token)
+    .send(data)
+    .end((err, res) =>{
+      res.should.have.status(400);
+      done();
+    });
+  });
+
+  it('Dovrebbe resettare la password', (done) =>{
+    let data = {
+      'password': 'Ciaociao.1',
+      'passwordConferma': 'Ciaociao.1'
+    };
+    let token = 'f912d68dad4a6174afcf488c96304dee7159ac8b9a31cab9895b62f5ef353d964b1d4a4f7a372057e51d5e53931cbbb9b9aec2f3ae729879aa0488f603c952c9';
+
+    chai.request(server)
+    .post('/user/reset-password/' + token)
+    .send(data)
+    .end((err, res) =>{
+      res.should.have.status(200);
+      done();
+    });
+  });
+
+
+});
+
+
+
+describe('Registrazione', () =>{
+
+
+  it('Formato email non valido', (done) =>{
+    let data = {
+      'codiceFiscale': 'DVDGST80A01A509R',
+      'nome': 'Gianni Alfonso',
+      'cognome': 'Bottiglieri',
+      'email': 'fonzino.com',
+      'password': 'Ciaociao.1',
+      'dataNascita': '1990-12-12',
+      'indirizzoResidenza': 'Via Palmieri, 22',
+      'nazionalita': 'Italia',
+      'numeroTelefono': '3333333333'
+    };
+
+    chai.request(server)
+    .post('/user/registrati')
+    .send(data)
+    .end((err, res) =>{
+      res.should.have.status(400);
+      done();
+    });
+  });
+
+  it('Email gia in uso', (done) =>{
+    let data = {
+      'codiceFiscale': 'DVDGST80A01A509R',
+      'nome': 'Gianni Alfonso',
+      'cognome': 'Bottiglieri',
+      'email': 'erminio@gmail.com',
+      'password': 'Ciaociao.1',
+      'dataNascita': '1990-12-12',
+      'indirizzoResidenza': 'Via Palmieri, 22',
+      'nazionalita': 'Italia',
+      'numeroTelefono': '3333333333'
+    };
+
+    chai.request(server)
+    .post('/user/registrati')
+    .send(data)
+    .end((err, res) =>{
+      res.should.have.status(400);
+      done();
+    });
+  });
+
+  it('Email già in uso e CF non combaciante', (done) =>{
+    let data = {
+      'codiceFiscale': 'DVDGST80A01A509K',
+      'nome': 'Gianni Alfonso',
+      'cognome': 'Bottiglieri',
+      'email': 'erminio@gmail.com',
+      'password': 'Ciaociao.1',
+      'dataNascita': '1990-12-12',
+      'indirizzoResidenza': 'Via Palmieri, 22',
+      'nazionalita': 'Italia',
+      'numeroTelefono': '3333333333'
+    };
+
+    chai.request(server)
+    .post('/user/registrati')
+    .send(data)
+    .end((err, res) =>{
+      res.should.have.status(400);
+      done();
+    });
+  });
+
+  it('Formato codice fiscale non valido', (done) =>{
+    let data = {
+      'codiceFiscale': 'FWRNKE',
+      'nome': 'Gianni Alfonso',
+      'cognome': 'Bottiglieri',
+      'email': 'fonzino@gmail.com',
+      'password': 'Ciaociao.1',
+      'dataNascita': '1990-12-12',
+      'indirizzoResidenza': 'Via Palmieri, 22',
+      'nazionalita': 'Italia',
+      'numeroTelefono': '3333333333'
+    };
+
+    chai.request(server)
+    .post('/user/registrati')
+    .send(data)
+    .end((err, res) =>{
+      res.should.have.status(400);
+      done();
+    });
+  });
+
+  it('Codice fiscale gia presente', (done) =>{
+    let data = {
+      'codiceFiscale': 'TTORMN80C20G039H',
+      'nome': 'Gianni Alfonso',
+      'cognome': 'Bottiglieri',
+      'email': 'fonzino@gmail.com',
+      'password': 'Ciaociao.1',
+      'dataNascita': '1990-12-12',
+      'indirizzoResidenza': 'Via Palmieri, 22',
+      'nazionalita': 'Italia',
+      'numeroTelefono': '3333333333'
+    };
+
+    chai.request(server)
+    .post('/user/registrati')
+    .send(data)
+    .end((err, res) =>{
+      res.should.have.status(400);
+      done();
+    });
+  });
+
+  it('Formato nome non valido', (done) =>{
+    let data = {
+      'codiceFiscale': 'DVDGST80A01A509R',
+      'nome': 'Gi.a1233',
+      'cognome': 'Bottiglieri',
+      'email': 'fonzino@gmail.com',
+      'password': 'Ciaociao.1',
+      'dataNascita': '1990-12-12',
+      'indirizzoResidenza': 'Via Palmieri, 22',
+      'nazionalita': 'Italia',
+      'numeroTelefono': '3333333333'
+    };
+
+    chai.request(server)
+    .post('/user/registrati')
+    .send(data)
+    .end((err, res) =>{
+      res.should.have.status(400);
+      done();
+    });
+  });
+
+  it('Formato cognome non valido', (done) =>{
+    let data = {
+      'codiceFiscale': 'DVDGST80A01A509R',
+      'nome': 'Gianni Alfonso',
+      'cognome': 'B.12x',
+      'email': 'fonzino@gmail.com',
+      'password': 'Ciaociao.1',
+      'dataNascita': '1990-12-12',
+      'indirizzoResidenza': 'Via Palmieri, 22',
+      'nazionalita': 'Italia',
+      'numeroTelefono': '3333333333'
+    };
+
+    chai.request(server)
+    .post('/user/registrati')
+    .send(data)
+    .end((err, res) =>{
+      res.should.have.status(400);
+      done();
+    });
+  });
+
+  it('Formato password non valido', (done) =>{
+    let data = {
+      'codiceFiscale': 'DVDGST80A01A509R',
+      'nome': 'Gianni Alfonso',
+      'cognome': 'Bottiglieri',
+      'email': 'fonzino@gmail.com',
+      'password': 'hf',
+      'dataNascita': '1990-12-12',
+      'indirizzoResidenza': 'Via Palmieri, 22',
+      'nazionalita': 'Italia',
+      'numeroTelefono': '3333333333'
+    };
+
+    chai.request(server)
+    .post('/user/registrati')
+    .send(data)
+    .end((err, res) =>{
+      res.should.have.status(400);
+      done();
+    });
+  });
+
+  it('Formato data nascita non valido', (done) =>{
+    let data = {
+      'codiceFiscale': 'DVDGST80A01A509R',
+      'nome': 'Gianni Alfonso',
+      'cognome': 'Bottiglieri',
+      'email': 'fonzino@gmail.com',
+      'password': 'Ciaociao.1',
+      'dataNascita': '19cj',
+      'indirizzoResidenza': 'Via Palmieri, 22',
+      'nazionalita': 'Italia',
+      'numeroTelefono': '3333333333'
+    };
+
+    chai.request(server)
+    .post('/user/registrati')
+    .send(data)
+    .end((err, res) =>{
+      res.should.have.status(400);
+      done();
+    });
+  });
+
+
+
+it('Data non valida', (done) =>{
+  let data = {
+    'codiceFiscale': 'DVDGST80A01A509R',
+    'nome': 'Gianni Alfonso',
+    'cognome': 'Bottiglieri',
+    'email': 'fonzino@gmail.com',
+    'password': 'Ciaociao.1',
+    'dataNascita': '2100-12-12',
+    'indirizzoResidenza': 'Via Palmieri, 22',
+    'nazionalita': 'Italia',
+    'numeroTelefono': '3333333333'
+  };
+
+  chai.request(server)
+  .post('/user/registrati')
+  .send(data)
+  .end((err, res) =>{
+    res.should.have.status(400);
+    done();
+  });
+});
+
+  it('Formato indirizzo non valido', (done) =>{
+    let data = {
+      'codiceFiscale': 'DVDGST80A01A509R',
+      'nome': 'Gianni Alfonso',
+      'cognome': 'Bottiglieri',
+      'email': 'fonzino@gmail.com',
+      'password': 'Ciaociao.1',
+      'dataNascita': '1990-12-12',
+      'indirizzoResidenza': 'Vx12',
+      'nazionalita': 'Italia',
+      'numeroTelefono': '3333333333'
+    };
+
+    chai.request(server)
+    .post('/user/registrati')
+    .send(data)
+    .end((err, res) =>{
+      res.should.have.status(400);
+      done();
+    });
+  });
+
+  it('Formato nazionalita non valido', (done) =>{
+    let data = {
+      'codiceFiscale': 'DVDGST80A01A509R',
+      'nome': 'Gianni Alfonso',
+      'cognome': 'Bottiglieri',
+      'email': 'fonzino@gmail.com',
+      'password': 'Ciaociao.1',
+      'dataNascita': '1990-12-12',
+      'indirizzoResidenza': 'Via Palmieri, 22',
+      'nazionalita': 'it21.a',
+      'numeroTelefono': '3333333333'
+    };
+
+    chai.request(server)
+    .post('/user/registrati')
+    .send(data)
+    .end((err, res) =>{
+      res.should.have.status(400);
+      done();
+    });
+  });
+
+  it('Formato numero di telefono non valido', (done) =>{
+    let data = {
+      'codiceFiscale': 'DVDGST80A01A509R',
+      'nome': 'Gianni Alfonso',
+      'cognome': 'Bottiglieri',
+      'email': 'fonzino@gmail.com',
+      'password': 'Ciaociao.1',
+      'dataNascita': '1990-12-12',
+      'indirizzoResidenza': 'Via Palmieri, 22',
+      'nazionalita': 'Italia',
+      'numeroTelefono': 'xxx222'
+    };
+
+    chai.request(server)
+    .post('/user/registrati')
+    .send(data)
+    .end((err, res) =>{
+      res.should.have.status(400);
+      done();
+    });
+  });
+
+  
+  it('Dovrebbe completare la registrazione', (done) =>{
+    let data = {
+      'codiceFiscale': 'DVDGST80A01A509R',
+      'nome': 'Gianni Alfonso',
+      'cognome': 'Bottiglieri',
+      'email': 'fonzino@gmail.com',
+      'password': 'Ciaociao.1',
+      'dataNascita': '1990-12-12',
+      'indirizzoResidenza': 'Via Palmieri, 22',
+      'nazionalita': 'Italia',
+      'numeroTelefono': '3333333333'
+    };
+
+    chai.request(server)
+    .post('/user/registrati')
+    .send(data)
+    .end((err, res) =>{
+      res.should.have.status(201);
+      done();
+    });
+  });
+});
+
+describe('Modifica password', () =>{
+
+  it('Dovrebbe modificare la password', (done) =>{
+    let data = {
+      'password': 'Ciaociao.1',
+      'passwordConferma': 'Ciaociao.1',
+      'idUtente': 3
+    };
+
+    chai.request(server)
+    .post('/user/modificaPassword')
+    .send(data)
+    .end((err, res) =>{
+      res.should.have.status(201);
+      done();
+    });
+  });
+
+  it('Formato password non valido', (done) =>{
+    let data = {
+      'password': 'as',
+      'passwordConferma': 'Ciaociao.1',
+      'idUtente': 3
+    };
+
+    chai.request(server)
+    .post('/user/modificaPassword')
+    .send(data)
+    .end((err, res) =>{
+      res.should.have.status(400);
+      done();
+    });
+  });
+
+  it('Le password non coincidono', (done) =>{
+    let data = {
+      'password': 'Ciaociao.1',
+      'passwordConferma': 'Ciaociao.12x',
+      'idUtente': 3
+    };
+
+    chai.request(server)
+    .post('/user/modificaPassword')
+    .send(data)
+    .end((err, res) =>{
+      res.should.have.status(400);
+      done();
+    });
+  });
+
+});
+
+
+
 });
