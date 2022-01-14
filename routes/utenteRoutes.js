@@ -141,7 +141,7 @@ router.get("/cancellaAccount", [
   })
 ],utenteController.cancellaAccount);
 
-router.get("/datiPersonali", utenteController.getUtenteByID);
+router.get("/datiPersonali", utenteController.visualizzaDatiUtente);
 
 router.post(
   "/effettuaTesseramento",
@@ -174,6 +174,7 @@ router.post(
     body("idUtente").custom(async (value) => {
       await Utente.findByPk(value).then((result) => {
         if (!result || result.isCancellato) throw new Error("Utente non esistente");
+        if(result && result.isTesserato) throw new Error("Utente già tesserato");
       });
     }).bail()
     .custom(async (value)=> { //check per evitatare utente con doppie richieste

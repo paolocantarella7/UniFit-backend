@@ -6,7 +6,7 @@ let { validationResult } = require("express-validator");
 let senderEmail = require("../utils/sendEmail");
 let { Op } = require("sequelize");
 let Fattura = require("../model/Fattura");
-const { update } = require("../model/Fattura");
+
 
 /**
  * Nome metodo: Login
@@ -37,22 +37,14 @@ exports.login = async (req, res) => {
     },
   })
     .then((result) => {
-      if (result) {
+      if (result && !result.isCancellato) {
         res.status(200).json({ code: 200, utente: result, success: true });
       } else {
         res
-          .status(404)
-          .json({ code: 404, msg: "Utente non trovato", success: false });
+          .status(400)
+          .json({ code: 400, msg: "Utente non trovato", success: false });
       }
     })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).json({
-        code: 500,
-        msg: "Qualcosa è andato storto...",
-        success: false,
-      });
-    });
 };
 
 /**
@@ -215,22 +207,17 @@ exports.cancellaAccount = async (req, res) => {
         .status(200)
         .json({ code: 200, msg: "Cancellazione riuscita", success: true })
     )
-    .catch((err) => {
-      console.error(err);
-      res
-        .status(500)
-        .json({ code: 500, msg: "Qualcosa è andato storto..", success: false });
-    });
+    
 };
 
 /**
- * Nome metodo: getUtenteByID
+ * Nome metodo: visualizzaDatiUtente
  * Descrizione: Metodo che permette di ottenere le informazioni di un utente
  * Parametri: Id utente
  * Return: Codice, messaggio, boolean true/false in base alla riuscita dell'operazione e dati dell'utente
  * Autore : Giuseppe Scafa
  */
-exports.getUtenteByID = async (req, res) => {
+exports.visualizzaDatiUtente = async (req, res) => {
   await Utente.findOne({
     attributes: [
       "nome",
@@ -244,6 +231,7 @@ exports.getUtenteByID = async (req, res) => {
     ],
     where: {
       idUtente: req.query.id,
+      isCancellato: 0
     },
   })
     .then((result) => {
@@ -255,14 +243,6 @@ exports.getUtenteByID = async (req, res) => {
           .json({ codice: 400, msg: "Utente non trovato", success: false });
       }
     })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).json({
-        code: 500,
-        msg: "Qualcosa è andato storto...",
-        success: false,
-      });
-    });
 };
 
 /**
@@ -325,21 +305,10 @@ exports.effettuaTesseramento = async (req, res) => {
                     success: true,
                   });
               })
-              .catch((error) => {
-                console.log("bp2");
-                console.log(error);
-                return res
-                  .status(400)
-                  .json({ codice: 400, msg: error, success: false });
-              });
           }
         });
       }
     })
-    .catch((err) => {
-      console.error(err);
-      return res.status(400).json({ codice: 400, msg: err, success: false });
-    });
 };
 
 /**
