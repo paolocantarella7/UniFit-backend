@@ -54,12 +54,9 @@ router.post("/effettuaPrenotazione", [
     .withMessage("Formato fascia oraria non valido!").bail()
     .custom(async (value, { req }) =>{
         let strut;
-        try{
-            strut =  await Struttura.findByPk(req.body.idStruttura);
-        }
-        catch(err){
-            console.log(err);
-        }
+    
+        strut =  await Struttura.findByPk(req.body.idStruttura);
+        
         let listaFasce = generatoreFasce.getListaFasce(strut.oraInizioMattina, strut.oraFineMattina, strut.oraInizioPomeriggio, strut.oraFinePomeriggio, strut.durataPerFascia);
         if(!listaFasce.includes(value))
             throw new Error("Fascia oraria non valida!")
@@ -114,28 +111,23 @@ router.post("/effettuaPrenotazione", [
     
 ], prenotazioneCNT.effettuaPrenotazione);
 
-router.get("/modificaPrenotazione", [
-    query("dataPrenotazione")
+router.post("/modificaPrenotazione", [
+    body("dataPrenotazione")
     .matches(validazione.data)
     .withMessage("Formato data non vallido"),
-    query("fascia")
+    body("fascia")
     .matches(validazione.fasciaOraria)
     .withMessage("Formato fascia oraria non valido").bail()
     .custom(async (value, { req }) =>{
         let strut;
-        try{
-            strut =  await Struttura.findByPk(req.body.idStruttura);
-        }
-        catch(err){
-            console.log(err);
-        }
+        strut =  await Struttura.findByPk(req.body.idStruttura); 
         let listaFasce = generatoreFasce.getListaFasce(strut.oraInizioMattina, strut.oraFineMattina, strut.oraInizioPomeriggio, strut.oraFinePomeriggio, strut.durataPerFascia);
         if(!listaFasce.includes(value))
             throw new Error("Fascia oraria non valida!")
     }),
-    query("idPrenotazione")
-    .custom(async (value) =>{
-        await Prenotazione.findByPk(value)
+    body("idPrenotazione")
+    .custom(async (value, {req}) =>{
+        await Prenotazione.findOne({where : { idPrenotazione : value, dataPrenotazione : req.body.dataPrenotazione}})
         .then((result) =>{
             if(!result)
                 throw new Error("Prenotazione non esistente");
@@ -144,17 +136,30 @@ router.get("/modificaPrenotazione", [
 ], prenotazioneCNT.modificaPrenotazione);
 
 
-router.get("/cancellaPrenotazione", [
-    query("email")
-    .matches(validazione.email)
-    .withMessage("Formato email errato"),
-    query("idPrenotazione")
+router.post("/cancellaPrenotazione", [
+    body("idUtente")
+    .custom(async (value) =>{
+        await Utente.findByPk(value)
+        .then((result) =>{
+            if(!result)
+                throw new Error("Utente non esistente");
+        })
+    }),
+    body("idPrenotazione")
     .custom(async (value) =>{
         await Prenotazione.findByPk(value)
         .then((result) =>{
             if(!result)
                 throw new Error("Prenotazione non esistente");
-        })
+
+                let oraInizio = result.oraInizio;
+                let dataPrenotazione = new Date(new Date(result.dataPrenotazione).setHours(oraInizio.split(':')[0], 0, 0, 0 ));
+                let dataOggi = new Date();
+                if(result && (Date.parse(dataPrenotazione) < Date.parse(dataOggi))){
+                    throw new Error("Prenotazione scaduta!");
+                }
+            
+          })
     })
 ],
 prenotazioneCNT.cancellaPrenotazione);
