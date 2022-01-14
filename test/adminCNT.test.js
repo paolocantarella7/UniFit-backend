@@ -425,6 +425,29 @@ describe('Aggiungi struttura', () =>{
         })
     });
 
+    it('Orari di apertura non coincidono con durata fasce', (done) =>{
+        let data = {
+            'nome': 'Campo da basket',
+            'prezzoPerFascia': 20,
+            'capacitaPerFascia': 30,
+            'dataInizioDisponibilita': '2022-07-20',
+            'oraInizioMattina': '07:00',
+            'oraFineMattina': '13:00',
+            'oraInizioPomeriggio': '14:00',
+            'oraFinePomeriggio': '19:00',
+            'durataPerFascia': 2,
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+        };
+        
+        chai.request(server)
+        .post('/admin/strutture/aggiungistruttura')
+        .send(data)
+        .end((err, res) =>{
+            res.should.have.status(400);
+            done();
+        })
+    });
+
 });
 
 
@@ -813,6 +836,29 @@ describe('Modifica struttura', () =>{
         })
     });
 
+    it('Orari apertura non coincidono con durata fasce', (done) =>{
+        let data = {
+            'nome': 'Campo da basket',
+            'prezzoPerFascia': 20,
+            'capacitaPerFascia': 30,
+            'dataInizioDisponibilita': '2022-07-20',
+            'oraInizioMattina': '07:00',
+            'oraFineMattina': '12:00',
+            'oraInizioPomeriggio': '14:00',
+            'oraFinePomeriggio': '18:00',
+            'durataPerFascia': 2,
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+        };
+        let id = 12;
+        chai.request(server)
+        .post('/admin/strutture/modificastruttura/' + id)
+        .send(data)
+        .end((err, res) =>{
+            res.should.have.status(400);
+            done();
+        })
+    });
+
 
 });
 
@@ -845,6 +891,39 @@ describe('Elimina struttura', () =>{
             done();
         })
     })
+});
+
+describe('Visualizza utenti registrati', () =>{
+    it('Dovrebbe visualizzare gli utenti registrati', (done) =>{
+        chai.request(server)
+        .get('/admin/utenti/visualizzautenti')
+        .end((err, res) =>{
+            res.should.have.status(200);
+            done();
+        })
+    })
+});
+
+describe('Visualizza richieste tesseramento', () =>{
+    it('Dovrebbe visualizzare le richieste di tesseramento', (done) =>{
+        chai.request(server)
+        .get('/admin/reqtess/visualizzareqtess')
+        .end((err, res) =>{
+            res.should.have.status(200);
+            done();
+        });
+    });
+});
+
+describe('Visualizza strutture', () =>{
+    it('Dovrebbe visualizzare le strutture', (done) =>{
+        chai.request(server)
+        .get('/admin/strutture/visualizzastrutture')
+        .end((err, res) =>{
+            res.should.have.status(200);
+            done();
+        });
+    });
 });
 
 describe('Valida tesseramento', ()=>{
@@ -937,7 +1016,7 @@ describe('Rifiuta tesseramento', ()=>{
 
     it('Dovrebbe rifiutare il tesseramento', (done) =>{
         let data = {
-            "idUtente": 3,
+            "idUtente": 4,
             "idReqTess": 13,
             "azione": "rifiuta" 
         };

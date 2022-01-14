@@ -197,7 +197,23 @@ router.post(
           throw new Error("Le strutture chiudono alle 21!");
         }
       })
-      .bail(),
+      .bail()
+      .custom((value, { req }) =>{
+        let temp1 = parseInt(req.body.oraInizioMattina.split(":")[0]);
+        let temp2 = parseInt(req.body.oraInizioPomeriggio.split(":")[0]);
+        let oraFineMattina = parseInt(req.body.oraFineMattina.split(":")[0]);
+        let oraFinePomeriggio = parseInt(value.split(":")[0]);
+        while(temp1 < oraFineMattina || temp2 < oraFinePomeriggio){
+          if(temp1 < oraFineMattina)
+            temp1 += parseInt(req.body.durataPerFascia);
+          if(temp2 < oraFinePomeriggio)
+            temp2 += parseInt(req.body.durataPerFascia);
+        }
+        if(temp1 > oraFineMattina || temp2 > oraFinePomeriggio)
+          throw new Error("Orari di apertura e chiusura non coincidono con la durata delle fasce!")
+
+        else return true;
+      }),
     body("dateChiusura").custom(async (dateChiusura) => {
       let dateChiusuraArray = JSON.parse(dateChiusura).dateChiusura;
       dateChiusuraArray.forEach((dataChiusura) => {
@@ -340,7 +356,23 @@ router.post(
           throw new Error("Le strutture chiudono alle 21!");
         }
       })
-      .bail(),
+      .bail()
+      .custom((value, { req }) =>{
+        let temp1 = parseInt(req.body.oraInizioMattina.split(":")[0]);
+        let temp2 = parseInt(req.body.oraInizioPomeriggio.split(":")[0]);
+        let oraFineMattina = parseInt(req.body.oraFineMattina.split(":")[0]);
+        let oraFinePomeriggio = parseInt(value.split(":")[0]);
+        while(temp1 < oraFineMattina || temp2 < oraFinePomeriggio){
+          if(temp1 < oraFineMattina)
+            temp1 += parseInt(req.body.durataPerFascia);
+          if(temp2 < oraFinePomeriggio)
+            temp2 += parseInt(req.body.durataPerFascia);
+        }
+        if(temp1 > oraFineMattina || temp2 > oraFinePomeriggio)
+          throw new Error("Orari di apertura e chiusura non coincidono con la durata delle fasce!")
+
+        else return true;
+      }),
     body("dateChiusura").custom(async (dateChiusura) => {
       let dateChiusuraArray = JSON.parse(dateChiusura).dateChiusura;
 

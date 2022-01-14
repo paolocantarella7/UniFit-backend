@@ -19,12 +19,12 @@ exports.visualizzaStrutture = async (req, res) => {
         res.status(200).json({ code: 200, strutture: result, success: true });
       }
     })
-    .catch((err) => {
+   /* .catch((err) => {
       console.error(err);
       res
         .status(500)
         .json({ code: 500, msg: "Qualcosa è andato storto..", success: false });
-    });
+    });*/
 };
 
 /**
@@ -53,12 +53,12 @@ exports.visualizzaDettagliStruttura = async (req, res) => {
           .json({ code: 404, msg: "Struttura non trovata!", success: false });
       }
     })
-    .catch((err) => {
+   /* .catch((err) => {
       console.error(err);
       res
         .status(500)
         .json({ code: 500, msg: "Qualcosa è andato storto..", success: false });
-    });
+    });*/
 };
 
 /**
@@ -103,12 +103,12 @@ exports.visualizzaPrenotazioniStruttura = async (req, res) => {
           .json({ code: 404, msg: "Struttura non trovata!", success: false });
       }
     })
-    .catch((err) => {
+  /*  .catch((err) => {
       console.error(err);
       res
         .status(500)
         .json({ code: 500, msg: "Qualcosa è andato storto..", success: false });
-    });
+    });*/
 };
 
 /**
@@ -137,14 +137,14 @@ exports.visualizzaUtentiRegistrati = async (req, res) => {
           .json({ code: 200, utentiRegistrati: result, success: true });
       }
     })
-    .catch((err) => {
+   /* .catch((err) => {
       console.error(err);
       res.status(500).json({
         code: 500,
         msg: "Qualcosa è andato storto...",
         success: false,
       });
-    });
+    });*/
 };
 
 /**
@@ -184,14 +184,14 @@ exports.visualizzaRichiesteTesseramento = async (req, res) => {
           .json({ code: 200, richiesteTess: result, success: true });
       }
     })
-    .catch((err) => {
+  /* .catch((err) => {
       console.error(err);
       res.status(500).json({
         code: 500,
         msg: "Qualcosa è andato storto...",
         success: false,
       });
-    });
+    });*/
 };
 
 /**
@@ -234,30 +234,30 @@ exports.validaTesseramento = async (req, res) => {
                 success: true,
               })
             )
-            .catch((err) => {
+            /*.catch((err) => {
               console.error(err);
               res.status(500).json({
                 code: 500,
                 msg: "Qualcosa è andato storto...",
                 success: false,
               });
-            });
-        } else {
+            });*/
+        } /*else {
           res.status(400).json({
             code: 400,
             msg: "Richiesta di tesseramento NON validata!",
             success: false,
           });
-        }
+        }*/
       })
-      .catch((err) => {
+     /* .catch((err) => {
         console.error(err);
         res.status(500).json({
           code: 500,
           msg: "Qualcosa è andato storto...",
           success: false,
         });
-      });
+      });*/
   } //rifiuto, la richiesta va cancellata
   else {
     await Richiesta_tesseramento.destroy({
@@ -270,14 +270,14 @@ exports.validaTesseramento = async (req, res) => {
           success: true,
         })
       )
-      .catch((err) => {
+     /* .catch((err) => {
         console.error(err);
         res.status(500).json({
           code: 500,
           msg: "Qualcosa è andato storto...",
           success: false,
         });
-      });
+      });*/
   }
 };
 
@@ -313,14 +313,14 @@ exports.eliminaStruttura = async (req, res) => {
         });
       }
     })
-    .catch((err) => {
+   /* .catch((err) => {
       console.error(err);
       res.status(500).json({
         code: 500,
         msg: "Qualcosa è andato storto...",
         success: false,
       });
-    });
+    });*/
 };
 
 exports.aggiungiStruttura = async (req, res) => {
@@ -355,18 +355,18 @@ exports.aggiungiStruttura = async (req, res) => {
           msg: "Struttura creata con successo",
           success: true,
         });
-      } else {
+      } /*else {
         res
           .status(400)
           .json({ code: 400, msg: "Struttura NON creata", success: false });
-      }
+      }*/
     })
-    .catch((err) => {
+   /* .catch((err) => {
       console.error(err);
       res
         .status(500)
         .json({ code: 500, msg: "Qualcosa è andato storto..", success: false });
-    });
+    });*/
 };
 
 exports.modificaStruttura = async (req, res) => {
@@ -392,14 +392,15 @@ exports.modificaStruttura = async (req, res) => {
           dataChiusura: dataChiusura,
           struttura: idStruttura,
         };
-        Chiusura.create(chiusura).catch((err) => {
+        Chiusura.create(chiusura)
+       /* .catch((err) => {
           console.error(err);
           res.status(500).json({
             code: 500,
             msg: "Qualcosa è andato storto..",
             success: false,
           });
-        });
+        });*/
       });
 
       res.status(201).json({
@@ -408,10 +409,10 @@ exports.modificaStruttura = async (req, res) => {
         success: true,
       });
     })
-    .catch((err) => {
+    /*.catch((err) => {
       console.error(err);
       res
         .status(500)
         .json({ code: 500, msg: "Qualcosa è andato storto..", success: false });
-    });
+    });*/
 };
