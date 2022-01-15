@@ -248,8 +248,15 @@ router.post(
 );
 
 router.post(
-  "/strutture/modificastruttura/:idStruttura",
+  "/strutture/modificastruttura",
   [
+    body("idStruttura")
+    .custom(async (value) => {
+      await Struttura.findByPk(value).then((result) => {
+        if (!result || result.isCancellata)
+          throw new Error("Struttura non esistente!");
+      });
+    }),
     body("nome")
       .matches(validazione.nomeStruttura)
       .withMessage("Formato nome struttura non valido"),

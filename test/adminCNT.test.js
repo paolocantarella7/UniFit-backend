@@ -23,11 +23,11 @@ describe('Visualizza dettagli struttura', () =>{
     });
 
     it('Struttura non esistente', (done) =>{
-        let id = 10;
+        let id = 11;
         chai.request(server)
         .get('/admin/strutture/dettagliStruttura/' + id)
         .end((err, res) =>{
-            res.should.have.status(404);
+            res.should.have.status(400);
             done();
         })
     });
@@ -45,11 +45,11 @@ describe('Visualizza prenotazioni struttura', ()=>{
     });
 
     it('Struttura non esistente', (done) =>{
-        let id = 10;
+        let id = 1011212;
         chai.request(server)
         .get('/admin/strutture/prenotazioniStruttura/' + id)
         .end((err, res) =>{
-            res.should.have.status(404);
+            res.should.have.status(400);
             done();
         })
     });
@@ -68,6 +68,98 @@ describe('Aggiungi struttura', () =>{
             'oraInizioPomeriggio': '14:00',
             'oraFinePomeriggio': '21:00',
             'durataPerFascia': 1,
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+        };
+        
+        chai.request(server)
+        .post('/admin/strutture/aggiungistruttura')
+        .send(data)
+        .end((err, res) =>{
+            res.should.have.status(201);
+            done();
+        })
+    });
+
+    it('Dovrebbe aggiungere una struttura', (done) =>{
+        let data = {
+            'nome': 'Campo da basket',
+            'prezzoPerFascia': 20,
+            'capacitaPerFascia': 30,
+            'dataInizioDisponibilita': '2022-07-20',
+            'oraInizioMattina': '07:15',
+            'oraFineMattina': '12:15',
+            'oraInizioPomeriggio': '14:00',
+            'oraFinePomeriggio': '21:00',
+            'durataPerFascia': 1,
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+        };
+        
+        chai.request(server)
+        .post('/admin/strutture/aggiungistruttura')
+        .send(data)
+        .end((err, res) =>{
+            res.should.have.status(201);
+            done();
+        })
+    });
+
+    it('Dovrebbe aggiungere una struttura', (done) =>{
+        let data = {
+            'nome': 'Campo da basket',
+            'prezzoPerFascia': 20,
+            'capacitaPerFascia': 30,
+            'dataInizioDisponibilita': '2022-07-20',
+            'oraInizioMattina': '07:45',
+            'oraFineMattina': '13:45',
+            'oraInizioPomeriggio': '14:00',
+            'oraFinePomeriggio': '20:00',
+            'durataPerFascia': 2,
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+        };
+        
+        chai.request(server)
+        .post('/admin/strutture/aggiungistruttura')
+        .send(data)
+        .end((err, res) =>{
+            res.should.have.status(201);
+            done();
+        })
+    });
+
+    it('Dovrebbe aggiungere una struttura', (done) =>{
+        let data = {
+            'nome': 'Campo da basket',
+            'prezzoPerFascia': 20,
+            'capacitaPerFascia': 30,
+            'dataInizioDisponibilita': '2022-07-20',
+            'oraInizioMattina': '07:45',
+            'oraFineMattina': '13:45',
+            'oraInizioPomeriggio': '14:45',
+            'oraFinePomeriggio': '20:45',
+            'durataPerFascia': 2,
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+        };
+        
+        chai.request(server)
+        .post('/admin/strutture/aggiungistruttura')
+        .send(data)
+        .end((err, res) =>{
+            res.should.have.status(201);
+            done();
+        })
+    });
+
+    it('Dovrebbe aggiungere una struttura', (done) =>{
+        let data = {
+            'nome': 'Campo da basket',
+            'prezzoPerFascia': 20,
+            'capacitaPerFascia': 30,
+            'dataInizioDisponibilita': '2022-07-20',
+            'oraInizioMattina': '07:00',
+            'oraFineMattina': '13:00',
+            'oraInizioPomeriggio': '13:30',
+            'oraFinePomeriggio': '19:30',
+            'durataPerFascia': 3,
             'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
         };
         
@@ -310,6 +402,98 @@ describe('Aggiungi struttura', () =>{
         })
     });
 
+    it('Orari di mattina non coincidono logicamente con durata', (done) =>{
+        let data = {
+            'nome': 'Campo da basket',
+            'prezzoPerFascia': 20,
+            'capacitaPerFascia': 30,
+            'dataInizioDisponibilita': '2022-07-20',
+            'oraInizioMattina': '09:00',
+            'oraFineMattina': '12:00',
+            'oraInizioPomeriggio': '14:00',
+            'oraFinePomeriggio': '21:00',
+            'durataPerFascia': 2,
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+        };
+        
+        chai.request(server)
+        .post('/admin/strutture/aggiungistruttura')
+        .send(data)
+        .end((err, res) =>{
+            res.should.have.status(400);
+            done();
+        })
+    });
+
+    it('Orari di mattina non coincidono logicamente con durata', (done) =>{
+        let data = {
+            'nome': 'Campo da basket',
+            'prezzoPerFascia': 20,
+            'capacitaPerFascia': 30,
+            'dataInizioDisponibilita': '2022-07-20',
+            'oraInizioMattina': '09:00',
+            'oraFineMattina': '12:00',
+            'oraInizioPomeriggio': '13:00',
+            'oraFinePomeriggio': '21:00',
+            'durataPerFascia': 4,
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+        };
+        
+        chai.request(server)
+        .post('/admin/strutture/aggiungistruttura')
+        .send(data)
+        .end((err, res) =>{
+            res.should.have.status(400);
+            done();
+        })
+    });
+
+    it('Orari di mattina non coincidono logicamente con durata', (done) =>{
+        let data = {
+            'nome': 'Campo da basket',
+            'prezzoPerFascia': 20,
+            'capacitaPerFascia': 30,
+            'dataInizioDisponibilita': '2022-07-20',
+            'oraInizioMattina': '09:15',
+            'oraFineMattina': '12:00',
+            'oraInizioPomeriggio': '13:00',
+            'oraFinePomeriggio': '21:00',
+            'durataPerFascia': 1,
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+        };
+        
+        chai.request(server)
+        .post('/admin/strutture/aggiungistruttura')
+        .send(data)
+        .end((err, res) =>{
+            res.should.have.status(400);
+            done();
+        })
+    });
+
+    it('Orari di mattina non coincidono logicamente con durata', (done) =>{
+        let data = {
+            'nome': 'Campo da basket',
+            'prezzoPerFascia': 20,
+            'capacitaPerFascia': 30,
+            'dataInizioDisponibilita': '2022-07-20',
+            'oraInizioMattina': '09:50',
+            'oraFineMattina': '12:00',
+            'oraInizioPomeriggio': '13:00',
+            'oraFinePomeriggio': '21:00',
+            'durataPerFascia': 1,
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+        };
+        
+        chai.request(server)
+        .post('/admin/strutture/aggiungistruttura')
+        .send(data)
+        .end((err, res) =>{
+            res.should.have.status(400);
+            done();
+        })
+    });
+
     it('Formato ora inizio pomeriggio non corretto', (done) =>{
         let data = {
             'nome': 'Campo da basket',
@@ -390,6 +574,75 @@ describe('Aggiungi struttura', () =>{
             'oraInizioPomeriggio': '11:00',
             'oraFinePomeriggio': '22:00',
             'durataPerFascia': 1,
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+        };
+        
+        chai.request(server)
+        .post('/admin/strutture/aggiungistruttura')
+        .send(data)
+        .end((err, res) =>{
+            res.should.have.status(400);
+            done();
+        })
+    });
+
+    it('Orari di pomeriggio non coincidono logicamente con durata', (done) =>{
+        let data = {
+            'nome': 'Campo da basket',
+            'prezzoPerFascia': 20,
+            'capacitaPerFascia': 30,
+            'dataInizioDisponibilita': '2022-07-20',
+            'oraInizioMattina': '08:00',
+            'oraFineMattina': '12:00',
+            'oraInizioPomeriggio': '14:00',
+            'oraFinePomeriggio': '21:00',
+            'durataPerFascia': 2,
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+        };
+        
+        chai.request(server)
+        .post('/admin/strutture/aggiungistruttura')
+        .send(data)
+        .end((err, res) =>{
+            res.should.have.status(400);
+            done();
+        })
+    });
+
+    it('Orari di pomeriggio non coincidono logicamente con durata', (done) =>{
+        let data = {
+            'nome': 'Campo da basket',
+            'prezzoPerFascia': 20,
+            'capacitaPerFascia': 30,
+            'dataInizioDisponibilita': '2022-07-20',
+            'oraInizioMattina': '08:00',
+            'oraFineMattina': '12:00',
+            'oraInizioPomeriggio': '14:15',
+            'oraFinePomeriggio': '21:00',
+            'durataPerFascia': 2,
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+        };
+        
+        chai.request(server)
+        .post('/admin/strutture/aggiungistruttura')
+        .send(data)
+        .end((err, res) =>{
+            res.should.have.status(400);
+            done();
+        })
+    });
+
+    it('Orari di pomeriggio non coincidono logicamente con durata', (done) =>{
+        let data = {
+            'nome': 'Campo da basket',
+            'prezzoPerFascia': 20,
+            'capacitaPerFascia': 30,
+            'dataInizioDisponibilita': '2022-07-20',
+            'oraInizioMattina': '08:00',
+            'oraFineMattina': '12:00',
+            'oraInizioPomeriggio': '15:45',
+            'oraFinePomeriggio': '21:00',
+            'durataPerFascia': 2,
             'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
         };
         
@@ -464,14 +717,35 @@ describe('Modifica struttura', () =>{
             'oraInizioPomeriggio': '14:00',
             'oraFinePomeriggio': '21:00',
             'durataPerFascia': 1,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }',
+            'idStruttura': 5
         };
-        let id = 12;
         chai.request(server)
-        .post('/admin/strutture/modificastruttura/' + id)
-        .send(data)
+        .post('/admin/strutture/modificastruttura')   .send(data)
         .end((err, res) =>{
             res.should.have.status(201);
+            done();
+        })
+    });
+
+    it('Struttura non trovata', (done) =>{
+        let data = {
+            'nome': 'Campo da basket',
+            'prezzoPerFascia': 20,
+            'capacitaPerFascia': 30,
+            'dataInizioDisponibilita': '2022-07-20',
+            'oraInizioMattina': '07:00',
+            'oraFineMattina': '12:00',
+            'oraInizioPomeriggio': '14:00',
+            'oraFinePomeriggio': '21:00',
+            'durataPerFascia': 1,
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }',
+            'idStruttura': 523
+        };
+        chai.request(server)
+        .post('/admin/strutture/modificastruttura')   .send(data)
+        .end((err, res) =>{
+            res.should.have.status(400);
             done();
         })
     });
@@ -487,13 +761,12 @@ describe('Modifica struttura', () =>{
             'oraInizioPomeriggio': '14:00',
             'oraFinePomeriggio': '21:00',
             'durataPerFascia': 1,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }',
+            'idStruttura': 5
         };
-        
-        let id = 12;
+
         chai.request(server)
-        .post('/admin/strutture/modificastruttura/' + id)
-        .send(data)
+        .post('/admin/strutture/modificastruttura')   .send(data)
         .end((err, res) =>{
             res.should.have.status(400);
             done();
@@ -511,13 +784,12 @@ describe('Modifica struttura', () =>{
             'oraInizioPomeriggio': '14:00',
             'oraFinePomeriggio': '21:00',
             'durataPerFascia': 1,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }',
+            'idStruttura': 5
         };
-        
-        let id = 12;
+
         chai.request(server)
-        .post('/admin/strutture/modificastruttura/' + id)
-        .send(data)
+        .post('/admin/strutture/modificastruttura')   .send(data)
         .end((err, res) =>{
             res.should.have.status(400);
             done();
@@ -535,12 +807,12 @@ describe('Modifica struttura', () =>{
             'oraInizioPomeriggio': '14:00',
             'oraFinePomeriggio': '21:00',
             'durataPerFascia': 1,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }',
+            'idStruttura': 5
         };
         
-        let id = 12;
         chai.request(server)
-        .post('/admin/strutture/modificastruttura/' + id)
+        .post('/admin/strutture/modificastruttura')
         .send(data)
         .end((err, res) =>{
             res.should.have.status(400);
@@ -559,12 +831,12 @@ describe('Modifica struttura', () =>{
             'oraInizioPomeriggio': '14:00',
             'oraFinePomeriggio': '21:00',
             'durataPerFascia': 1,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }',
+            'idStruttura': 5
         };
         
-        let id = 12;
         chai.request(server)
-        .post('/admin/strutture/modificastruttura/' + id)
+        .post('/admin/strutture/modificastruttura')
         .send(data)
         .end((err, res) =>{
             res.should.have.status(400);
@@ -583,12 +855,12 @@ describe('Modifica struttura', () =>{
             'oraInizioPomeriggio': '14:00',
             'oraFinePomeriggio': '21:00',
             'durataPerFascia': 1,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }',
+            'idStruttura': 5
         };
-        
-        let id = 12;
+
         chai.request(server)
-        .post('/admin/strutture/modificastruttura/' + id)
+        .post('/admin/strutture/modificastruttura')
         .send(data)
         .end((err, res) =>{
             res.should.have.status(400);
@@ -607,12 +879,12 @@ describe('Modifica struttura', () =>{
             'oraInizioPomeriggio': '14:00',
             'oraFinePomeriggio': '21:00',
             'durataPerFascia': 1,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }',
+            'idStruttura': 5
         };
         
-        let id = 12;
         chai.request(server)
-        .post('/admin/strutture/modificastruttura/' + id)
+        .post('/admin/strutture/modificastruttura')
         .send(data)
         .end((err, res) =>{
             res.should.have.status(400);
@@ -631,12 +903,11 @@ describe('Modifica struttura', () =>{
             'oraInizioPomeriggio': '14:00',
             'oraFinePomeriggio': '21:00',
             'durataPerFascia': 1,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }',
+            'idStruttura': 5
         };
-        
-        let id = 12;
         chai.request(server)
-        .post('/admin/strutture/modificastruttura/' + id)
+        .post('/admin/strutture/modificastruttura')
         .send(data)
         .end((err, res) =>{
             res.should.have.status(400);
@@ -655,12 +926,12 @@ describe('Modifica struttura', () =>{
             'oraInizioPomeriggio': '14:00',
             'oraFinePomeriggio': '21:00',
             'durataPerFascia': 1,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }',
+            'idStruttura': 5
         };
         
-        let id = 12;
         chai.request(server)
-        .post('/admin/strutture/modificastruttura/' + id)
+        .post('/admin/strutture/modificastruttura')
         .send(data)
         .end((err, res) =>{
             res.should.have.status(400);
@@ -679,12 +950,12 @@ describe('Modifica struttura', () =>{
             'oraInizioPomeriggio': '14:00',
             'oraFinePomeriggio': '21:00',
             'durataPerFascia': 1,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }',
+            'idStruttura': 5
         };
-        
-        let id = 12;
+
         chai.request(server)
-        .post('/admin/strutture/modificastruttura/' + id)
+        .post('/admin/strutture/modificastruttura')
         .send(data)
         .end((err, res) =>{
             res.should.have.status(400);
@@ -703,12 +974,12 @@ describe('Modifica struttura', () =>{
             'oraInizioPomeriggio': '14:00',
             'oraFinePomeriggio': '21:00',
             'durataPerFascia': 1,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }',
+            'idStruttura': 5
         };
         
-        let id = 12;
         chai.request(server)
-        .post('/admin/strutture/modificastruttura/' + id)
+        .post('/admin/strutture/modificastruttura')
         .send(data)
         .end((err, res) =>{
             res.should.have.status(400);
@@ -727,12 +998,12 @@ describe('Modifica struttura', () =>{
             'oraInizioPomeriggio': '14x:00',
             'oraFinePomeriggio': '21:00',
             'durataPerFascia': 1,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }',
+            'idStruttura': 5
         };
-        
-        let id = 12;
+
         chai.request(server)
-        .post('/admin/strutture/modificastruttura/' + id)
+        .post('/admin/strutture/modificastruttura')
         .send(data)
         .end((err, res) =>{
             res.should.have.status(400);
@@ -751,12 +1022,12 @@ describe('Modifica struttura', () =>{
             'oraInizioPomeriggio': '11:00',
             'oraFinePomeriggio': '21:00',
             'durataPerFascia': 1,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }',
+            'idStruttura': 5
         };
         
-        let id = 12;
         chai.request(server)
-        .post('/admin/strutture/modificastruttura/' + id)
+        .post('/admin/strutture/modificastruttura')
         .send(data)
         .end((err, res) =>{
             res.should.have.status(400);
@@ -775,12 +1046,12 @@ describe('Modifica struttura', () =>{
             'oraInizioPomeriggio': '14:00',
             'oraFinePomeriggio': '21x:00',
             'durataPerFascia': 1,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }',
+            'idStruttura': 5
         };
         
-        let id = 12;
         chai.request(server)
-        .post('/admin/strutture/modificastruttura/' + id)
+        .post('/admin/strutture/modificastruttura')
         .send(data)
         .end((err, res) =>{
             res.should.have.status(400);
@@ -799,12 +1070,12 @@ describe('Modifica struttura', () =>{
             'oraInizioPomeriggio': '11:00',
             'oraFinePomeriggio': '22:00',
             'durataPerFascia': 1,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }',
+            'idStruttura': 5
         };
         
-        let id = 12;
         chai.request(server)
-        .post('/admin/strutture/modificastruttura/' + id)
+        .post('/admin/strutture/modificastruttura')
         .send(data)
         .end((err, res) =>{
             res.should.have.status(400);
@@ -823,12 +1094,12 @@ describe('Modifica struttura', () =>{
             'oraInizioPomeriggio': '11:00',
             'oraFinePomeriggio': '22:00',
             'durataPerFascia': 1,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022c-12-25\", \"2022x-12-31\", \"20a22-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022c-12-25\", \"2022x-12-31\", \"20a22-12-31\"]  }',
+            'idStruttura': 5
         };
         
-        let id = 12;
         chai.request(server)
-        .post('/admin/strutture/modificastruttura/' + id)
+        .post('/admin/strutture/modificastruttura')
         .send(data)
         .end((err, res) =>{
             res.should.have.status(400);
@@ -847,11 +1118,12 @@ describe('Modifica struttura', () =>{
             'oraInizioPomeriggio': '14:00',
             'oraFinePomeriggio': '18:00',
             'durataPerFascia': 2,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }',
+            'idStruttura': 5
         };
-        let id = 12;
+
         chai.request(server)
-        .post('/admin/strutture/modificastruttura/' + id)
+        .post('/admin/strutture/modificastruttura')
         .send(data)
         .end((err, res) =>{
             res.should.have.status(400);
@@ -880,7 +1152,7 @@ describe('Elimina struttura', () =>{
 
     it('Dovrebbe eliminare la struttura', (done) =>{
         let data = {
-            'idStrutt': 11
+            'idStrutt': 14
         };
 
         chai.request(server)

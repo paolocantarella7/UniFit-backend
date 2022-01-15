@@ -45,12 +45,12 @@ exports.visualizzaDettagliStruttura = async (req, res) => {
     where: { idStruttura: idStruttura },
   })
     .then((result) => {
-      if (result) {
+      if (result && !result.isCancellata) {
         res.status(200).json({ code: 200, struttura: result, success: true });
-      } else {
+      } else  {
         res
-          .status(404)
-          .json({ code: 404, msg: "Struttura non trovata!", success: false });
+          .status(400)
+          .json({ code: 400, msg: "Struttura non trovata!", success: false });
       }
     })
    /* .catch((err) => {
@@ -95,12 +95,12 @@ exports.visualizzaPrenotazioniStruttura = async (req, res) => {
     where: { idStruttura: idStruttura },
   })
     .then((result) => {
-      if (result) {
+      if (result && !result.isCancellata) {
         res.status(200).json({ code: 200, struttura: result, success: true });
       } else {
         res
-          .status(404)
-          .json({ code: 404, msg: "Struttura non trovata!", success: false });
+          .status(400)
+          .json({ code: 400, msg: "Struttura non trovata!", success: false });
       }
     })
   /*  .catch((err) => {
@@ -381,7 +381,7 @@ exports.modificaStruttura = async (req, res) => {
   let dateChiusura = JSON.parse(req.body.dateChiusura).dateChiusura;
 
   await Struttura.update(strutturaDaCreare, {
-    where: { idStruttura: idStruttura },
+    where: { idStruttura: idStruttura},
     returning: true,
     plain: true,
   })
