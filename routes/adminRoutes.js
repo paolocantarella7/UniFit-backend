@@ -5,7 +5,7 @@ let { body } = require("express-validator");
 let moment = require("moment");
 const RichiestaTesseramento = require("../model/Richiesta_tesseramento");
 const Struttura = require("../model/Struttura");
-const { query } = require('express-validator');
+const { query } = require("express-validator");
 
 let validazione = {
   nomeStruttura: /[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/,
@@ -15,7 +15,7 @@ let validazione = {
   dataLimite: new Date().setHours(0, 0, 0, 0),
   orarioMattinaLimite: new Date().setHours(7, 0, 0, 0), //07:00:00
   orarioPomeriggioLimite: new Date().setHours(21, 0, 0, 0), //21:00:00,
-  orario: /[0-9]+:[0-9]+/
+  orario: /[0-9]+:[0-9]+/,
 };
 
 router.get("/strutture/visualizzastrutture", adminCNT.visualizzaStrutture);
@@ -59,16 +59,18 @@ router.post(
   adminCNT.validaTesseramento
 );
 
-router.get("/strutture/eliminastruttura", [
-  query("idStrutt")
-  .custom(async (value) =>{
-    await Struttura.findByPk(value)
-    .then((result) =>{
-      if(!result || result.isCancellata)
-        throw new Error("Struttura non esistente!")
-    })
-  })
-], adminCNT.eliminaStruttura);
+router.get(
+  "/strutture/eliminastruttura",
+  [
+    query("idStrutt").custom(async (value) => {
+      await Struttura.findByPk(value).then((result) => {
+        if (!result || result.isCancellata)
+          throw new Error("Struttura non esistente!");
+      });
+    }),
+  ],
+  adminCNT.eliminaStruttura
+);
 
 router.post(
   "/strutture/aggiungistruttura",
@@ -148,7 +150,22 @@ router.post(
           );
         }
       })
-      .bail(),
+      .bail()
+      .custom((value, { req }) => {
+        let oraIM = moment(req.body.oraInizioMattina, "HH:mm");
+        let oraFM = moment(value, "HH:mm");
+        while (oraIM.isBefore(oraFM)) {
+          oraIM
+            .add(parseInt(req.body.durataPerFascia), "hours")
+            .format("HH:mm");
+        }
+
+        if (oraIM.isAfter(oraFM)) {
+          throw new Error(
+            "Orari di mattina non coincidono logicamente con la durata!"
+          );
+        } else return true;
+      }),
     body("oraInizioPomeriggio")
       .matches(validazione.orario)
       .withMessage("Formato ora non valido")
@@ -198,21 +215,20 @@ router.post(
         }
       })
       .bail()
-      .custom((value, { req }) =>{
-        let temp1 = parseInt(req.body.oraInizioMattina.split(":")[0]);
-        let temp2 = parseInt(req.body.oraInizioPomeriggio.split(":")[0]);
-        let oraFineMattina = parseInt(req.body.oraFineMattina.split(":")[0]);
-        let oraFinePomeriggio = parseInt(value.split(":")[0]);
-        while(temp1 < oraFineMattina || temp2 < oraFinePomeriggio){
-          if(temp1 < oraFineMattina)
-            temp1 += parseInt(req.body.durataPerFascia);
-          if(temp2 < oraFinePomeriggio)
-            temp2 += parseInt(req.body.durataPerFascia);
+      .custom((value, { req }) => {
+        let oraIP = moment(req.body.oraInizioPomeriggio, "HH:mm");
+        let oraFP = moment(value, "HH:mm");
+        while (oraIP.isBefore(oraFP)) {
+          oraIP
+            .add(parseInt(req.body.durataPerFascia), "hours")
+            .format("HH:mm");
         }
-        if(temp1 > oraFineMattina || temp2 > oraFinePomeriggio)
-          throw new Error("Orari di apertura e chiusura non coincidono con la durata delle fasce!")
 
-        else return true;
+        if (oraIP.isAfter(oraFP)) {
+          throw new Error(
+            "Orari di pomeriggio non coincidono logicamente con la durata!"
+          );
+        } else return true;
       }),
     body("dateChiusura").custom(async (dateChiusura) => {
       let dateChiusuraArray = JSON.parse(dateChiusura).dateChiusura;
@@ -306,7 +322,22 @@ router.post(
           );
         }
       })
-      .bail(),
+      .bail()
+      .custom((value, { req }) => {
+        let oraIM = moment(req.body.oraInizioMattina, "HH:mm");
+        let oraFM = moment(value, "HH:mm");
+        while (oraIM.isBefore(oraFM)) {
+          oraIM
+            .add(parseInt(req.body.durataPerFascia), "hours")
+            .format("HH:mm");
+        }
+
+        if (oraIM.isAfter(oraFM)) {
+          throw new Error(
+            "Orari di mattina non coincidono logicamente con la durata!"
+          );
+        } else return true;
+      }),
     body("oraInizioPomeriggio")
       .matches(validazione.orario)
       .withMessage("Formato ora non valido")
@@ -357,21 +388,20 @@ router.post(
         }
       })
       .bail()
-      .custom((value, { req }) =>{
-        let temp1 = parseInt(req.body.oraInizioMattina.split(":")[0]);
-        let temp2 = parseInt(req.body.oraInizioPomeriggio.split(":")[0]);
-        let oraFineMattina = parseInt(req.body.oraFineMattina.split(":")[0]);
-        let oraFinePomeriggio = parseInt(value.split(":")[0]);
-        while(temp1 < oraFineMattina || temp2 < oraFinePomeriggio){
-          if(temp1 < oraFineMattina)
-            temp1 += parseInt(req.body.durataPerFascia);
-          if(temp2 < oraFinePomeriggio)
-            temp2 += parseInt(req.body.durataPerFascia);
+      .custom((value, { req }) => {
+        let oraIP = moment(req.body.oraInizioPomeriggio, "HH:mm");
+        let oraFP = moment(value, "HH:mm");
+        while (oraIP.isBefore(oraFP)) {
+          oraIP
+            .add(parseInt(req.body.durataPerFascia), "hours")
+            .format("HH:mm");
         }
-        if(temp1 > oraFineMattina || temp2 > oraFinePomeriggio)
-          throw new Error("Orari di apertura e chiusura non coincidono con la durata delle fasce!")
 
-        else return true;
+        if (oraIP.isAfter(oraFP)) {
+          throw new Error(
+            "Orari di pomeriggio non coincidono logicamente con la durata!"
+          );
+        } else return true;
       }),
     body("dateChiusura").custom(async (dateChiusura) => {
       let dateChiusuraArray = JSON.parse(dateChiusura).dateChiusura;
