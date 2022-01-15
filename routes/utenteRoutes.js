@@ -21,23 +21,24 @@ let validazione = {
   cvvCarta: /^[0-9]{3,4}$/,
 };
 
-
 router.post(
   "/registrati",
   [
     body("email")
       .matches(validazione.email)
       .withMessage("Formato e-mail non valido")
-      .custom(async (value, {req}) => {
+      .custom(async (value, { req }) => {
         return await Utente.findOne({ where: { email: value } }).then(
           (user) => {
-            //Utente con email già esistente  
-            //oppure in caso di utente cancellato con CF diverso da quello associato a quell'email 
-            if ((user && !user.isCancellato)) {
+            //Utente con email già esistente
+            //oppure in caso di utente cancellato con CF diverso da quello associato a quell'email
+            if (user && !user.isCancellato) {
               throw new Error("E-mail già in uso!");
-            }
-            else if(user && user.isCancellato && (user.codiceFiscale !== req.body.codiceFiscale))
-            {
+            } else if (
+              user &&
+              user.isCancellato &&
+              user.codiceFiscale !== req.body.codiceFiscale
+            ) {
               throw new Error("E-mail già in uso!");
             }
           }
@@ -46,19 +47,20 @@ router.post(
     body("codiceFiscale")
       .matches(validazione.codiceFiscale)
       .withMessage("Formato codice fiscale non valido")
-      .custom(async (value, {req}) => {
+      .custom(async (value, { req }) => {
         return await Utente.findOne({ where: { codiceFiscale: value } }).then(
           (user) => {
-            //Utente con email già esistente  
-            //oppure in caso di utente cancellato con email diversa da quella associata a quel CF 
-            if ((user && !user.isCancellato)) {
+            //Utente con email già esistente
+            //oppure in caso di utente cancellato con email diversa da quella associata a quel CF
+            if (user && !user.isCancellato) {
+              throw new Error("Codice fiscale già presente nel database!");
+            } else if (
+              user &&
+              user.isCancellato &&
+              user.email !== req.body.email
+            ) {
               throw new Error("Codice fiscale già presente nel database!");
             }
-            else if(user && user.isCancellato && (user.email !== req.body.email))
-            {
-              throw new Error("Codice fiscale già presente nel database!");
-            }
-    
           }
         );
       }),
@@ -113,6 +115,12 @@ router.post(
         }
       })
       .bail(),
+    body("idUtente").custom(async (value) => {
+      await Utente.findByPk(value).then((result) => {
+        if (!result || result.isCancellato)
+          throw new Error("Utente non esistente!");
+      });
+    })
   ],
   utenteController.modificaPassword
 );
@@ -130,16 +138,18 @@ router.post(
   utenteController.login
 );
 
-router.get("/cancellaAccount", [
-  query("idUtente")
-  .custom(async (value) =>{
-    await Utente.findByPk(value)
-    .then((result) =>{
-      if(!result || result.isCancellato)
-        throw new Error("Utente non esistente!")
-    })
-  })
-],utenteController.cancellaAccount);
+router.get(
+  "/cancellaAccount",
+  [
+    query("idUtente").custom(async (value) => {
+      await Utente.findByPk(value).then((result) => {
+        if (!result || result.isCancellato)
+          throw new Error("Utente non esistente!");
+      });
+    }),
+  ],
+  utenteController.cancellaAccount
+);
 
 router.get("/datiPersonali", utenteController.visualizzaDatiUtente);
 
@@ -171,29 +181,37 @@ router.post(
       if (value != "Interno" && value != "Esterno")
         throw new Error("Valore tipologia tesseramento non valido");
     }),
-    body("idUtente").custom(async (value) => {
-      await Utente.findByPk(value).then((result) => {
-        if (!result || result.isCancellato) throw new Error("Utente non esistente");
-        if(result && result.isTesserato) throw new Error("Utente già tesserato");
-      });
-    }).bail()
-    .custom(async (value)=> { //check per evitatare utente con doppie richieste
-      await RichiestaTesseramento.findOne({where: {utente:value}}).then((result) => {
-        if (result) throw new Error("L'utente ha già effettuato una richiesta!");
-      }
-    )}).bail(),
+    body("idUtente")
+      .custom(async (value) => {
+        await Utente.findByPk(value).then((result) => {
+          if (!result || result.isCancellato)
+            throw new Error("Utente non esistente");
+          if (result && result.isTesserato)
+            throw new Error("Utente già tesserato");
+        });
+      })
+      .bail()
+      .custom(async (value) => {
+        //check per evitatare utente con doppie richieste
+        await RichiestaTesseramento.findOne({ where: { utente: value } }).then(
+          (result) => {
+            if (result)
+              throw new Error("L'utente ha già effettuato una richiesta!");
+          }
+        );
+      })
+      .bail(),
     body("file")
       .custom((value, { req }) => {
-        if(!req.files)
-        {
+        if (!req.files) {
           throw new Error("Inserimento file obbligatorio!");
-        }
-        else if (req.files.file.mimetype !== "application/pdf" ) {
+        } else if (req.files.file.mimetype !== "application/pdf") {
           throw new Error("Formato file non valido!");
         }
 
         return true;
-      }).bail()
+      })
+      .bail(),
   ],
   utenteController.effettuaTesseramento
 );

@@ -101,14 +101,6 @@ exports.registrazione = async (req, res) => {
                 success: true,
               });
           })
-          .catch((err) => {
-            console.error(err);
-            res.status(500).json({
-              codice: 500,
-              messaggio: "Qualcosa è andato storto...",
-              success: false,
-            });
-          });
       } else {
         await Utente.create(utenteDaRegistrare)
           .then((result) => {
@@ -120,24 +112,8 @@ exports.registrazione = async (req, res) => {
               });
             }
           })
-          .catch((err) => {
-            console.error(err);
-            res.status(500).json({
-              codice: 500,
-              messaggio: "Qualcosa è andato storto...",
-              success: false,
-            });
-          });
       }
     })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).json({
-        codice: 500,
-        messaggio: "Qualcosa è andato storto...",
-        success: false,
-      });
-    });
 };
 
 /**
@@ -165,21 +141,13 @@ exports.modificaPassword = async (req, res) => {
   )
     .then((result) => {
       if (result) {
-        res.status(201).json({
-          codice: 201,
+        res.status(200).json({
+          codice: 200,
           messaggio: "Password modificata con successo",
           success: true,
         });
       }
     })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).json({
-        codice: 500,
-        messaggio: "Qualcosa è andato storto...",
-        success: false,
-      });
-    });
 };
 
 /**
@@ -425,20 +393,7 @@ exports.resettaPasswordPerRecupero = async (req, res) => {
               });
             }
           })
-          .catch((err) => {
-            console.error(err);
-            res.status(500).json({
-              code: 500,
-              msg: "Qualcosa è andato storto..",
-              success: false,
-            });
-          });
-      }
+      }  
     })
-    .catch((err) => {
-      console.error(err);
-      res
-        .status(500)
-        .json({ code: 500, msg: "Qualcosa è andato storto..", success: false });
-    });
+  
 };

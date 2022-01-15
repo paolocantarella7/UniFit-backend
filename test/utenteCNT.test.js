@@ -12,11 +12,11 @@ chai.use(require("chai-match"));
 chai.use(chaiHttp);
 let fs = require("fs");
 
-describe("Meotod che permette di effettuare il login", function () {
+describe("Metodo che permette di effettuare il login", function () {
   it("Login utente (non admin) riuscito", (done) => {
     let utente = {
       email: "dellarocca16@gmail.com",
-      password: "filofilo",
+      password: "333333333",
     };
 
     chai
@@ -47,7 +47,7 @@ describe("Meotod che permette di effettuare il login", function () {
 
   it("Login non riuscito  (utente che ha effettuato la cancellazione)", (done) => {
     let utente = {
-      email: "deleeeeeel@gmail.com",
+      email: "annaf@munnez.it",
       password: "filofilo",
     };
 
@@ -142,9 +142,9 @@ describe("Meotod che permette di effettuare il login", function () {
   });
 });
 
-describe("Meotod che permette di cancellare un utente", function () {
+describe("Metodo che permette di cancellare un utente", function () {
   it("Cancellazione riuscita", (done) => {
-    let idUtente = 10;
+    let idUtente = 5;
 
     chai
       .request(server)
@@ -192,7 +192,7 @@ describe("Meotod che permette di cancellare un utente", function () {
   });
 
   it("Cancellazione non riuscita (Utente non trovato - già cancellato)", (done) => {
-    let idUtente = "10";
+    let idUtente = 20;
 
     chai
       .request(server)
@@ -254,7 +254,7 @@ describe("Metodo che permette di visualizzare i dati di un utente", function () 
   });
 
   it("Visualizzazione dati NON riuscita (Utente cancellato quindi non trovato)", (done) => {
-    let idUtente = "10";
+    let idUtente = 20;
 
     chai
       .request(server)
@@ -284,7 +284,7 @@ describe("Metodo che permette di effettuare una richiesta di tesseramento", func
       .attach(
         "file",
         fs.readFileSync(
-          "C:/Users/della/Desktop/UniFit-backend/test/testupload/CERTIFICATO.pdf" //Aggiungere path relativo qui
+          __dirname+"/testupload/CERTIFICATO.pdf" //Aggiungere path relativo qui
         ),
         "CERTIFICATO.pdf"
       )
@@ -311,7 +311,7 @@ describe("Metodo che permette di effettuare una richiesta di tesseramento", func
       .attach(
         "file",
         fs.readFileSync(
-          "C:/Users/della/Desktop/UniFit-backend/test/testupload/CERTIFICATO.pdf" //Aggiungere path relativo qui
+          __dirname+"/testupload/CERTIFICATO.pdf" //Aggiungere path relativo qui
         ),
         "CERTIFICATO.pdf"
       )
@@ -338,7 +338,7 @@ describe("Metodo che permette di effettuare una richiesta di tesseramento", func
       .attach(
         "file",
         fs.readFileSync(
-          "C:/Users/della/Desktop/UniFit-backend/test/testupload/CERTIFICATO.pdf"
+          __dirname+"/testupload/CERTIFICATO.pdf"
         ),
         "CERTIFICATO.pdf"
       )
@@ -365,7 +365,7 @@ describe("Metodo che permette di effettuare una richiesta di tesseramento", func
       .attach(
         "file",
         fs.readFileSync(
-          "C:/Users/della/Desktop/UniFit-backend/test/testupload/CERTIFICATO.pdf"
+          __dirname+"/testupload/CERTIFICATO.pdf"
         ),
         "CERTIFICATO.pdf"
       )
@@ -392,7 +392,7 @@ describe("Metodo che permette di effettuare una richiesta di tesseramento", func
       .attach(
         "file",
         fs.readFileSync(
-          "C:/Users/della/Desktop/UniFit-backend/test/testupload/CERTIFICATO.pdf"
+          __dirname+"/testupload/CERTIFICATO.pdf"
         ),
         "CERTIFICATO.pdf"
       )
@@ -419,7 +419,7 @@ describe("Metodo che permette di effettuare una richiesta di tesseramento", func
       .attach(
         "file",
         fs.readFileSync(
-          "C:/Users/della/Desktop/UniFit-backend/test/testupload/CERTIFICATO.pdf"
+          __dirname+"/testupload/CERTIFICATO.pdf"
         ),
         "CERTIFICATO.pdf"
       )
@@ -446,7 +446,7 @@ describe("Metodo che permette di effettuare una richiesta di tesseramento", func
       .attach(
         "file",
         fs.readFileSync(
-          "C:/Users/della/Desktop/UniFit-backend/test/testupload/CERTIFICATO.pdf"
+          __dirname+"/testupload/CERTIFICATO.pdf"
         ),
         "CERTIFICATO.pdf"
       )
@@ -473,7 +473,7 @@ describe("Metodo che permette di effettuare una richiesta di tesseramento", func
       .attach(
         "file",
         fs.readFileSync(
-          "C:/Users/della/Desktop/UniFit-backend/test/testupload/CERTIFICATO.pdf"
+          __dirname+"/testupload/CERTIFICATO.pdf"
         ),
         "CERTIFICATO.pdf"
       )
@@ -486,7 +486,7 @@ describe("Metodo che permette di effettuare una richiesta di tesseramento", func
   it("Utente già richiedente di tesseramento", (done) => {
     let richiesta = {
       tipologiaTesseramento: "Esterno",
-      idUtente: 11,
+      idUtente: 1,
       numeroCarta: "1234123412341234",
       intestatarioCarta: "Luca Boffetta",
       cvvCarta: "123",
@@ -500,7 +500,7 @@ describe("Metodo che permette di effettuare una richiesta di tesseramento", func
       .attach(
         "file",
         fs.readFileSync(
-          "C:/Users/della/Desktop/UniFit-backend/test/testupload/CERTIFICATO.pdf"
+          __dirname+"/testupload/CERTIFICATO.pdf"
         ),
         "CERTIFICATO.pdf"
       )
@@ -527,7 +527,7 @@ describe("Metodo che permette di effettuare una richiesta di tesseramento", func
       .attach(
         "file",
         fs.readFileSync(
-          "C:/Users/della/Desktop/UniFit-backend/test/testupload/CERTIFICATO.pdf"
+          __dirname+"/testupload/CERTIFICATO.pdf"
         ),
         "CERTIFICATO.pdf"
       )
@@ -554,7 +554,7 @@ describe("Metodo che permette di effettuare una richiesta di tesseramento", func
       .attach(
         "file",
         fs.readFileSync(
-          "C:/Users/della/Desktop/UniFit-backend/test/testupload/CERTIFICATO.pdf"
+          __dirname+"/testupload/CERTIFICATO.pdf"
         ),
         "CERTIFICATO.pdf"
       )
@@ -581,7 +581,7 @@ describe("Metodo che permette di effettuare una richiesta di tesseramento", func
       .attach(
         "file",
         fs.readFileSync(
-          "C:/Users/della/Desktop/UniFit-backend/test/testupload/CERTIFICATO.pdf"
+          __dirname+"/testupload/CERTIFICATO.pdf"
         ),
         "CERTIFICATO.pdf"
       )
@@ -608,7 +608,7 @@ describe("Metodo che permette di effettuare una richiesta di tesseramento", func
       .attach(
         "file",
         fs.readFileSync(
-          "C:/Users/della/Desktop/UniFit-backend/test/testupload/CERTIFICATO.pdf"
+          __dirname+"/testupload/CERTIFICATO.pdf"
         ),
         "CERTIFICATO.pdf"
       )
@@ -635,7 +635,7 @@ describe("Metodo che permette di effettuare una richiesta di tesseramento", func
       .attach(
         "file",
         fs.readFileSync(
-          "C:/Users/della/Desktop/UniFit-backend/test/testupload/CERTIFICATO.pdf"
+          __dirname+"/testupload/CERTIFICATO.pdf"
         ),
         "CERTIFICATO.pdf"
       )
@@ -662,7 +662,7 @@ describe("Metodo che permette di effettuare una richiesta di tesseramento", func
       .attach(
         "file",
         fs.readFileSync(
-          "C:/Users/della/Desktop/UniFit-backend/test/testupload/CERTIFICATO.pdf"
+          __dirname+"/testupload/CERTIFICATO.pdf"
         ),
         "CERTIFICATO.pdf"
       )
@@ -689,7 +689,7 @@ describe("Metodo che permette di effettuare una richiesta di tesseramento", func
       .attach(
         "file",
         fs.readFileSync(
-          "C:/Users/della/Desktop/UniFit-backend/test/testupload/CERTIFICATO.pdf"
+          __dirname+"/testupload/CERTIFICATO.pdf"
         ),
         "CERTIFICATO.pdf"
       )
@@ -716,7 +716,7 @@ describe("Metodo che permette di effettuare una richiesta di tesseramento", func
       .attach(
         "file",
         fs.readFileSync(
-          "C:/Users/della/Desktop/UniFit-backend/test/testupload/CERTIFICATO.pdf"
+          __dirname+"/testupload/CERTIFICATO.pdf"
         ),
         "CERTIFICATO.pdf"
       )
@@ -743,7 +743,7 @@ describe("Metodo che permette di effettuare una richiesta di tesseramento", func
       .attach(
         "file",
         fs.readFileSync(
-          "C:/Users/della/Desktop/UniFit-backend/test/testupload/CERTIFICATO.pdf"
+          __dirname+"/testupload/CERTIFICATO.pdf"
         ),
         "CERTIFICATO.pdf"
       )
@@ -771,7 +771,7 @@ describe("Metodo che permette di effettuare una richiesta di tesseramento", func
       .attach(
         "file",
         fs.readFileSync(
-          "C:/Users/della/Desktop/UniFit-backend/test/testupload/CERTIFICATO.pdf"
+          __dirname+"/testupload/CERTIFICATO.pdf"
         ),
         "CERTIFICATO.pdf"
       )
@@ -798,7 +798,7 @@ describe("Metodo che permette di effettuare una richiesta di tesseramento", func
       .attach(
         "file",
         fs.readFileSync(
-          "C:/Users/della/Desktop/UniFit-backend/test/testupload/CERTIFICATO.pdf"
+          __dirname+"/testupload/CERTIFICATO.pdf"
         ),
         "CERTIFICATO.pdf"
       )
@@ -825,7 +825,7 @@ describe("Metodo che permette di effettuare una richiesta di tesseramento", func
       .attach(
         "file",
         fs.readFileSync(
-          "C:/Users/della/Desktop/UniFit-backend/test/testupload/CERTIFICATO.pdf"
+          __dirname+"/testupload/CERTIFICATO.pdf"
         ),
         "CERTIFICATO.pdf"
       )
@@ -852,7 +852,7 @@ describe("Metodo che permette di effettuare una richiesta di tesseramento", func
       .attach(
         "file",
         fs.readFileSync(
-          "C:/Users/della/Desktop/UniFit-backend/test/testupload/CERTIFICATO.pdf"
+          __dirname+"/testupload/CERTIFICATO.pdf"
         ),
         "CERTIFICATO.pdf"
       )
@@ -879,7 +879,7 @@ describe("Metodo che permette di effettuare una richiesta di tesseramento", func
       .attach(
         "file",
         fs.readFileSync(
-          "C:/Users/della/Desktop/UniFit-backend/test/testupload/CERTIFICATO.pdf"
+          __dirname+"/testupload/CERTIFICATO.pdf"
         ),
         "CERTIFICATO.pdf"
       )
@@ -906,7 +906,7 @@ describe("Metodo che permette di effettuare una richiesta di tesseramento", func
       .attach(
         "file",
         fs.readFileSync(
-          "C:/Users/della/Desktop/UniFit-backend/test/testupload/CERTIFICATO.pdf"
+          __dirname+"/testupload/CERTIFICATO.pdf"
         ),
         "CERTIFICATO.pdf"
       )
@@ -933,7 +933,7 @@ describe("Metodo che permette di effettuare una richiesta di tesseramento", func
       .attach(
         "file",
         fs.readFileSync(
-          "C:/Users/della/Desktop/UniFit-backend/test/testupload/CERTIFICATO.pdf"
+          __dirname+"/testupload/CERTIFICATO.pdf"
         ),
         "" //Invio niente
       )
@@ -960,7 +960,7 @@ describe("Metodo che permette di effettuare una richiesta di tesseramento", func
       .attach(
         "file",
         fs.readFileSync(
-          "C:/Users/della/Desktop/UniFit-backend/test/testupload/LICENZESOFTWARE.ppt"
+          __dirname+"/testupload/LICENZESOFTWARE.ppt"
         ),
         "LICENZESOFTWARE.ppt"
       )
@@ -987,7 +987,7 @@ describe("Metodo che permette di effettuare una richiesta di tesseramento", func
       .attach(
         "file",
         fs.readFileSync(
-          "C:/Users/della/Desktop/UniFit-backend/test/testupload/siringa.png"
+          __dirname+"/testupload/siringa.png"
         ),
         "siringa.png"
       )
@@ -1014,7 +1014,7 @@ describe("Metodo che permette di effettuare una richiesta di tesseramento", func
       .attach(
         "file",
         fs.readFileSync(
-          "C:/Users/della/Desktop/UniFit-backend/test/testupload/RAD.docx"
+          __dirname+"/testupload/RAD.docx"
         ),
         "RAD.docx"
       )
@@ -1023,11 +1023,12 @@ describe("Metodo che permette di effettuare una richiesta di tesseramento", func
         done();
       });
   });
+});
 
 describe('Recupero password', () =>{
   it('Dovrebbe iniziare la procedura di recupero passowrd', (done) =>{
     let data = {
-      'email': 'erminio@gmail.com'
+      'email': 'dellarocca16@gmail.com'
     };
 
     chai.request(server)
@@ -1078,7 +1079,7 @@ describe('Reset password', () =>{
       'password': 'ghh',
       'passwordConferma': 'Ciaociao.1'
     };
-    let token = 'f912d68dad4a6174afcf488c96304dee7159ac8b9a31cab9895b62f5ef353d964b1d4a4f7a372057e51d5e53931cbbb9b9aec2f3ae729879aa0488f603c952c9';
+    let token = 'e57c8ce5a9503e3e10a19babbe116d308ff3477625c81b61d9809f3ec66f62e1f2fc9bb525ee6ad4493084e62341fbd869108a130bb3aecfbb2fd53413128915';
 
     chai.request(server)
     .post('/user/reset-password/' + token)
@@ -1121,12 +1122,28 @@ describe('Reset password', () =>{
     });
   });
 
-  it('Dovrebbe resettare la password', (done) =>{
+  it('Token scaduto o non valido', (done) =>{
     let data = {
       'password': 'Ciaociao.1',
       'passwordConferma': 'Ciaociao.1'
     };
     let token = 'f912d68dad4a6174afcf488c96304dee7159ac8b9a31cab9895b62f5ef353d964b1d4a4f7a372057e51d5e53931cbbb9b9aec2f3ae729879aa0488f603c952c9';
+
+    chai.request(server)
+    .post('/user/reset-password/' + token)
+    .send(data)
+    .end((err, res) =>{
+      res.should.have.status(400);
+      done();
+    });
+  });
+
+  it('Dovrebbe resettare la password', (done) =>{
+    let data = {
+      'password': 'Ciaociao.1',
+      'passwordConferma': 'Ciaociao.1'
+    };
+    let token = 'e57c8ce5a9503e3e10a19babbe116d308ff3477625c81b61d9809f3ec66f62e1f2fc9bb525ee6ad4493084e62341fbd869108a130bb3aecfbb2fd53413128915';
 
     chai.request(server)
     .post('/user/reset-password/' + token)
@@ -1436,7 +1453,7 @@ it('Data non valida', (done) =>{
   
   it('Dovrebbe completare la registrazione', (done) =>{
     let data = {
-      'codiceFiscale': 'DVDGST80A01A509R',
+      'codiceFiscale': 'CSTMRZ40B23H703S',
       'nome': 'Gianni Alfonso',
       'cognome': 'Bottiglieri',
       'email': 'fonzino@gmail.com',
@@ -1463,14 +1480,46 @@ describe('Modifica password', () =>{
     let data = {
       'password': 'Ciaociao.1',
       'passwordConferma': 'Ciaociao.1',
-      'idUtente': 3
+      'idUtente': 4
     };
 
     chai.request(server)
     .post('/user/modificaPassword')
     .send(data)
     .end((err, res) =>{
-      res.should.have.status(201);
+      res.should.have.status(200);
+      done();
+    });
+  });
+
+  it('Utente non trovato', (done) =>{
+    let data = {
+      'password': 'Ciaociao.1',
+      'passwordConferma': 'Ciaociao.1',
+      'idUtente': 4233
+    };
+
+    chai.request(server)
+    .post('/user/modificaPassword')
+    .send(data)
+    .end((err, res) =>{
+      res.should.have.status(400);
+      done();
+    });
+  });
+
+  it('Utente non trovato (cancellato)', (done) =>{
+    let data = {
+      'password': 'Ciaociao.1',
+      'passwordConferma': 'Ciaociao.1',
+      'idUtente': 20
+    };
+
+    chai.request(server)
+    .post('/user/modificaPassword')
+    .send(data)
+    .end((err, res) =>{
+      res.should.have.status(400);
       done();
     });
   });
@@ -1510,5 +1559,3 @@ describe('Modifica password', () =>{
 });
 
 
-
-});
