@@ -4,6 +4,7 @@ let Prenotazione = require("../model/Prenotazione");
 let Utente = require("../model/Utente");
 let Richiesta_tesseramento = require("../model/Richiesta_tesseramento");
 let { validationResult } = require("express-validator");
+let fs = require("fs");
 
 /**
  * Nome metodo: visualizzaStrutture
@@ -13,13 +14,12 @@ let { validationResult } = require("express-validator");
  * Autore : Matteo Della Rocca
  */
 exports.visualizzaStrutture = async (req, res) => {
-  await Struttura.findAll()
-    .then((result) => {
-      if (result) {
-        res.status(200).json({ code: 200, strutture: result, success: true });
-      }
-    })
-   /* .catch((err) => {
+  await Struttura.findAll().then((result) => {
+    if (result) {
+      res.status(200).json({ code: 200, strutture: result, success: true });
+    }
+  });
+  /* .catch((err) => {
       console.error(err);
       res
         .status(500)
@@ -43,17 +43,16 @@ exports.visualizzaDettagliStruttura = async (req, res) => {
       as: "giorniChiusura",
     },
     where: { idStruttura: idStruttura },
-  })
-    .then((result) => {
-      if (result) {
-        res.status(200).json({ code: 200, struttura: result, success: true });
-      } else  {
-        res
-          .status(400)
-          .json({ code: 400, msg: "Struttura non trovata!", success: false });
-      }
-    })
-   /* .catch((err) => {
+  }).then((result) => {
+    if (result) {
+      res.status(200).json({ code: 200, struttura: result, success: true });
+    } else {
+      res
+        .status(400)
+        .json({ code: 400, msg: "Struttura non trovata!", success: false });
+    }
+  });
+  /* .catch((err) => {
       console.error(err);
       res
         .status(500)
@@ -93,16 +92,15 @@ exports.visualizzaPrenotazioniStruttura = async (req, res) => {
       },
     ],
     where: { idStruttura: idStruttura },
-  })
-    .then((result) => {
-      if (result) {
-        res.status(200).json({ code: 200, struttura: result, success: true });
-      } else {
-        res
-          .status(400)
-          .json({ code: 400, msg: "Struttura non trovata!", success: false });
-      }
-    })
+  }).then((result) => {
+    if (result) {
+      res.status(200).json({ code: 200, struttura: result, success: true });
+    } else {
+      res
+        .status(400)
+        .json({ code: 400, msg: "Struttura non trovata!", success: false });
+    }
+  });
   /*  .catch((err) => {
       console.error(err);
       res
@@ -129,15 +127,14 @@ exports.visualizzaUtentiRegistrati = async (req, res) => {
       "isTesserato",
     ],
     where: { isAdmin: 0 }, //solo utenti registrati
-  })
-    .then((result) => {
-      if (result) {
-        res
-          .status(200)
-          .json({ code: 200, utentiRegistrati: result, success: true });
-      }
-    })
-   /* .catch((err) => {
+  }).then((result) => {
+    if (result) {
+      res
+        .status(200)
+        .json({ code: 200, utentiRegistrati: result, success: true });
+    }
+  });
+  /* .catch((err) => {
       console.error(err);
       res.status(500).json({
         code: 500,
@@ -176,14 +173,11 @@ exports.visualizzaRichiesteTesseramento = async (req, res) => {
       ],
     },
     where: { statusRichiesta: "Eseguita" }, //solo le richiesta da valutare
-  })
-    .then((result) => {
-      if (result) {
-        res
-          .status(200)
-          .json({ code: 200, richiesteTess: result, success: true });
-      }
-    })
+  }).then((result) => {
+    if (result) {
+      res.status(200).json({ code: 200, richiesteTess: result, success: true });
+    }
+  });
   /* .catch((err) => {
       console.error(err);
       res.status(500).json({
@@ -223,18 +217,19 @@ exports.validaTesseramento = async (req, res) => {
         returning: true,
         plain: true,
       }
-    )
-      .then((result) => {
-        if (result[1]) {
-          Utente.update({ isTesserato: 1 }, { where: { idUtente: idUtente } })
-            .then(
-              res.status(200).json({
-                code: 200,
-                msg: "Richiesta di tesseramento accettata con successo!",
-                success: true,
-              })
-            )
-            /*.catch((err) => {
+    ).then((result) => {
+      if (result[1]) {
+        Utente.update(
+          { isTesserato: 1 },
+          { where: { idUtente: idUtente } }
+        ).then(
+          res.status(200).json({
+            code: 200,
+            msg: "Richiesta di tesseramento accettata con successo!",
+            success: true,
+          })
+        );
+        /*.catch((err) => {
               console.error(err);
               res.status(500).json({
                 code: 500,
@@ -242,15 +237,15 @@ exports.validaTesseramento = async (req, res) => {
                 success: false,
               });
             });*/
-        } /*else {
+      } /*else {
           res.status(400).json({
             code: 400,
             msg: "Richiesta di tesseramento NON validata!",
             success: false,
           });
         }*/
-      })
-     /* .catch((err) => {
+    });
+    /* .catch((err) => {
         console.error(err);
         res.status(500).json({
           code: 500,
@@ -262,15 +257,19 @@ exports.validaTesseramento = async (req, res) => {
   else {
     await Richiesta_tesseramento.destroy({
       where: { idRichiesta_tesseramento: idRichiestaTess, utente: idUtente },
-    })
-      .then(
-        res.status(200).json({
-          code: 200,
-          msg: "Richiesta di tesseramento rifiutata con successo!",
-          success: true,
-        })
-      )
-     /* .catch((err) => {
+    });
+
+    //Cancello la cartella creata con il certificato "rifiutato" di quell'utente
+    fs.rmdir("./static/richieste_tesseramento/" + idUtente, {
+      recursive: true,
+    });
+    res.status(200).json({
+      code: 200,
+      msg: "Richiesta di tesseramento rifiutata con successo!",
+      success: true,
+    });
+
+    /* .catch((err) => {
         console.error(err);
         res.status(500).json({
           code: 500,
@@ -302,18 +301,17 @@ exports.eliminaStruttura = async (req, res) => {
   await Struttura.update(
     { isCancellata: 1 },
     { where: { idStruttura: idStruttura }, returning: true, plain: true }
-  )
-    .then((result) => {
-      if (result[1]) {
-        //result contiene un campo che è 1 quando la riga è modificata, 0 altrimenti
-        res.status(200).json({
-          code: 200,
-          msg: "Cancellazione struttura riuscita",
-          success: true,
-        });
-      }
-    })
-   /* .catch((err) => {
+  ).then((result) => {
+    if (result[1]) {
+      //result contiene un campo che è 1 quando la riga è modificata, 0 altrimenti
+      res.status(200).json({
+        code: 200,
+        msg: "Cancellazione struttura riuscita",
+        success: true,
+      });
+    }
+  });
+  /* .catch((err) => {
       console.error(err);
       res.status(500).json({
         code: 500,
@@ -334,34 +332,33 @@ exports.aggiungiStruttura = async (req, res) => {
   let { ...strutturaDaCreare } = { ...req.body };
   let dateChiusura = JSON.parse(req.body.dateChiusura).dateChiusura;
 
-  await Struttura.create(strutturaDaCreare)
-    .then((result) => {
-      if (result) {
-        if (dateChiusura !== []) {
-          //Ci sono date chiusure da inserire nel DB
+  await Struttura.create(strutturaDaCreare).then((result) => {
+    if (result) {
+      if (dateChiusura !== []) {
+        //Ci sono date chiusure da inserire nel DB
 
-          dateChiusura.forEach((dataChiusura) => {
-            let chiusura = {
-              dataChiusura: dataChiusura,
-              struttura: result.idStruttura,
-            };
+        dateChiusura.forEach((dataChiusura) => {
+          let chiusura = {
+            dataChiusura: dataChiusura,
+            struttura: result.idStruttura,
+          };
 
-            Chiusura.create(chiusura);
-          });
-        }
-
-        res.status(201).json({
-          code: 201,
-          msg: "Struttura creata con successo",
-          success: true,
+          Chiusura.create(chiusura);
         });
-      } /*else {
+      }
+
+      res.status(201).json({
+        code: 201,
+        msg: "Struttura creata con successo",
+        success: true,
+      });
+    } /*else {
         res
           .status(400)
           .json({ code: 400, msg: "Struttura NON creata", success: false });
       }*/
-    })
-   /* .catch((err) => {
+  });
+  /* .catch((err) => {
       console.error(err);
       res
         .status(500)
@@ -381,19 +378,18 @@ exports.modificaStruttura = async (req, res) => {
   let dateChiusura = JSON.parse(req.body.dateChiusura).dateChiusura;
 
   await Struttura.update(strutturaDaCreare, {
-    where: { idStruttura: idStruttura},
+    where: { idStruttura: idStruttura },
     returning: true,
     plain: true,
-  })
-    .then(() => {
-      Chiusura.destroy({ where: { struttura: idStruttura } });
-      dateChiusura.forEach((dataChiusura) => {
-        let chiusura = {
-          dataChiusura: dataChiusura,
-          struttura: idStruttura,
-        };
-        Chiusura.create(chiusura)
-       /* .catch((err) => {
+  }).then(() => {
+    Chiusura.destroy({ where: { struttura: idStruttura } });
+    dateChiusura.forEach((dataChiusura) => {
+      let chiusura = {
+        dataChiusura: dataChiusura,
+        struttura: idStruttura,
+      };
+      Chiusura.create(chiusura);
+      /* .catch((err) => {
           console.error(err);
           res.status(500).json({
             code: 500,
@@ -401,15 +397,15 @@ exports.modificaStruttura = async (req, res) => {
             success: false,
           });
         });*/
-      });
+    });
 
-      res.status(201).json({
-        code: 201,
-        msg: "Struttura modificata con successo",
-        success: true,
-      });
-    })
-    /*.catch((err) => {
+    res.status(201).json({
+      code: 201,
+      msg: "Struttura modificata con successo",
+      success: true,
+    });
+  });
+  /*.catch((err) => {
       console.error(err);
       res
         .status(500)
