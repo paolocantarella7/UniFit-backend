@@ -23,7 +23,7 @@ describe('Visualizza dettagli struttura', () =>{
     });
 
     it('Struttura non esistente', (done) =>{
-        let id = 11;
+        let id = 1771;
         chai.request(server)
         .get('/admin/strutture/dettagliStruttura/' + id)
         .end((err, res) =>{

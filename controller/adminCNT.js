@@ -45,7 +45,7 @@ exports.visualizzaDettagliStruttura = async (req, res) => {
     where: { idStruttura: idStruttura },
   })
     .then((result) => {
-      if (result && !result.isCancellata) {
+      if (result) {
         res.status(200).json({ code: 200, struttura: result, success: true });
       } else  {
         res
@@ -95,7 +95,7 @@ exports.visualizzaPrenotazioniStruttura = async (req, res) => {
     where: { idStruttura: idStruttura },
   })
     .then((result) => {
-      if (result && !result.isCancellata) {
+      if (result) {
         res.status(200).json({ code: 200, struttura: result, success: true });
       } else {
         res
