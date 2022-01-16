@@ -12,7 +12,7 @@ let Fattura = require("../model/Fattura");
  * Nome metodo: Login
  * Descrizione: Metodo che permette di effettuare il login
  * Parametri: email e password
- * Return: Codice, messaggio, boolean true/false in base alla riuscita dell'operazione e dati dell'utente
+ * Return: Codice, msg, boolean true/false in base alla riuscita dell'operazione e dati dell'utente
  * Autore : Giuseppe Scafa
  */
 exports.login = async (req, res) => {
@@ -51,7 +51,7 @@ exports.login = async (req, res) => {
  * Nome metodo: Registrazione
  * Descrizione: Metodo che permette di effettuare la registrazione di un utente
  * Parametri: Informazioni utente
- * Return: Codice, messaggio, boolean true/false in base alla riuscita dell'operazione
+ * Return: Codice, msg, boolean true/false in base alla riuscita dell'operazione
  * Autore : Matteo Della Rocca
  */
 exports.registrazione = async (req, res) => {
@@ -96,8 +96,8 @@ exports.registrazione = async (req, res) => {
           .then((result) => {
             if (result)
               res.status(201).json({
-                codice: 201,
-                messaggio: "Registrazione effettuata con successo",
+                code: 201,
+                msg: "Registrazione effettuata con successo",
                 success: true,
               });
           })
@@ -106,8 +106,8 @@ exports.registrazione = async (req, res) => {
           .then((result) => {
             if (result) {
               res.status(201).json({
-                codice: 201,
-                messaggio: "Registrazione effettuata con successo",
+                code: 201,
+                msg: "Registrazione effettuata con successo",
                 success: true,
               });
             }
@@ -120,7 +120,7 @@ exports.registrazione = async (req, res) => {
  * Nome metodo: modificaPassword
  * Descrizione: Metodo che permette di effettuare la modifica della password di un utente
  * Parametri: Password modificata e ID Utente
- * Return: Codice, messaggio, boolean true/false in base alla riuscita dell'operazione
+ * Return: Codice, msg, boolean true/false in base alla riuscita dell'operazione
  * Autore : Matteo Della Rocca
  */
 exports.modificaPassword = async (req, res) => {
@@ -142,8 +142,8 @@ exports.modificaPassword = async (req, res) => {
     .then((result) => {
       if (result) {
         res.status(200).json({
-          codice: 200,
-          messaggio: "Password modificata con successo",
+          code: 200,
+          msg: "Password modificata con successo",
           success: true,
         });
       }
@@ -154,7 +154,7 @@ exports.modificaPassword = async (req, res) => {
  * Nome metodo: Cancella Account
  * Descrizione: Metodo che permette di cancellare l'account di un utente
  * Parametri: Id utente
- * Return: Codice, messaggio, boolean true/false in base alla riuscita dell'operazione
+ * Return: Codice, msg, boolean true/false in base alla riuscita dell'operazione
  * Autore : Giuseppe Scafa
  */
 
@@ -182,7 +182,7 @@ exports.cancellaAccount = async (req, res) => {
  * Nome metodo: visualizzaDatiUtente
  * Descrizione: Metodo che permette di ottenere le informazioni di un utente
  * Parametri: Id utente
- * Return: Codice, messaggio, boolean true/false in base alla riuscita dell'operazione e dati dell'utente
+ * Return: Codice, msg, boolean true/false in base alla riuscita dell'operazione e dati dell'utente
  * Autore : Giuseppe Scafa
  */
 exports.visualizzaDatiUtente = async (req, res) => {
@@ -204,11 +204,11 @@ exports.visualizzaDatiUtente = async (req, res) => {
   })
     .then((result) => {
       if (result) {
-        res.status(200).json({ codice: 200, utente: result, success: true });
+        res.status(200).json({ code: 200, utente: result, success: true });
       } else {
         res
           .status(400)
-          .json({ codice: 400, msg: "Utente non trovato", success: false });
+          .json({ code: 400, msg: "Utente non trovato", success: false });
       }
     })
 };
@@ -217,7 +217,7 @@ exports.visualizzaDatiUtente = async (req, res) => {
  * Nome metodo: effettuaTesseramento
  * Descrizione: Metodo che permette di creare una richiesta di tesseramento
  * Parametri: dati dell'utente e file
- * Return: Codice, messaggio, boolean true/false in base alla riuscita dell'operazione
+ * Return: Codice, msg, boolean true/false in base alla riuscita dell'operazione
  * Autore : Giuseppe Scafa
  */
 
@@ -248,7 +248,7 @@ exports.effettuaTesseramento = async (req, res) => {
         fs.mkdir("." + filePath, (err) => {
           if (err) {
             return res.status(400).json({
-              codice: 400,
+              code: 400,
               msg: "Errore nella creazione della directory",
               success: false,
             });
@@ -283,7 +283,7 @@ exports.effettuaTesseramento = async (req, res) => {
  * Nome metodo: recuperoPassword
  * Descrizione: Metodo che permette di effettuare una richiesta di recupero della password
  * Parametri: email utente
- * Return: Codice, messaggio, boolean true/false in base alla riuscita dell'operazione
+ * Return: Codice, msg, boolean true/false in base alla riuscita dell'operazione
  * Autore : Matteo Della Rocca
  */
 exports.recuperoPassword = async (req, res) => {
@@ -343,7 +343,7 @@ exports.recuperoPassword = async (req, res) => {
  * Nome metodo: resettaPasswordPerRecupero
  * Descrizione: Metodo che permette di resettare la password dopo aver chiesto il recupero
  * Parametri: password modificata
- * Return: Codice, messaggio, boolean true/false in base alla riuscita dell'operazione
+ * Return: Codice, msg, boolean true/false in base alla riuscita dell'operazione
  * Autore : Matteo Della Rocca
  */
 exports.resettaPasswordPerRecupero = async (req, res) => {
@@ -387,8 +387,8 @@ exports.resettaPasswordPerRecupero = async (req, res) => {
           .then((result) => {
             if (result) {
               res.status(200).json({
-                codice: 200,
-                messaggio: "Password modificata con successo",
+                code: 200,
+                msg: "Password modificata con successo",
                 success: true,
               });
             }
