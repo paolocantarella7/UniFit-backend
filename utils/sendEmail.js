@@ -35,3 +35,26 @@ exports.sendEmailWithToken = (email, token) => {
  
     return mail.sendMail(mailOptions);
 }
+
+exports.sendRimborsoEmail = (email, importo) =>{
+    let mail = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: '', // Inserire email UniFit
+            pass: '' // Inserire password UniFit
+        }
+    });
+
+    let mailOptions = {
+        from: 'unifit2022@gmail.com',
+        to: email,
+        subject: 'Avviso di rimborso',
+        html: '<p>Gentile Utente, <br>' 
+        +'con la presente le avvisiamo che è stato effettuato un rimborso a suo carico della cifra di €'+ importo 
+        
+        +'<br>Cordiali saluti, <br> il team UniFit.</p>'
+ 
+    };
+ 
+    return mail.sendMail(mailOptions);
+}
