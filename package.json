@@ -5,7 +5,9 @@
   "main": "app.js",
   "scripts": {
     "test": "nyc mocha --exit",
-    "lint": "./node_modules/.bin/eslint --fix app.js"
+    "lint": "./node_modules/.bin/eslint --fix app.js",
+    "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
+    "reportHtml": "nyc report --reporte=html"
   },
   "author": "",
   "license": "ISC",
