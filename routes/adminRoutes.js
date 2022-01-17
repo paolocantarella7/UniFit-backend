@@ -1,6 +1,7 @@
-const express = require("express");
-const router = express.Router();
-const adminCNT = require("../controller/adminCNT");
+let express = require("express");
+let router = express.Router();
+let adminCNT = require("../controller/adminCNT");
+let strutturaCNT = require("../controller/strutturaCNT");
 let { body } = require("express-validator");
 let moment = require("moment");
 const RichiestaTesseramento = require("../model/Richiesta_tesseramento");
@@ -18,14 +19,14 @@ let validazione = {
   orario: /[0-9]+:[0-9]+/,
 };
 
-router.get("/strutture/visualizzastrutture", adminCNT.visualizzaStrutture);
+router.get("/strutture/visualizzastrutture", strutturaCNT.visualizzaStrutture);
 router.get(
   "/strutture/dettagliStruttura/:id",
-  adminCNT.visualizzaDettagliStruttura
+  strutturaCNT.visualizzaDettagliStruttura
 );
 router.get(
   "/strutture/prenotazioniStruttura/:id",
-  adminCNT.visualizzaPrenotazioniStruttura
+  strutturaCNT.visualizzaPrenotazioniStruttura
 );
 router.get("/utenti/visualizzautenti", adminCNT.visualizzaUtentiRegistrati);
 router.get(
@@ -69,7 +70,7 @@ router.get(
       });
     }),
   ],
-  adminCNT.eliminaStruttura
+  strutturaCNT.eliminaStruttura
 );
 
 router.post(
@@ -244,7 +245,7 @@ router.post(
       });
     }),
   ],
-  adminCNT.aggiungiStruttura
+  strutturaCNT.aggiungiStruttura
 );
 
 router.post(
@@ -425,7 +426,7 @@ router.post(
       });
     }),
   ],
-  adminCNT.modificaStruttura
+  strutturaCNT.modificaStruttura
 );
 
 module.exports = router;
