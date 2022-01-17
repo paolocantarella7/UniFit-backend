@@ -1,5 +1,8 @@
 let nodemailer = require("nodemailer");
 
+let host = "http://localhost:3000";
+let emailUniFit = ""; //inserire email UniFit gmail
+let passwordUniFit = ""; //inserire password UniFit gmail
 
 /**
  * Nome metodo: sendEmailWithToken
@@ -13,8 +16,8 @@ exports.sendEmailWithToken = (email, token) => {
     let mail = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: '', // Inserire email UniFit
-            pass: '' // Inserire password UniFit
+            user: emailUniFit, // Inserire email UniFit
+            pass: passwordUniFit // Inserire password UniFit
         }
     });
  
@@ -24,8 +27,8 @@ exports.sendEmailWithToken = (email, token) => {
         subject: 'Reset Password Link - UniFit.it',
         html: '<p>Gentile Utente, <br>' 
         +'è stato richiesto un recupero della password, '+
-        'usi questo <a href="http://localhost:3000/user/reset-password/' + token + '">link</a> per resettare la password'+
-        ' altrimenti <b>ignora</b> questa e-mail. <br>'+
+        'usi questo <a href='+host+'/recovery/' + token + '">link</a> per resettare la password'+
+        ' altrimenti <b>ignori</b> questa e-mail. <br>'+
         '<br>Cordiali saluti, <br> il team UniFit.</p>'
  
     };

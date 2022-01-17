@@ -2,112 +2,134 @@ let Utente = require("../model/Utente");
 let RichiestaTesseramento = require("../model/Richiesta_tesseramento");
 let crypto = require("crypto");
 let fs = require("fs");
-let expressFileUpload = require("express-fileupload");
 let { validationResult } = require("express-validator");
-let path = require("path");
 let senderEmail = require("../utils/sendEmail");
-let { Op, DATE } = require("sequelize");
-const { Sequelize } = require("../singleton/singleton");
+let { Op } = require("sequelize");
+let Fattura = require("../model/Fattura");
 
-exports.getAllUtenti = async (req, res) => {
-  await Utente.findAll({
-    /*include: [
-     {
-        model: Prenotazione,
-        as: "listaPrenotazioni",
-      },
-      {
-        model: RichiestaTesseramento,
-        as: "dettagliTesseramento",
-      }, 
-    ],*/
-  })
-    .then((result) => {
-      res.status(200).json({ utenti: result });
-    })
-    .catch((err) => {
-      res.status(400).json(err);
-    });
-};
 
 /**
  * Nome metodo: Login
  * Descrizione: Metodo che permette di effettuare il login
  * Parametri: email e password
- * Return: Codice, messaggio, boolean true/false in base alla riuscita dell'operazione e dati dell'utente
+ * Return: Codice, msg, boolean true/false in base alla riuscita dell'operazione e dati dell'utente
  * Autore : Giuseppe Scafa
  */
-
 exports.login = async (req, res) => {
   //Check consistenza parametri richiesta
-  let erroriValidaizone = validationResult(req);
-  if (!erroriValidaizone.isEmpty()) {
-    return res.status(400).json({ error: erroriValidaizone.array() });
+  let erroriValidazione = validationResult(req);
+  if (!erroriValidazione.isEmpty()) {
+    return res
+      .status(400)
+      .json({ code: 400, error: erroriValidazione.array(), success: false });
   }
 
   let pw = crypto.createHash("sha512").update(req.body.password).digest("hex");
-  await Utente.findOne({ where: { email: req.body.email, password: pw } })
+  await Utente.findOne({
+    where: { email: req.body.email, password: pw, isCancellato: 0 },
+    attributes: {
+      exclude: [
+        "password",
+        "isCancellato",
+        "tokenRecuperoPassword",
+        "dataScadenzaTokenRP",
+      ],
+    },
+  })
     .then((result) => {
       if (result && !result.isCancellato) {
         res.status(200).json({ code: 200, utente: result, success: true });
       } else {
         res
-          .status(404)
-          .json({ code: 404, msg: "Utente non trovato", success: false });
+          .status(400)
+          .json({ code: 400, msg: "Utente non trovato", success: false });
       }
     })
-    .catch((err) => {
-      res.status(500).json({ code: 500, msg: err, success: false });
-    });
 };
 
 /**
  * Nome metodo: Registrazione
  * Descrizione: Metodo che permette di effettuare la registrazione di un utente
  * Parametri: Informazioni utente
- * Return: Codice, messaggio, boolean true/false in base alla riuscita dell'operazione
+ * Return: Codice, msg, boolean true/false in base alla riuscita dell'operazione
  * Autore : Matteo Della Rocca
  */
 exports.registrazione = async (req, res) => {
   //Check consistenza parametri richiesta
-  let erroriValidaizone = validationResult(req);
-  if (!erroriValidaizone.isEmpty()) {
-    return res.status(400).json({ error: erroriValidaizone.array() });
+  let erroriValidazione = validationResult(req);
+  if (!erroriValidazione.isEmpty()) {
+    return res
+      .status(400)
+      .json({ code: 400, error: erroriValidazione.array(), success: false });
   }
-
   let { ...utenteDaRegistrare } = { ...req.body };
-  await Utente.create(utenteDaRegistrare)
-    .then((result) => {
-      if (result) {
-        res.status(201).json({
-          codice: 201,
-          messaggio: "Registrazione effettuata con successo",
-          success: true,
-        });
+
+  await Utente.findOne({
+    where: {
+      codiceFiscale: utenteDaRegistrare.codiceFiscale,
+      email: utenteDaRegistrare.email,
+    },
+  })
+    .then(async (userCheck) => {
+      if (userCheck && userCheck.isCancellato) {
+        //Utente già registrato, ma cancellato
+
+        await Utente.update(
+          //Modifico soltanto i campi e riattivo l'utente
+          {
+            nome: utenteDaRegistrare.nome,
+            cognome: utenteDaRegistrare.cognome,
+            dataNascita: utenteDaRegistrare.dataNascita,
+            nazionalita: utenteDaRegistrare.nazionalita,
+            isCancellato: 0,
+            password: utenteDaRegistrare.password,
+            indirizzoResidenza: utenteDaRegistrare.indirizzoResidenza,
+            numeroTelefono: utenteDaRegistrare.numeroTelefono,
+          },
+          {
+            individualHooks: true,
+            where: {
+              idUtente: userCheck.idUtente,
+            },
+          }
+        )
+          .then((result) => {
+            if (result)
+              res.status(201).json({
+                code: 201,
+                msg: "Registrazione effettuata con successo",
+                success: true,
+              });
+          })
+      } else {
+        await Utente.create(utenteDaRegistrare)
+          .then((result) => {
+            if (result) {
+              res.status(201).json({
+                code: 201,
+                msg: "Registrazione effettuata con successo",
+                success: true,
+              });
+            }
+          })
       }
     })
-    .catch((err) => {
-      res.status(500).json({
-        codice: 500,
-        messaggio: "Qualcosa è andato storto...",
-        success: false,
-      });
-      console.log(err);
-    });
 };
 
 /**
  * Nome metodo: modificaPassword
  * Descrizione: Metodo che permette di effettuare la modifica della password di un utente
  * Parametri: Password modificata e ID Utente
- * Return: Codice, messaggio, boolean true/false in base alla riuscita dell'operazione
+ * Return: Codice, msg, boolean true/false in base alla riuscita dell'operazione
  * Autore : Matteo Della Rocca
  */
 exports.modificaPassword = async (req, res) => {
   //Check consistenza parametri richiesta
   let erroriValidazione = validationResult(req);
   if (!erroriValidazione.isEmpty()) {
-    return res.status(400).json({ error: erroriValidazione.array() });
+    return res
+      .status(400)
+      .json({ code: 400, error: erroriValidazione.array(), success: false });
   }
 
   let idUtente = req.body.idUtente;
@@ -119,53 +141,51 @@ exports.modificaPassword = async (req, res) => {
   )
     .then((result) => {
       if (result) {
-        res.status(201).json({
-          codice: 201,
-          messaggio: "Password modificata con successo",
+        res.status(200).json({
+          code: 200,
+          msg: "Password modificata con successo",
           success: true,
         });
       }
     })
-    .catch((err) => {
-      res.status(500).json({
-        codice: 500,
-        messaggio: "Qualcosa è andato storto...",
-        success: false,
-      });
-    });
 };
 
 /**
  * Nome metodo: Cancella Account
  * Descrizione: Metodo che permette di cancellare l'account di un utente
  * Parametri: Id utente
- * Return: Codice, messaggio, boolean true/false in base alla riuscita dell'operazione
+ * Return: Codice, msg, boolean true/false in base alla riuscita dell'operazione
  * Autore : Giuseppe Scafa
  */
 
 exports.cancellaAccount = async (req, res) => {
+  let erroriValidazione = validationResult(req);
+  if (!erroriValidazione.isEmpty()) {
+    return res
+      .status(400)
+      .json({ code: 400, error: erroriValidazione.array(), success: false });
+  }
+
   await Utente.update(
     { isCancellato: 1 },
-    { where: { idUtente: req.query.id } }
+    { where: { idUtente: req.query.idUtente } }
   )
     .then(
       res
         .status(200)
         .json({ code: 200, msg: "Cancellazione riuscita", success: true })
     )
-    .catch((err) => {
-      res.status(500).json({ code: 500, msg: err, success: false });
-    });
+    
 };
 
 /**
- * Nome metodo: getUtenteByID
+ * Nome metodo: visualizzaDatiUtente
  * Descrizione: Metodo che permette di ottenere le informazioni di un utente
  * Parametri: Id utente
- * Return: Codice, messaggio, boolean true/false in base alla riuscita dell'operazione e dati dell'utente
+ * Return: Codice, msg, boolean true/false in base alla riuscita dell'operazione e dati dell'utente
  * Autore : Giuseppe Scafa
  */
-exports.getUtenteByID = async (req, res) => {
+exports.visualizzaDatiUtente = async (req, res) => {
   await Utente.findOne({
     attributes: [
       "nome",
@@ -179,37 +199,37 @@ exports.getUtenteByID = async (req, res) => {
     ],
     where: {
       idUtente: req.query.id,
+      isCancellato: 0
     },
   })
     .then((result) => {
       if (result) {
-        res.status(200).json({ codice: 200, utente: result, success: true });
+        res.status(200).json({ code: 200, utente: result, success: true });
       } else {
         res
-          .status(404)
-          .json({ codice: 404, msg: "Utente non trovato", success: false });
+          .status(400)
+          .json({ code: 400, msg: "Utente non trovato", success: false });
       }
     })
-    .catch((err) => {
-      res.status(500).json({ code: 500, msg: err, success: false });
-    });
 };
 
 /**
  * Nome metodo: effettuaTesseramento
  * Descrizione: Metodo che permette di creare una richiesta di tesseramento
  * Parametri: dati dell'utente e file
- * Return: Codice, messaggio, boolean true/false in base alla riuscita dell'operazione
+ * Return: Codice, msg, boolean true/false in base alla riuscita dell'operazione
  * Autore : Giuseppe Scafa
  */
 
 exports.effettuaTesseramento = async (req, res) => {
-  let filePath = "/static/richieste_tesseramento/" + req.body.idUtente;
-  if (path.extname(req.files.file.name) != ".pdf")
+  let erroriValidazione = validationResult(req);
+  if (!erroriValidazione.isEmpty()) {
     return res
       .status(400)
-      .json({ codice: 400, msg: "Formato file non valido", success: false });
+      .json({ code: 400, error: erroriValidazione.array(), success: false });
+  }
 
+  let filePath = "/static/richieste_tesseramento/" + req.body.idUtente;
   let nuovaRichiesta = {
     dataRichiesta: new Date().toISOString().substring(0, 10),
     tipologiaTesseramento: req.body.tipologiaTesseramento,
@@ -218,9 +238,9 @@ exports.effettuaTesseramento = async (req, res) => {
     utente: req.body.idUtente,
   };
 
-  if (req.body.tipologiaTesseramento == "Interno")
-    nuovaRichiesta.prezzoTesseramento = 12;
-  else nuovaRichiesta.prezzoTesseramento = 20;
+  if (req.body.tipologiaTesseramento === "Interno")
+    nuovaRichiesta.prezzoTesseramento = 12.0;
+  else nuovaRichiesta.prezzoTesseramento = 20.0;
 
   await RichiestaTesseramento.create(nuovaRichiesta)
     .then((result) => {
@@ -228,40 +248,51 @@ exports.effettuaTesseramento = async (req, res) => {
         fs.mkdir("." + filePath, (err) => {
           if (err) {
             return res.status(400).json({
-              codice: 400,
+              code: 400,
               msg: "Errore nella creazione della directory",
               success: false,
             });
           } else {
             req.files.file.mv("." + filePath + "/certificato.pdf");
-            return res
-              .status(200)
-              .json({
-                codice: 200,
-                msg: "Operazione completata",
-                success: true,
-              });
+            let nuovaFattura = {
+              intestatario: req.body.intestatarioCarta,
+              totalePagamento: result.prezzoTesseramento,
+              dataRilascio: new Date(new Date().getTime())
+                .toISOString()
+                .substring(0, 10),
+              statusFattura: "Pagata",
+              richiesta: result.idRichiesta_tesseramento,
+            };
+
+            Fattura.create(nuovaFattura)
+              .then((reslt) => {
+                if (reslt)
+                  return res.status(200).json({
+                    code: 200,
+                    msg: "Operazione effettuata con successo",
+                    success: true,
+                  });
+              })
           }
         });
       }
     })
-    .catch((err) => {
-      return res.status(400).json({ codice: 400, msg: err, success: false });
-    });
 };
 
 /**
  * Nome metodo: recuperoPassword
  * Descrizione: Metodo che permette di effettuare una richiesta di recupero della password
  * Parametri: email utente
- * Return: Codice, messaggio, boolean true/false in base alla riuscita dell'operazione
+ * Return: Codice, msg, boolean true/false in base alla riuscita dell'operazione
  * Autore : Matteo Della Rocca
  */
 exports.recuperoPassword = async (req, res) => {
   //Check consistenza parametri richiesta
   let erroriValidazione = validationResult(req);
   if (!erroriValidazione.isEmpty()) {
-    return res.status(400).json({ error: erroriValidazione.array() });
+    return res
+      .status(400)
+      .json({ code: 400, error: erroriValidazione.array(), success: false });
   }
 
   let emailRicevuta = req.body.email;
@@ -280,17 +311,20 @@ exports.recuperoPassword = async (req, res) => {
     },
     { where: { email: emailRicevuta } }
   )
-    .then( async (result) => {
+    .then(async (result) => {
       if (result) {
         try {
-         await senderEmail.sendEmailWithToken(emailRicevuta, token);
-          res.status(200).json({
-            code: 200,
-            msg: "Invio email di recupero riuscito",
-            success: true,
-          }).end();
+          await senderEmail.sendEmailWithToken(emailRicevuta, token);
+          res
+            .status(200)
+            .json({
+              code: 200,
+              msg: "Invio email di recupero riuscito",
+              success: true,
+            })
+            .end();
         } catch (err) {
-          console.log(err);
+          console.error(err);
           res.status(500).json({
             code: 500,
             msg: "Invio email di recupero NON riuscito",
@@ -300,8 +334,8 @@ exports.recuperoPassword = async (req, res) => {
       }
     })
     .catch((err) => {
+      console.error(err);
       res.status(500).json({ code: 500, msg: err, success: false });
-      console.log(err);
     });
 };
 
@@ -309,13 +343,15 @@ exports.recuperoPassword = async (req, res) => {
  * Nome metodo: resettaPasswordPerRecupero
  * Descrizione: Metodo che permette di resettare la password dopo aver chiesto il recupero
  * Parametri: password modificata
- * Return: Codice, messaggio, boolean true/false in base alla riuscita dell'operazione
+ * Return: Codice, msg, boolean true/false in base alla riuscita dell'operazione
  * Autore : Matteo Della Rocca
  */
 exports.resettaPasswordPerRecupero = async (req, res) => {
   let erroriValidazione = validationResult(req);
   if (!erroriValidazione.isEmpty()) {
-    return res.status(400).json({ error: erroriValidazione.array() });
+    return res
+      .status(400)
+      .json({ code: 400, error: erroriValidazione.array(), success: false });
   }
 
   let token = req.params.token;
@@ -339,30 +375,25 @@ exports.resettaPasswordPerRecupero = async (req, res) => {
             success: false,
           })
           .end();
-      }
+      } else {
+        Utente.update(
+          {
+            password: passwordModificata,
+            tokenRecuperoPassword: null,
+            dataScadenzaTokenRP: null,
+          }, //rendo di nuovo recuperabile la password
+          { individualHooks: true, where: { tokenRecuperoPassword: token } }
+        )
+          .then((result) => {
+            if (result) {
+              res.status(200).json({
+                code: 200,
+                msg: "Password modificata con successo",
+                success: true,
+              });
+            }
+          })
+      }  
     })
-    .catch((err) => {
-      res.status(500).json({ code: 500, msg: err, success: false });
-    });
-
-  await Utente.update(
-    {
-      password: passwordModificata,
-      tokenRecuperoPassword: null,
-      dataScadenzaTokenRP: null,
-    }, //rendo di nuovo recuperabile la password
-    { individualHooks: true, where: { tokenRecuperoPassword: token } }
-  )
-    .then((result) => {
-      if (result) {
-        res.status(201).json({
-          codice: 201,
-          messaggio: "Password modificata con successo",
-          success: true,
-        });
-      }
-    })
-    .catch((err) => {
-      res.status(500).json({ code: 500, msg: err, success: false });
-    });
+  
 };
