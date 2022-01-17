@@ -1,8 +1,8 @@
 let nodemailer = require("nodemailer");
 
 let host = "http://localhost:3000";
-let emailUniFit = "unifit2022@gmail.com"; //inserire email UniFit gmail
-let passwordUniFit = "UniFitFit@2022@"; //inserire password UniFit gmail
+let emailUniFit = ""; //inserire email UniFit gmail
+let passwordUniFit = ""; //inserire password UniFit gmail
 
 /**
  * Nome metodo: sendEmailWithToken
