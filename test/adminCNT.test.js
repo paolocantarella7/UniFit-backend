@@ -126,7 +126,10 @@ describe('Rifiuta tesseramento', ()=>{
             'utente': 4
           };
 
-          
+          RichiestaTesseramento.create(nuovaRichiesta);
+          fs.mkdirSync("./static/richieste_tesseramento/4",{recursive: true}, (err) =>{
+              console.log(err);
+          });
 
         chai.request(server)
         .post('/admin/reqtess/validatesseramento')

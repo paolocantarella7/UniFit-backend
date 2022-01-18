@@ -229,8 +229,8 @@ exports.visualizzaStrutture = async (req, res) => {
           });*/
       });
   
-      res.status(201).json({
-        code: 201,
+      res.status(200).json({
+        code: 200,
         msg: "Struttura modificata con successo",
         success: true,
       });

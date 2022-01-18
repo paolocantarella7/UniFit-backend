@@ -722,9 +722,10 @@ describe('Modifica struttura', () =>{
             'idStruttura': 5
         };
         chai.request(server)
-        .post('/admin/strutture/modificastruttura')   .send(data)
+        .post('/admin/strutture/modificastruttura')  
+        .send(data)
         .end((err, res) =>{
-            res.should.have.status(201);
+            res.should.have.status(200);
             done();
         })
     });
