@@ -47,6 +47,12 @@ router.get(
 router.post(
   "/effettuaPrenotazione",
   [
+    body("idUtente").custom(async (value) => {
+      await Utente.findByPk(value).then((result) => {
+        if (!result || (result && result.isCancellato)) throw new Error("Utente non esistente");
+        if (result && !result.isTesserato) throw new Error("Utente non tesserato!");
+      });
+    }).bail(),
     body("idStruttura").custom(async (value) => {
       await Struttura.findByPk(value).then((result) => {
         if (!result || result.isCancellata)
@@ -72,11 +78,6 @@ router.post(
         if (!listaFasce.includes(value))
           throw new Error("Fascia oraria non valida!");
       }),
-    body("idUtente").custom(async (value) => {
-      await Utente.findByPk(value).then((result) => {
-        if (!result) throw new Error("Utente non esistente");
-      });
-    }),
     body("intestatarioCarta")
       .matches(validazione.nome)
       .withMessage("Formato nome non valido"),
@@ -182,7 +183,8 @@ router.post(
   [
     body("idUtente").custom(async (value) => {
       await Utente.findByPk(value).then((result) => {
-        if (!result) throw new Error("Utente non esistente");
+        if (!result || (result && result.isCancellato)) throw new Error("Utente non esistente");
+        if (result && !result.isTesserato) throw new Error("Utente non tesserato!");
       });
     }),
     body("idPrenotazione").custom(async (value) => {
