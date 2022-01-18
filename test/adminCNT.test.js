@@ -7,9 +7,11 @@ let chaiHttp = require('chai-http');
 let randomstring = require("randomstring");
 let server = require('../app');
 // eslint-disable-next-line no-unused-vars
-let  should = chai.should();
+let should = chai.should();
 chai.use(require('chai-match'));
 chai.use(chaiHttp);
+let RichiestaTesseramento = require('../model/Richiesta_tesseramento');
+let fs = require("fs");
 
 describe('Valida tesseramento', ()=>{
 
@@ -59,7 +61,15 @@ describe('Valida tesseramento', ()=>{
         .end((err, res) =>{
             res.should.have.status(200);
             done();
-        })
+            RichiestaTesseramento.update({statusRichiesta: 'Effettuata'}, {
+                where:{
+                    idRichiesta_tesseramento: 5
+                }
+            });
+            
+        });
+
+        
     });
 
 });
@@ -105,13 +115,30 @@ describe('Rifiuta tesseramento', ()=>{
             "idReqTess": 13,
             "azione": "rifiuta" 
         };
+        
+        let nuovaRichiesta = {
+            'idRichiesta_tesseramento': 13,
+            'dataRichiesta': '2022-01-07',
+            'tipologiaTesseramento': "Interno",
+            'statusRichiesta': 'Effettuata',
+            'prezzoTesseramento': 12.00,
+            'certificatoAllegatoPath': '/',
+            'utente': 4
+          };
+
+          
 
         chai.request(server)
-        .get('/admin/reqtess/validatesseramento')
+        .post('/admin/reqtess/validatesseramento')
+        .send(data)
         .end((err, res) =>{
             res.should.have.status(200);
             done();
-        })
+            RichiestaTesseramento.create(nuovaRichiesta);
+            fs.mkdirSync("./static/richieste_tesseramento/4",{recursive: true}, (err) =>{
+                console.log(err);
+            });
+        });
     });
 
 });

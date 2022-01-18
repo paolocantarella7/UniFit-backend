@@ -10,7 +10,7 @@ let server = require('../app');
 let  should = chai.should();
 chai.use(require('chai-match'));
 chai.use(chaiHttp);
-
+let Struttura = require('../model/Struttura');
 
 describe('Visualizza dettagli struttura', () =>{
     it('Dovrebbe visualizzare i dettagli della struttura', (done) =>{
@@ -1153,8 +1153,9 @@ describe('Elimina struttura', () =>{
 
     it('Dovrebbe eliminare la struttura', (done) =>{
         let data = {
-            'idStrutt': 14
+            'idStrutt': 56
         };
+        
 
         chai.request(server)
         .get('/admin/strutture/eliminastruttura')
@@ -1162,8 +1163,11 @@ describe('Elimina struttura', () =>{
         .end((err, res) =>{
             res.should.have.status(200);
             done();
-        })
-    })
+            Struttura.update({isCancellata :0}, {where:{
+                idStruttura : data.idStrutt
+            }});
+        });
+    });
 });
 
 describe('Visualizza utenti registrati', () =>{
