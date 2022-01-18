@@ -266,14 +266,21 @@ exports.effettuaTesseramento = async (req, res) => {
 
             Fattura.create(nuovaFattura)
               .then((reslt) => {
-                if (reslt)
+                if (reslt){
                   return res.status(200).json({
                     code: 200,
                     msg: "Operazione effettuata con successo",
                     success: true,
                   });
+                }
               })
           }
+        });
+      } else {
+        return res.status(400).json({
+          code: 400,
+          msg: "Errore nella creazione della directory",
+          success: false,
         });
       }
     })
@@ -313,7 +320,7 @@ exports.recuperoPassword = async (req, res) => {
   )
     .then(async (result) => {
       if (result) {
-        try {
+        //try {
           await senderEmail.sendEmailWithToken(emailRicevuta, token);
           res
             .status(200)
@@ -323,7 +330,7 @@ exports.recuperoPassword = async (req, res) => {
               success: true,
             })
             .end();
-        } catch (err) {
+        } /*catch (err) {
           console.error(err);
           res.status(500).json({
             code: 500,
@@ -331,12 +338,12 @@ exports.recuperoPassword = async (req, res) => {
             success: false,
           });
         }
-      }
+      } */
     })
-    .catch((err) => {
+    /*.catch((err) => {
       console.error(err);
       res.status(500).json({ code: 500, msg: err, success: false });
-    });
+    });*/
 };
 
 /**
