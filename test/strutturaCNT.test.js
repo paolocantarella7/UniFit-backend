@@ -1171,28 +1171,6 @@ describe('Elimina struttura', () =>{
     });
 });
 
-describe('Visualizza utenti registrati', () =>{
-    it('Dovrebbe visualizzare gli utenti registrati', (done) =>{
-        chai.request(server)
-        .get('/admin/utenti/visualizzautenti')
-        .end((err, res) =>{
-            res.should.have.status(200);
-            done();
-        })
-    })
-});
-
-describe('Visualizza richieste tesseramento', () =>{
-    it('Dovrebbe visualizzare le richieste di tesseramento', (done) =>{
-        chai.request(server)
-        .get('/admin/reqtess/visualizzareqtess')
-        .end((err, res) =>{
-            res.should.have.status(200);
-            done();
-        });
-    });
-});
-
 describe('Visualizza strutture', () =>{
     it('Dovrebbe visualizzare le strutture', (done) =>{
         chai.request(server)

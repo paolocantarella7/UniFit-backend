@@ -203,10 +203,11 @@ exports.visualizzaStrutture = async (req, res) => {
         .status(400)
         .json({ code: 400, error: erroriValidazione.array(), success: false });
     }
-    let idStruttura = req.params.idStruttura;
     let { ...strutturaDaCreare } = { ...req.body };
     let dateChiusura = JSON.parse(req.body.dateChiusura).dateChiusura;
-  
+    let idStruttura = strutturaDaCreare.idStruttura;
+
+    delete strutturaDaCreare.idStruttura;
     await Struttura.update(strutturaDaCreare, {
       where: { idStruttura: idStruttura },
       returning: true,
