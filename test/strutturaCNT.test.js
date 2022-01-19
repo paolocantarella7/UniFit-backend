@@ -1169,7 +1169,7 @@ describe('Elimina struttura', () =>{
 
     it('Dovrebbe eliminare la struttura', (done) =>{
         let data = {
-            'idStrutt': 56
+            'idStrutt': 23
         };
         
 
