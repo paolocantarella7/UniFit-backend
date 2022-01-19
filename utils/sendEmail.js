@@ -36,6 +36,14 @@ exports.sendEmailWithToken = (email, token) => {
     return mail.sendMail(mailOptions);
 }
 
+
+/**
+ * Nome metodo: sendRimborsoEmail
+ * Descrizione: Metodo che permette di inviare una email di avvenuto rimborso
+ * Parametri: email destinatario e importo
+ * Return:  Una Promise con eventuale errore da gestire
+ * Autore : Giuseppe Scafa
+ */
 exports.sendRimborsoEmail = (email, importo) =>{
     let mail = nodemailer.createTransport({
         service: 'gmail',

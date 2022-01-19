@@ -10,7 +10,7 @@ let server = require('../app');
 let  should = chai.should();
 chai.use(require('chai-match'));
 chai.use(chaiHttp);
-
+let Struttura = require('../model/Struttura');
 
 describe('Visualizza dettagli struttura', () =>{
     it('Dovrebbe visualizzare i dettagli della struttura', (done) =>{
@@ -63,7 +63,7 @@ describe('Aggiungi struttura', () =>{
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
             'capacitaPerFascia': 30,
-            'dataInizioDisponibilita': '2022-07-20',
+            'dataInizioDisponibilita': '2070-07-20',
             'oraInizioMattina': '07:00',
             'oraFineMattina': '12:00',
             'oraInizioPomeriggio': '14:00',
@@ -78,7 +78,10 @@ describe('Aggiungi struttura', () =>{
         .end((err, res) =>{
             res.should.have.status(201);
             done();
-        })
+            Struttura.destroy({where: {
+                dataInizioDisponibilita:'2070-07-20'
+            }});
+        });
     });
 
     it('Dovrebbe aggiungere una struttura', (done) =>{
@@ -86,7 +89,7 @@ describe('Aggiungi struttura', () =>{
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
             'capacitaPerFascia': 30,
-            'dataInizioDisponibilita': '2022-07-20',
+            'dataInizioDisponibilita': '2070-07-20',
             'oraInizioMattina': '07:15',
             'oraFineMattina': '12:15',
             'oraInizioPomeriggio': '14:00',
@@ -101,6 +104,9 @@ describe('Aggiungi struttura', () =>{
         .end((err, res) =>{
             res.should.have.status(201);
             done();
+            Struttura.destroy({where: {
+                dataInizioDisponibilita:'2070-07-20'
+            }});
         })
     });
 
@@ -109,7 +115,7 @@ describe('Aggiungi struttura', () =>{
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
             'capacitaPerFascia': 30,
-            'dataInizioDisponibilita': '2022-07-20',
+            'dataInizioDisponibilita': '2070-07-20',
             'oraInizioMattina': '07:45',
             'oraFineMattina': '13:45',
             'oraInizioPomeriggio': '14:00',
@@ -124,6 +130,9 @@ describe('Aggiungi struttura', () =>{
         .end((err, res) =>{
             res.should.have.status(201);
             done();
+            Struttura.destroy({where: {
+                dataInizioDisponibilita:'2070-07-20'
+            }});
         })
     });
 
@@ -132,7 +141,7 @@ describe('Aggiungi struttura', () =>{
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
             'capacitaPerFascia': 30,
-            'dataInizioDisponibilita': '2022-07-20',
+            'dataInizioDisponibilita': '2070-07-20',
             'oraInizioMattina': '07:45',
             'oraFineMattina': '13:45',
             'oraInizioPomeriggio': '14:45',
@@ -147,6 +156,9 @@ describe('Aggiungi struttura', () =>{
         .end((err, res) =>{
             res.should.have.status(201);
             done();
+            Struttura.destroy({where: {
+                dataInizioDisponibilita:'2070-07-20'
+            }});
         })
     });
 
@@ -155,7 +167,7 @@ describe('Aggiungi struttura', () =>{
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
             'capacitaPerFascia': 30,
-            'dataInizioDisponibilita': '2022-07-20',
+            'dataInizioDisponibilita': '2070-07-20',
             'oraInizioMattina': '07:00',
             'oraFineMattina': '13:00',
             'oraInizioPomeriggio': '13:30',
@@ -170,6 +182,9 @@ describe('Aggiungi struttura', () =>{
         .end((err, res) =>{
             res.should.have.status(201);
             done();
+            Struttura.destroy({where: {
+                dataInizioDisponibilita:'2070-07-20'
+            }});
         })
     });
 
@@ -722,9 +737,10 @@ describe('Modifica struttura', () =>{
             'idStruttura': 5
         };
         chai.request(server)
-        .post('/admin/strutture/modificastruttura')   .send(data)
+        .post('/admin/strutture/modificastruttura')  
+        .send(data)
         .end((err, res) =>{
-            res.should.have.status(201);
+            res.should.have.status(200);
             done();
         })
     });
@@ -1153,8 +1169,9 @@ describe('Elimina struttura', () =>{
 
     it('Dovrebbe eliminare la struttura', (done) =>{
         let data = {
-            'idStrutt': 14
+            'idStrutt': 56
         };
+        
 
         chai.request(server)
         .get('/admin/strutture/eliminastruttura')
@@ -1162,8 +1179,11 @@ describe('Elimina struttura', () =>{
         .end((err, res) =>{
             res.should.have.status(200);
             done();
-        })
-    })
+            Struttura.update({isCancellata :0}, {where:{
+                idStruttura : data.idStrutt
+            }});
+        });
+    });
 });
 
 describe('Visualizza utenti registrati', () =>{

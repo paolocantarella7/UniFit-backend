@@ -10,6 +10,10 @@ let server = require("../app");
 let should = chai.should();
 chai.use(require("chai-match"));
 chai.use(chaiHttp);
+let Prenotazione = require("../model/Prenotazione");
+let Fattura = require("../model/Fattura");
+let moment = require("moment");
+
 
 // Test - getPrenotazioniByUtente
 describe("Metodo che permette di visualizzare le prenotazioni di un utente", () => {
@@ -49,16 +53,17 @@ describe("Metodo che permette di visualizzare le prenotazioni di un utente", () 
 
 //Test- effettuaPrenotazione
 describe("Metodo che permette di effettuare una prenotazione di un struttura", () => {
-  it("Dovrebbe poter effettuare la prenotazione dell'utente richiesta", (done) => {
+  it("Dovrebbe poter effettuare la prenotazione della struttura richiesta", (done) => {
+    
     let parametri = {
-      idStruttura: "1",
-      dataPrenotazione: "2022-04-30",
+      idStruttura: 1,
+      dataPrenotazione: "2022-05-30",
       intestatarioCarta: "Matteo Scafa",
       numeroCarta: "1234567891234567",
       cvvCarta: "123",
       scadenzaCarta: "2030-12-20",
       fascia: "10:00-11:00",
-      idUtente: "3",
+      idUtente: 1
     };
 
     chai
@@ -68,6 +73,7 @@ describe("Metodo che permette di effettuare una prenotazione di un struttura", (
       .end((err, res) => {
         res.should.have.status(200);
         done();
+
       });
   });
 
@@ -403,7 +409,7 @@ describe("Metodo che permette di effettuare una prenotazione di un struttura", (
 
   it("Fascia oraria non valida (Slot pieno)", (done) => {
     let parametri = {
-      idStruttura: "3",
+      idStruttura: "5",
       dataPrenotazione: "2022-02-25",
       intestatarioCarta: "Matteo scafa",
       numeroCarta: "1234567891234567",
@@ -411,6 +417,28 @@ describe("Metodo che permette di effettuare una prenotazione di un struttura", (
       scadenzaCarta: "2030-12-20",
       fascia: "18:00-19:00",
       idUtente: "11",
+    };
+
+    chai
+      .request(server)
+      .post("/prenotazione/effettuaPrenotazione")
+      .send(parametri)
+      .end((err, res) => {
+        res.should.have.status(400);
+        done();
+      });
+  });
+
+  it("Utente non tesserato", (done) => {
+    let parametri = {
+      idStruttura: "4",
+      dataPrenotazione: "2021-12-25",
+      intestatarioCarta: "Matteo Scafa",
+      numeroCarta: "1234567891234567",
+      cvvCarta: "123",
+      scadenzaCarta: "2025-12-20",
+      fascia: "10:00-11:00",
+      idUtente: "3212",
     };
 
     chai
@@ -545,11 +573,12 @@ describe("Metodo che permette di generare le fasce di una struttura", () => {
 describe("Metodo che permette di modificare la prenotazione di una struttura", () => {
   it("Modifica prenotazione riuscita", (done) => {
     let parametri = {
-      idStruttura: 3,
-      dataPrenotazione: "2022-04-30",
-      fascia: "18:00-19:00",
-      idPrenotazione: 115,
+      idStruttura: 1,
+      dataPrenotazione: "2022-03-23",
+      fascia: "12:00-13:00",
+      idPrenotazione: 102
     };
+    
     chai
       .request(server)
       .post("/prenotazione/modificaPrenotazione")
@@ -557,6 +586,7 @@ describe("Metodo che permette di modificare la prenotazione di una struttura", (
       .end((err, res) => {
         res.should.have.status(200);
         done();
+        Prenotazione.update({oraInizio: "11:00:00", oraFine: "12:00:00"}, {where: {idPrenotazione: parametri.idPrenotazione}})
       });
   });
 
@@ -887,9 +917,21 @@ describe("Metodo che permette di modificare la prenotazione di una struttura", (
 describe("Metodo che permette di cancellare la prenotazione di una struttura", () => {
   it("Cancellazione prenotazione riuscita con rimborso", (done) => {
     let parametri = {
-      idPrenotazione: 152,
-      idUtente: 11,
+      idPrenotazione: 75,
+      idUtente: 1
     };
+
+    let nuovaPrenotazione = {
+      'idPrenotazione' : 75,
+      'dataPrenotazione': '2022-04-30',
+      'oraInizio': '10:00:00',
+      'oraFine': '11:00:00',
+      'totalePagato': 5.00,
+      'utente': 1,
+      'struttura': 1
+    };
+
+    Prenotazione.update(nuovaPrenotazione, {where: {idPrenotazione: parametri.idPrenotazione}});
     chai
       .request(server)
       .post("/prenotazione/cancellaPrenotazione")
@@ -897,14 +939,29 @@ describe("Metodo che permette di cancellare la prenotazione di una struttura", (
       .end((err, res) => {
         res.should.have.status(200);
         done();
+        Prenotazione.create(nuovaPrenotazione).catch((err) =>console.log(err));
       });
+      
   });
-
+  
   it("Cancellazione prenotazione riuscita senza rimborso", (done) => {
     let parametri = {
-      idPrenotazione: 153, //Scegliere prenotazione con la data di oggi e ora inizio < 24 
-      idUtente: 11,
+      idPrenotazione: 74, //Scegliere prenotazione con la data di oggi e ora inizio < 24 
+      idUtente: 1
     };
+
+    let nuovaPrenotazione = {
+      'idPrenotazione' : 74,
+      'dataPrenotazione': new Date().toISOString().substring(0,10),
+      'oraInizio': moment(new Date().getTime()).add(1, 'h').format("HH:mm"),
+      'oraFine': moment(new Date().getTime()).add(1, 'h').add(1, 'h').format("HH:mm"),
+      'totalePagato': 5,
+      'utente': 1,
+      'struttura': 3
+    };
+
+   
+    Prenotazione.update(nuovaPrenotazione, {where: {idPrenotazione: parametri.idPrenotazione}});
     chai
       .request(server)
       .post("/prenotazione/cancellaPrenotazione")
@@ -912,6 +969,7 @@ describe("Metodo che permette di cancellare la prenotazione di una struttura", (
       .end((err, res) => {
         res.should.have.status(200);
         done();
+        Prenotazione.create(nuovaPrenotazione).catch((err)=> console.log(err))
       });
   });
 
