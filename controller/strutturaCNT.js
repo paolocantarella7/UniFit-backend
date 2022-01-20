@@ -18,6 +18,9 @@ let { validationResult } = require("express-validator");
       include: {
         model: Chiusura,
         as: "giorniChiusura",
+        attributes: {
+          exclude: ['idChiusura', 'struttura'] 
+        }
       },
       where: { idStruttura: idStruttura },
     }).then((result) => {
@@ -206,8 +209,8 @@ exports.visualizzaStrutture = async (req, res) => {
     let { ...strutturaDaCreare } = { ...req.body };
     let dateChiusura = JSON.parse(req.body.dateChiusura).dateChiusura;
     let idStruttura = strutturaDaCreare.idStruttura;
-
     delete strutturaDaCreare.idStruttura;
+
     await Struttura.update(strutturaDaCreare, {
       where: { idStruttura: idStruttura },
       returning: true,
@@ -217,7 +220,7 @@ exports.visualizzaStrutture = async (req, res) => {
       dateChiusura.forEach((dataChiusura) => {
         let chiusura = {
           dataChiusura: dataChiusura,
-          struttura: idStruttura,
+          struttura: idStruttura
         };
         Chiusura.create(chiusura);
         /* .catch((err) => {
