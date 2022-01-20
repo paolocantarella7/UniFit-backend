@@ -47,7 +47,7 @@ exports.getChiusuraByIdStruttura = async (req, res) => {
     where: { struttura: idStruttura },
     attributes: { exclude: ["struttura", "idChiusura"] },
   }).then((result) => {
-    if (result.length!== 0 {
+    if (result.length!== 0) {
       let chiusureTemp = [];
       result.forEach((data) => {
         chiusureTemp.push(data.dataChiusura);
