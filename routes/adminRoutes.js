@@ -19,6 +19,7 @@ let validazione = {
   orario: /[0-9]+:[0-9]+/,
 };
 
+router.get("/strutture/giorniChiusura/:id", strutturaCNT.getChiusuraByIdStruttura);
 router.get("/strutture/visualizzastrutture", strutturaCNT.visualizzaStrutture);
 router.get(
   "/strutture/dettagliStruttura/:id",
