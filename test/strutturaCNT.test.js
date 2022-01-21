@@ -58,18 +58,19 @@ describe('Visualizza prenotazioni struttura', ()=>{
 });
 
 describe('Aggiungi struttura', () =>{
+
     it('Dovrebbe aggiungere una struttura', (done) =>{
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
             'capacitaPerFascia': 30,
-            'dataInizioDisponibilita': '2070-07-20',
+            'dataInizioDisponibilita': '2069-07-20',
             'oraInizioMattina': '07:00',
             'oraFineMattina': '12:00',
             'oraInizioPomeriggio': '14:00',
             'oraFinePomeriggio': '21:00',
             'durataPerFascia': 1,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-30\", \"2022-12-31\"]  }'
         };
         
         chai.request(server)
@@ -78,9 +79,6 @@ describe('Aggiungi struttura', () =>{
         .end((err, res) =>{
             res.should.have.status(201);
             done();
-            Struttura.destroy({where: {
-                dataInizioDisponibilita:'2070-07-20'
-            }});
         });
     });
 
@@ -89,13 +87,13 @@ describe('Aggiungi struttura', () =>{
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
             'capacitaPerFascia': 30,
-            'dataInizioDisponibilita': '2070-07-20',
+            'dataInizioDisponibilita': '2079-07-20',
             'oraInizioMattina': '07:15',
             'oraFineMattina': '12:15',
             'oraInizioPomeriggio': '14:00',
             'oraFinePomeriggio': '21:00',
             'durataPerFascia': 1,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-30\", \"2022-12-31\"]  }'
         };
         
         chai.request(server)
@@ -104,9 +102,7 @@ describe('Aggiungi struttura', () =>{
         .end((err, res) =>{
             res.should.have.status(201);
             done();
-            Struttura.destroy({where: {
-                dataInizioDisponibilita:'2070-07-20'
-            }});
+   
         })
     });
 
@@ -115,13 +111,13 @@ describe('Aggiungi struttura', () =>{
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
             'capacitaPerFascia': 30,
-            'dataInizioDisponibilita': '2070-07-20',
+            'dataInizioDisponibilita': '2071-07-20',
             'oraInizioMattina': '07:45',
             'oraFineMattina': '13:45',
             'oraInizioPomeriggio': '14:00',
             'oraFinePomeriggio': '20:00',
             'durataPerFascia': 2,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-30\", \"2022-12-31\"]  }'
         };
         
         chai.request(server)
@@ -130,9 +126,6 @@ describe('Aggiungi struttura', () =>{
         .end((err, res) =>{
             res.should.have.status(201);
             done();
-            Struttura.destroy({where: {
-                dataInizioDisponibilita:'2070-07-20'
-            }});
         })
     });
 
@@ -141,13 +134,13 @@ describe('Aggiungi struttura', () =>{
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
             'capacitaPerFascia': 30,
-            'dataInizioDisponibilita': '2070-07-20',
+            'dataInizioDisponibilita': '2072-07-20',
             'oraInizioMattina': '07:45',
             'oraFineMattina': '13:45',
             'oraInizioPomeriggio': '14:45',
             'oraFinePomeriggio': '20:45',
             'durataPerFascia': 2,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-30\", \"2022-12-31\"]  }'
         };
         
         chai.request(server)
@@ -156,9 +149,7 @@ describe('Aggiungi struttura', () =>{
         .end((err, res) =>{
             res.should.have.status(201);
             done();
-            Struttura.destroy({where: {
-                dataInizioDisponibilita:'2070-07-20'
-            }});
+
         })
     });
 
@@ -167,13 +158,13 @@ describe('Aggiungi struttura', () =>{
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
             'capacitaPerFascia': 30,
-            'dataInizioDisponibilita': '2070-07-20',
+            'dataInizioDisponibilita': '2073-07-20',
             'oraInizioMattina': '07:00',
             'oraFineMattina': '13:00',
             'oraInizioPomeriggio': '13:30',
             'oraFinePomeriggio': '19:30',
             'durataPerFascia': 3,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-30\", \"2022-12-31\"]  }'
         };
         
         chai.request(server)
@@ -182,9 +173,6 @@ describe('Aggiungi struttura', () =>{
         .end((err, res) =>{
             res.should.have.status(201);
             done();
-            Struttura.destroy({where: {
-                dataInizioDisponibilita:'2070-07-20'
-            }});
         })
     });
 
@@ -199,7 +187,7 @@ describe('Aggiungi struttura', () =>{
             'oraInizioPomeriggio': '14:00',
             'oraFinePomeriggio': '21:00',
             'durataPerFascia': 1,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-30\", \"2022-12-31\"]  }'
         };
         
         chai.request(server)
@@ -222,7 +210,7 @@ describe('Aggiungi struttura', () =>{
             'oraInizioPomeriggio': '14:00',
             'oraFinePomeriggio': '21:00',
             'durataPerFascia': 1,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-30\", \"2022-12-31\"]  }'
         };
         
         chai.request(server)
@@ -245,7 +233,7 @@ describe('Aggiungi struttura', () =>{
             'oraInizioPomeriggio': '14:00',
             'oraFinePomeriggio': '21:00',
             'durataPerFascia': 1,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-30\", \"2022-12-31\"]  }'
         };
         
         chai.request(server)
@@ -268,7 +256,7 @@ describe('Aggiungi struttura', () =>{
             'oraInizioPomeriggio': '14:00',
             'oraFinePomeriggio': '21:00',
             'durataPerFascia': 1,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-30\", \"2022-12-31\"]  }'
         };
         
         chai.request(server)
@@ -291,7 +279,7 @@ describe('Aggiungi struttura', () =>{
             'oraInizioPomeriggio': '14:00',
             'oraFinePomeriggio': '21:00',
             'durataPerFascia': 1,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-30\", \"2022-12-31\"]  }'
         };
         
         chai.request(server)
@@ -314,7 +302,7 @@ describe('Aggiungi struttura', () =>{
             'oraInizioPomeriggio': '14:00',
             'oraFinePomeriggio': '21:00',
             'durataPerFascia': 1,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-30\", \"2022-12-31\"]  }'
         };
         
         chai.request(server)
@@ -337,7 +325,7 @@ describe('Aggiungi struttura', () =>{
             'oraInizioPomeriggio': '14:00',
             'oraFinePomeriggio': '21:00',
             'durataPerFascia': 1,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-30\", \"2022-12-31\"]  }'
         };
         
         chai.request(server)
@@ -360,7 +348,7 @@ describe('Aggiungi struttura', () =>{
             'oraInizioPomeriggio': '14:00',
             'oraFinePomeriggio': '21:00',
             'durataPerFascia': 1,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-30\", \"2022-12-31\"]  }'
         };
         
         chai.request(server)
@@ -383,7 +371,7 @@ describe('Aggiungi struttura', () =>{
             'oraInizioPomeriggio': '14:00',
             'oraFinePomeriggio': '21:00',
             'durataPerFascia': 1,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-30\", \"2022-12-31\"]  }'
         };
         
         chai.request(server)
@@ -406,7 +394,7 @@ describe('Aggiungi struttura', () =>{
             'oraInizioPomeriggio': '14:00',
             'oraFinePomeriggio': '21:00',
             'durataPerFascia': 1,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-30\", \"2022-12-31\"]  }'
         };
         
         chai.request(server)
@@ -429,7 +417,7 @@ describe('Aggiungi struttura', () =>{
             'oraInizioPomeriggio': '14:00',
             'oraFinePomeriggio': '21:00',
             'durataPerFascia': 2,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-30\", \"2022-12-31\"]  }'
         };
         
         chai.request(server)
@@ -452,7 +440,7 @@ describe('Aggiungi struttura', () =>{
             'oraInizioPomeriggio': '13:00',
             'oraFinePomeriggio': '21:00',
             'durataPerFascia': 4,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-30\", \"2022-12-31\"]  }'
         };
         
         chai.request(server)
@@ -475,7 +463,7 @@ describe('Aggiungi struttura', () =>{
             'oraInizioPomeriggio': '13:00',
             'oraFinePomeriggio': '21:00',
             'durataPerFascia': 1,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-30\", \"2022-12-31\"]  }'
         };
         
         chai.request(server)
@@ -498,7 +486,7 @@ describe('Aggiungi struttura', () =>{
             'oraInizioPomeriggio': '13:00',
             'oraFinePomeriggio': '21:00',
             'durataPerFascia': 1,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-30\", \"2022-12-31\"]  }'
         };
         
         chai.request(server)
@@ -521,7 +509,7 @@ describe('Aggiungi struttura', () =>{
             'oraInizioPomeriggio': '14x:00',
             'oraFinePomeriggio': '21:00',
             'durataPerFascia': 1,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-30\", \"2022-12-31\"]  }'
         };
         
         chai.request(server)
@@ -544,7 +532,7 @@ describe('Aggiungi struttura', () =>{
             'oraInizioPomeriggio': '11:00',
             'oraFinePomeriggio': '21:00',
             'durataPerFascia': 1,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-30", \"2022-12-31\"]  }'
         };
         
         chai.request(server)
@@ -567,7 +555,7 @@ describe('Aggiungi struttura', () =>{
             'oraInizioPomeriggio': '14:00',
             'oraFinePomeriggio': '21x:00',
             'durataPerFascia': 1,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-30\", \"2022-12-31\"]  }'
         };
         
         chai.request(server)
@@ -590,7 +578,7 @@ describe('Aggiungi struttura', () =>{
             'oraInizioPomeriggio': '11:00',
             'oraFinePomeriggio': '22:00',
             'durataPerFascia': 1,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-30\", \"2022-12-31\"]  }'
         };
         
         chai.request(server)
@@ -613,7 +601,7 @@ describe('Aggiungi struttura', () =>{
             'oraInizioPomeriggio': '14:00',
             'oraFinePomeriggio': '21:00',
             'durataPerFascia': 2,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-30\", \"2022-12-31\"]  }'
         };
         
         chai.request(server)
@@ -636,7 +624,7 @@ describe('Aggiungi struttura', () =>{
             'oraInizioPomeriggio': '14:15',
             'oraFinePomeriggio': '21:00',
             'durataPerFascia': 2,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-30\", \"2022-12-31\"]  }'
         };
         
         chai.request(server)
@@ -659,7 +647,7 @@ describe('Aggiungi struttura', () =>{
             'oraInizioPomeriggio': '15:45',
             'oraFinePomeriggio': '21:00',
             'durataPerFascia': 2,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-30\", \"2022-12-31\"]  }'
         };
         
         chai.request(server)
@@ -682,7 +670,7 @@ describe('Aggiungi struttura', () =>{
             'oraInizioPomeriggio': '11:00',
             'oraFinePomeriggio': '22:00',
             'durataPerFascia': 1,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022c-12-25\", \"2022x-12-31\", \"20a22-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022c-12-25\", \"2022x-12-30\", \"20a22-12-31\"]  }'
         };
         
         chai.request(server)
@@ -705,7 +693,7 @@ describe('Aggiungi struttura', () =>{
             'oraInizioPomeriggio': '14:00',
             'oraFinePomeriggio': '19:00',
             'durataPerFascia': 2,
-            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }'
+            'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-30\", \"2022-12-31\"]  }'
         };
         
         chai.request(server)
@@ -1167,12 +1155,12 @@ describe('Elimina struttura', () =>{
         })
     })
 
+
     it('Dovrebbe eliminare la struttura', (done) =>{
         let data = {
-            'idStrutt': 56
+            'idStrutt': 20
         };
         
-
         chai.request(server)
         .get('/admin/strutture/eliminastruttura')
         .query(data)

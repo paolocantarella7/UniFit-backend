@@ -65,11 +65,8 @@ describe('Valida tesseramento', ()=>{
                 where:{
                     idRichiesta_tesseramento: 5
                 }
-            });
-            
+            });       
         });
-
-        
     });
 
 });

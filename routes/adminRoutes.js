@@ -2,11 +2,10 @@ let express = require("express");
 let router = express.Router();
 let adminCNT = require("../controller/adminCNT");
 let strutturaCNT = require("../controller/strutturaCNT");
-let { body } = require("express-validator");
+let { body, query} = require("express-validator");
 let moment = require("moment");
-const RichiestaTesseramento = require("../model/Richiesta_tesseramento");
-const Struttura = require("../model/Struttura");
-const { query } = require("express-validator");
+let RichiestaTesseramento = require("../model/Richiesta_tesseramento");
+let Struttura = require("../model/Struttura");
 
 let validazione = {
   nomeStruttura: /[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/,
@@ -19,7 +18,7 @@ let validazione = {
   orario: /[0-9]+:[0-9]+/,
 };
 
-router.get("/strutture/giorniChiusura/:id", strutturaCNT.getChiusuraByIdStruttura);
+
 router.get("/strutture/visualizzastrutture", strutturaCNT.visualizzaStrutture);
 router.get(
   "/strutture/dettagliStruttura/:id",
@@ -45,13 +44,13 @@ router.post(
       return true;
     }),
     body("idReqTess").custom(async (idReqTess, { req }) => {
-      let idRT = idReqTess;
-      let idUtente = req.body.idUtente;
+      let idRT = Number(idReqTess).toString();
+      let idUtente = Number(req.body.idUtente).toString();
 
       return await RichiestaTesseramento.findOne({
         where: { idRichiesta_tesseramento: idRT, utente: idUtente },
       }).then((result) => {
-        if (!result || (result && result.statusRichiesta === "Accettata")) {
+        if (!result || (result  && result.statusRichiesta === "Accettata")) {
           //richieste non trovate o già accettate
           throw new Error("Richiesta di tesseramento non trovata!");
         }
@@ -65,7 +64,7 @@ router.get(
   "/strutture/eliminastruttura",
   [
     query("idStrutt").custom(async (value) => {
-      await Struttura.findByPk(value).then((result) => {
+      await Struttura.findByPk(Number(value).toString()).then((result) => {
         if (!result || result.isCancellata)
           throw new Error("Struttura non esistente!");
       });
@@ -254,7 +253,7 @@ router.post(
   [
     body("idStruttura")
     .custom(async (value) => {
-      await Struttura.findByPk(value).then((result) => {
+      await Struttura.findByPk(Number(value).toString()).then((result) => {
         if (!result || result.isCancellata)
           throw new Error("Struttura non esistente!");
       });
