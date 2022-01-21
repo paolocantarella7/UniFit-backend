@@ -1078,6 +1078,38 @@ describe("Metodo che permette di cancellare la prenotazione di una struttura", (
         done();
       });
   });
+
+
+
+describe('Visualizza dettagli prenotazione', ()=>{
+  it('Dovrebbe visualizzare i dettagli di una prenotazione', (done) =>{
+
+    let idPrenotazione = 102;
+
+    chai.request(server)
+    .get("/prenotazione/dettagliPrenotazione?idPrenotazione=" + idPrenotazione)
+    .end((err, res) =>{
+      res.should.have.status(200);
+      done();
+    });
+
+  });
+
+  it('Prenotazione non esistente', (done) =>{
+
+    let idPrenotazione = 500;
+
+    chai.request(server)
+    .get("/prenotazione/dettagliPrenotazione?idPrenotazione=" + idPrenotazione)
+    .end((err, res) =>{
+      res.should.have.status(400);
+      done();
+    });
+
+  });
+});
+
+
 });
 
 

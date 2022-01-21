@@ -297,12 +297,16 @@ let effettuaRimborso = async (email, importo) => {
  * Autore : Giuseppe Scafa
  */
 exports.getPrenotazioneById = async (req, res) =>{
+
+  
+
   let idPrenotazione = req.query.idPrenotazione;
   Prenotazione.findByPk(idPrenotazione)
   .then((result) =>{
-    res.status(200).json({code: 200, listaPrenotazioni: result, success: true});
-  })
-  .catch((err) =>{
-    res.status(400).json({code:400, msg:"Errore", success: false});
+    if(result)
+      res.status(200).json({code: 200, dettagli: result, success: true});
+
+    else 
+      res.status(400).json({code:400, msg:"Prenotazione non trovata!", success:false});
   });
 }
