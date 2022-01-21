@@ -100,7 +100,7 @@ exports.validaTesseramento = async (req, res) => {
       .json({ code: 400, error: erroriValidazione.array(), success: false });
   }
 
-  let idUtente = req.body.idUtente;
+
   let idRichiestaTess = req.body.idReqTess;
   let azione = req.body.azione;
 
@@ -176,3 +176,21 @@ exports.validaTesseramento = async (req, res) => {
   }
 };
 
+exports.downloadCertificato = async (req,res) =>{
+
+  let idReq = Number(req.params.idReq).toString();
+
+  await Richiesta_tesseramento.findOne({
+  where : {
+    idRichiesta_tesseramento: idReq
+  }}).then((result)=>
+  {
+    if(result){
+      let certificato = fs.readFileSync('.'+result.certificatoAllegatoPath+"/certificato.pdf");
+      res.contentType("application/pdf").send(certificato);
+      }
+      
+    }
+  )
+
+};

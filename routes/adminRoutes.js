@@ -18,6 +18,9 @@ let validazione = {
   orario: /[0-9]+:[0-9]+/,
 };
 
+
+router.get('/reqtess/downloadCertificato/:idReq', adminCNT.downloadCertificato);
+
 router.get("/strutture/visualizzastrutture", strutturaCNT.visualizzaStrutture);
 router.get(
   "/strutture/dettagliStruttura/:id",
