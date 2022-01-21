@@ -37,40 +37,7 @@ exports.visualizzaDettagliStruttura = async (req, res) => {
       });*/
 };
 
-/**
-<<<<<<< HEAD
- * Nome metodo: getChiusuraByIdStruttura
- * Descrizione: Metodo che permette all'amministratore di visualizzare i giorni di chiusura di una struttura
- * Parametri: ID della struttura
- * Return: Codice, Struttura richiesta/Messaggio d'errore, boolean true/false in base alla riuscita dell'operazione
- * Autore : Matteo Della Rocca
- */
-exports.getChiusuraByIdStruttura = async (req, res) => {
-  let idStruttura = req.params.id;
-
-  await Chiusura.findAll({
-    where: { struttura: idStruttura },
-    attributes: { exclude: ["struttura", "idChiusura"] },
-  }).then((result) => {
-    if (result.length!== 0) {
-      let chiusureTemp = [];
-      result.forEach((data) => {
-        chiusureTemp.push(data.dataChiusura);
-      });
-      res.json({
-        code: 200,
-        chiusure: JSON.stringify(chiusureTemp),
-        success: true,
-      });
-    } else {
-      res.json({ code: 400, msg: "Struttura non trovata!", success: false });
-    }
-  });
-};
-
-/**
-=======
->>>>>>> ADM
+/*
  * Nome metodo: visualizzaPrenotazioniStruttura
  * Descrizione: Metodo che permette all'amministratore di visualizzare la lista di prenotazioni di una struttura in particolare con utente associato
  * Parametri: ID della struttura
