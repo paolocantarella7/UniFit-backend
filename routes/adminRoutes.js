@@ -18,10 +18,6 @@ let validazione = {
   orario: /[0-9]+:[0-9]+/,
 };
 
-<<<<<<< HEAD
-=======
-
->>>>>>> ADM
 router.get("/strutture/visualizzastrutture", strutturaCNT.visualizzaStrutture);
 router.get(
   "/strutture/dettagliStruttura/:id",
