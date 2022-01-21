@@ -287,3 +287,26 @@ exports.cancellaPrenotazione = async (req, res) => {
 let effettuaRimborso = async (email, importo) => {
   await senderEmail.sendRimborsoEmail(email, importo);
 };
+
+
+/**
+ * Nome metodo: getPrenotazioneById
+ * Descrizione: Metodo che permette di ottenere i dettagli di una prenotazione
+ * Parametri: idPrenotazione
+ * Return: Codice, messaggio, boolean true/false in base alla riuscita dell'operazione
+ * Autore : Giuseppe Scafa
+ */
+exports.getPrenotazioneById = async (req, res) =>{
+
+  
+
+  let idPrenotazione = req.query.idPrenotazione;
+  Prenotazione.findByPk(idPrenotazione)
+  .then((result) =>{
+    if(result)
+      res.status(200).json({code: 200, dettagli: result, success: true});
+
+    else 
+      res.status(400).json({code:400, msg:"Prenotazione non trovata!", success:false});
+  });
+}
