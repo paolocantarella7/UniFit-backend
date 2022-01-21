@@ -12,12 +12,16 @@ let { validationResult } = require("express-validator");
  * Autore : Matteo Della Rocca
  */
 exports.visualizzaDettagliStruttura = async (req, res) => {
-  let idStruttura = req.params.id;
+  let idStruttura = Number(req.params.id);
 
   await Struttura.findOne({
-    where: { idStruttura: idStruttura },
+    where: { idStruttura: idStruttura.toString() },
+    include : {
+      model: Chiusura,
+      as: "giorniChiusura"
+    }
   }).then((result) => {
-    if (result) {
+    if (result && result.length !== 0) {
       res.status(200).json({ code: 200, struttura: result, success: true });
     } else {
       res
@@ -34,6 +38,7 @@ exports.visualizzaDettagliStruttura = async (req, res) => {
 };
 
 /**
+<<<<<<< HEAD
  * Nome metodo: getChiusuraByIdStruttura
  * Descrizione: Metodo che permette all'amministratore di visualizzare i giorni di chiusura di una struttura
  * Parametri: ID della struttura
@@ -64,6 +69,8 @@ exports.getChiusuraByIdStruttura = async (req, res) => {
 };
 
 /**
+=======
+>>>>>>> ADM
  * Nome metodo: visualizzaPrenotazioniStruttura
  * Descrizione: Metodo che permette all'amministratore di visualizzare la lista di prenotazioni di una struttura in particolare con utente associato
  * Parametri: ID della struttura
@@ -71,7 +78,7 @@ exports.getChiusuraByIdStruttura = async (req, res) => {
  * Autore : Matteo Della Rocca
  */
 exports.visualizzaPrenotazioniStruttura = async (req, res) => {
-  let idStruttura = req.params.id;
+  let idStruttura =  Number(req.params.id);
 
   await Struttura.findOne({
     include: [
@@ -94,9 +101,9 @@ exports.visualizzaPrenotazioniStruttura = async (req, res) => {
         ],
       },
     ],
-    where: { idStruttura: idStruttura },
+    where: { idStruttura: idStruttura.toString() },
   }).then((result) => {
-    if (result) {
+    if (result && result.length !== 0) {
       res.status(200).json({ code: 200, struttura: result, success: true });
     } else {
       res
@@ -149,11 +156,11 @@ exports.eliminaStruttura = async (req, res) => {
       .json({ code: 400, error: erroriValidazione.array(), success: false });
   }
 
-  let idStruttura = req.query.idStrutt;
+  let idStruttura = Number(req.query.idStrutt);
 
   await Struttura.update(
     { isCancellata: 1 },
-    { where: { idStruttura: idStruttura }, returning: true, plain: true }
+    { where: { idStruttura: idStruttura.toString() }, returning: true, plain: true }
   ).then((result) => {
     if (result[1]) {
       //result contiene un campo che è 1 quando la riga è modificata, 0 altrimenti
@@ -195,7 +202,6 @@ exports.aggiungiStruttura = async (req, res) => {
             dataChiusura: dataChiusura,
             struttura: result.idStruttura,
           };
-
           Chiusura.create(chiusura);
         });
       }
