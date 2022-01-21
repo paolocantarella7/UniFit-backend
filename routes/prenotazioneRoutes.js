@@ -18,6 +18,8 @@ let validazione = {
   fasciaOraria: /^[0-9]+:[0-9]+-[0-9]+:[0-9]+$/,
 };
 
+router.get("/dettagliPrenotazione", prenotazioneCNT.getPrenotazioneById);
+
 router.get(
   "/prenotazioniUtente",
   [
