@@ -45,8 +45,8 @@ exports.sendRimborsoEmail = (email, importo) =>{
     let mail = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: '', // Inserire email UniFit
-            pass: '' // Inserire password UniFit
+            user: emailUniFit, // Inserire email UniFit
+            pass: passwordUniFit // Inserire password UniFit
         }
     });
 
