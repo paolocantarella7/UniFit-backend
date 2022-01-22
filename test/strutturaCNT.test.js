@@ -745,7 +745,7 @@ describe('Modifica struttura', () => {
             'oraFinePomeriggio': '21:00',
             'durataPerFascia': 1,
             'dateChiusura': '{ \"dateChiusura\" : [\"2022-12-25\", \"2022-12-31\", \"2022-12-31\"]  }',
-            'idStruttura': 523
+            'idStruttura': 5334
         };
         chai.request(server)
             .post('/admin/strutture/modificastruttura')   .send(data)

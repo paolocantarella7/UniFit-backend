@@ -1,7 +1,7 @@
 let nodemailer = require("nodemailer");
 
 let host = "http://localhost:3000";
-let emailUniFit = ""; //inserire email UniFit gmail
+let emailUniFit = "unifit2022@gmail.com"; //inserire email UniFit gmail
 let passwordUniFit = ""; //inserire password UniFit gmail
 
 /**
