@@ -1,5 +1,8 @@
 let nodemailer = require("nodemailer");
 
+let host = "http://localhost:3000";
+let emailUniFit = ""; //inserire email UniFit gmail
+let passwordUniFit = ""; //inserire password UniFit gmail
 
 /**
  * Nome metodo: sendEmailWithToken
@@ -13,8 +16,8 @@ exports.sendEmailWithToken = (email, token) => {
     let mail = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: '', // Inserire email UniFit
-            pass: '' // Inserire password UniFit
+            user: emailUniFit, // Inserire email UniFit
+            pass: passwordUniFit // Inserire password UniFit
         }
     });
  
@@ -24,9 +27,40 @@ exports.sendEmailWithToken = (email, token) => {
         subject: 'Reset Password Link - UniFit.it',
         html: '<p>Gentile Utente, <br>' 
         +'è stato richiesto un recupero della password, '+
-        'usi questo <a href="http://localhost:3000/user/reset-password/' + token + '">link</a> per resettare la password'+
-        ' altrimenti <b>ignora</b> questa e-mail. <br>'+
+        'usi questo <a href='+host+'/recovery/' + token + '">link</a> per resettare la password'+
+        ' altrimenti <b>ignori</b> questa e-mail. <br>'+
         '<br>Cordiali saluti, <br> il team UniFit.</p>'
+ 
+    };
+ 
+    return mail.sendMail(mailOptions);
+}
+
+
+/**
+ * Nome metodo: sendRimborsoEmail
+ * Descrizione: Metodo che permette di inviare una email di avvenuto rimborso
+ * Parametri: email destinatario e importo
+ * Return:  Una Promise con eventuale errore da gestire
+ * Autore : Giuseppe Scafa
+ */
+exports.sendRimborsoEmail = (email, importo) =>{
+    let mail = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: emailUniFit, // Inserire email UniFit
+            pass: passwordUniFit // Inserire password UniFit
+        }
+    });
+
+    let mailOptions = {
+        from: 'unifit2022@gmail.com',
+        to: email,
+        subject: 'Avviso di rimborso',
+        html: '<p>Gentile Utente, <br>' 
+        +'con la presente le avvisiamo che è stato effettuato un rimborso a suo carico della cifra di €'+ importo 
+        
+        +'<br>Cordiali saluti, <br> il team UniFit.</p>'
  
     };
  
