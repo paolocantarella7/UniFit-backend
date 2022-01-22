@@ -16,35 +16,35 @@ let Fattura = require("../model/Fattura");
  * Autore : Giuseppe Scafa
  */
 exports.login = async (req, res) => {
-  //Check consistenza parametri richiesta
-  let erroriValidazione = validationResult(req);
-  if (!erroriValidazione.isEmpty()) {
-    return res
-      .status(400)
-      .json({ code: 400, error: erroriValidazione.array(), success: false });
-  }
+    //Check consistenza parametri richiesta
+    let erroriValidazione = validationResult(req);
+    if (!erroriValidazione.isEmpty()) {
+        return res
+            .status(400)
+            .json({ code: 400, error: erroriValidazione.array(), success: false });
+    }
 
-  let pw = crypto.createHash("sha512").update(req.body.password).digest("hex");
-  await Utente.findOne({
-    where: { email: req.body.email, password: pw, isCancellato: 0 },
-    attributes: {
-      exclude: [
-        "password",
-        "isCancellato",
-        "tokenRecuperoPassword",
-        "dataScadenzaTokenRP",
-      ],
-    },
-  })
-    .then((result) => {
-      if (result && !result.isCancellato) {
-        res.status(200).json({ code: 200, utente: result, success: true });
-      } else {
-        res
-          .status(400)
-          .json({ code: 400, msg: "Utente non trovato", success: false });
-      }
+    let pw = crypto.createHash("sha512").update(req.body.password).digest("hex");
+    await Utente.findOne({
+        where: { email: req.body.email, password: pw, isCancellato: 0 },
+        attributes: {
+            exclude: [
+                "password",
+                "isCancellato",
+                "tokenRecuperoPassword",
+                "dataScadenzaTokenRP",
+            ],
+        },
     })
+        .then((result) => {
+            if (result && !result.isCancellato) {
+                res.status(200).json({ code: 200, utente: result, success: true });
+            } else {
+                res
+                    .status(400)
+                    .json({ code: 400, msg: "Utente non trovato", success: false });
+            }
+        });
 };
 
 /**
@@ -55,65 +55,65 @@ exports.login = async (req, res) => {
  * Autore : Matteo Della Rocca
  */
 exports.registrazione = async (req, res) => {
-  //Check consistenza parametri richiesta
-  let erroriValidazione = validationResult(req);
-  if (!erroriValidazione.isEmpty()) {
-    return res
-      .status(400)
-      .json({ code: 400, error: erroriValidazione.array(), success: false });
-  }
-  let { ...utenteDaRegistrare } = { ...req.body };
+    //Check consistenza parametri richiesta
+    let erroriValidazione = validationResult(req);
+    if (!erroriValidazione.isEmpty()) {
+        return res
+            .status(400)
+            .json({ code: 400, error: erroriValidazione.array(), success: false });
+    }
+    let { ...utenteDaRegistrare } = { ...req.body };
 
-  await Utente.findOne({
-    where: {
-      codiceFiscale: utenteDaRegistrare.codiceFiscale,
-      email: utenteDaRegistrare.email,
-    },
-  })
-    .then(async (userCheck) => {
-      if (userCheck && userCheck.isCancellato) {
-        //Utente già registrato, ma cancellato
-
-        await Utente.update(
-          //Modifico soltanto i campi e riattivo l'utente
-          {
-            nome: utenteDaRegistrare.nome,
-            cognome: utenteDaRegistrare.cognome,
-            dataNascita: utenteDaRegistrare.dataNascita,
-            nazionalita: utenteDaRegistrare.nazionalita,
-            isCancellato: 0,
-            password: utenteDaRegistrare.password,
-            indirizzoResidenza: utenteDaRegistrare.indirizzoResidenza,
-            numeroTelefono: utenteDaRegistrare.numeroTelefono,
-          },
-          {
-            individualHooks: true,
-            where: {
-              idUtente: userCheck.idUtente,
-            },
-          }
-        )
-          .then((result) => {
-            if (result)
-              res.status(201).json({
-                code: 201,
-                msg: "Registrazione effettuata con successo",
-                success: true,
-              });
-          })
-      } else {
-        await Utente.create(utenteDaRegistrare)
-          .then((result) => {
-            if (result) {
-              res.status(201).json({
-                code: 201,
-                msg: "Registrazione effettuata con successo",
-                success: true,
-              });
-            }
-          })
-      }
+    await Utente.findOne({
+        where: {
+            codiceFiscale: utenteDaRegistrare.codiceFiscale,
+            email: utenteDaRegistrare.email,
+        },
     })
+        .then(async (userCheck) => {
+            if (userCheck && userCheck.isCancellato) {
+                //Utente già registrato, ma cancellato
+
+                await Utente.update(
+                    //Modifico soltanto i campi e riattivo l'utente
+                    {
+                        nome: utenteDaRegistrare.nome,
+                        cognome: utenteDaRegistrare.cognome,
+                        dataNascita: utenteDaRegistrare.dataNascita,
+                        nazionalita: utenteDaRegistrare.nazionalita,
+                        isCancellato: 0,
+                        password: utenteDaRegistrare.password,
+                        indirizzoResidenza: utenteDaRegistrare.indirizzoResidenza,
+                        numeroTelefono: utenteDaRegistrare.numeroTelefono,
+                    },
+                    {
+                        individualHooks: true,
+                        where: {
+                            idUtente: userCheck.idUtente,
+                        },
+                    }
+                )
+                    .then((result) => {
+                        if (result)
+                            res.status(201).json({
+                                code: 201,
+                                msg: "Registrazione effettuata con successo",
+                                success: true,
+                            });
+                    });
+            } else {
+                await Utente.create(utenteDaRegistrare)
+                    .then((result) => {
+                        if (result) {
+                            res.status(201).json({
+                                code: 201,
+                                msg: "Registrazione effettuata con successo",
+                                success: true,
+                            });
+                        }
+                    });
+            }
+        });
 };
 
 /**
@@ -124,30 +124,30 @@ exports.registrazione = async (req, res) => {
  * Autore : Matteo Della Rocca
  */
 exports.modificaPassword = async (req, res) => {
-  //Check consistenza parametri richiesta
-  let erroriValidazione = validationResult(req);
-  if (!erroriValidazione.isEmpty()) {
-    return res
-      .status(400)
-      .json({ code: 400, error: erroriValidazione.array(), success: false });
-  }
+    //Check consistenza parametri richiesta
+    let erroriValidazione = validationResult(req);
+    if (!erroriValidazione.isEmpty()) {
+        return res
+            .status(400)
+            .json({ code: 400, error: erroriValidazione.array(), success: false });
+    }
 
-  let idUtente = req.body.idUtente;
-  let passwordModificata = req.body.password;
+    let idUtente = req.body.idUtente;
+    let passwordModificata = req.body.password;
 
-  await Utente.update(
-    { password: passwordModificata },
-    { individualHooks: true, where: { idUtente: idUtente } }
-  )
-    .then((result) => {
-      if (result) {
-        res.status(200).json({
-          code: 200,
-          msg: "Password modificata con successo",
-          success: true,
+    await Utente.update(
+        { password: passwordModificata },
+        { individualHooks: true, where: { idUtente: idUtente } }
+    )
+        .then((result) => {
+            if (result) {
+                res.status(200).json({
+                    code: 200,
+                    msg: "Password modificata con successo",
+                    success: true,
+                });
+            }
         });
-      }
-    })
 };
 
 /**
@@ -159,22 +159,22 @@ exports.modificaPassword = async (req, res) => {
  */
 
 exports.cancellaAccount = async (req, res) => {
-  let erroriValidazione = validationResult(req);
-  if (!erroriValidazione.isEmpty()) {
-    return res
-      .status(400)
-      .json({ code: 400, error: erroriValidazione.array(), success: false });
-  }
+    let erroriValidazione = validationResult(req);
+    if (!erroriValidazione.isEmpty()) {
+        return res
+            .status(400)
+            .json({ code: 400, error: erroriValidazione.array(), success: false });
+    }
 
-  await Utente.update(
-    { isCancellato: 1 },
-    { where: { idUtente: req.query.idUtente } }
-  )
-    .then(
-      res
-        .status(200)
-        .json({ code: 200, msg: "Cancellazione riuscita", success: true })
+    await Utente.update(
+        { isCancellato: 1 },
+        { where: { idUtente: req.query.idUtente } }
     )
+        .then(
+            res
+                .status(200)
+                .json({ code: 200, msg: "Cancellazione riuscita", success: true })
+        );
     
 };
 
@@ -186,31 +186,31 @@ exports.cancellaAccount = async (req, res) => {
  * Autore : Giuseppe Scafa
  */
 exports.visualizzaDatiUtente = async (req, res) => {
-  await Utente.findOne({
-    attributes: [
-      "nome",
-      "cognome",
-      "email",
-      "codiceFiscale",
-      "indirizzoResidenza",
-      "numeroTelefono",
-      "dataNascita",
-      "nazionalita",
-    ],
-    where: {
-      idUtente: req.query.id,
-      isCancellato: 0
-    },
-  })
-    .then((result) => {
-      if (result) {
-        res.status(200).json({ code: 200, utente: result, success: true });
-      } else {
-        res
-          .status(400)
-          .json({ code: 400, msg: "Utente non trovato", success: false });
-      }
+    await Utente.findOne({
+        attributes: [
+            "nome",
+            "cognome",
+            "email",
+            "codiceFiscale",
+            "indirizzoResidenza",
+            "numeroTelefono",
+            "dataNascita",
+            "nazionalita",
+        ],
+        where: {
+            idUtente: req.query.id,
+            isCancellato: 0
+        },
     })
+        .then((result) => {
+            if (result) {
+                res.status(200).json({ code: 200, utente: result, success: true });
+            } else {
+                res
+                    .status(400)
+                    .json({ code: 400, msg: "Utente non trovato", success: false });
+            }
+        });
 };
 
 /**
@@ -222,68 +222,68 @@ exports.visualizzaDatiUtente = async (req, res) => {
  */
 
 exports.effettuaTesseramento = async (req, res) => {
-  let erroriValidazione = validationResult(req);
-  if (!erroriValidazione.isEmpty()) {
-    return res
-      .status(400)
-      .json({ code: 400, error: erroriValidazione.array(), success: false });
-  }
+    let erroriValidazione = validationResult(req);
+    if (!erroriValidazione.isEmpty()) {
+        return res
+            .status(400)
+            .json({ code: 400, error: erroriValidazione.array(), success: false });
+    }
 
-  let filePath = "/static/richieste_tesseramento/" + req.body.idUtente;
-  let nuovaRichiesta = {
-    dataRichiesta: new Date().toISOString().substring(0, 10),
-    tipologiaTesseramento: req.body.tipologiaTesseramento,
-    statusRichiesta: "Eseguita",
-    certificatoAllegatoPath: filePath,
-    utente: req.body.idUtente,
-  };
+    let filePath = "/static/richieste_tesseramento/" + req.body.idUtente;
+    let nuovaRichiesta = {
+        dataRichiesta: new Date().toISOString().substring(0, 10),
+        tipologiaTesseramento: req.body.tipologiaTesseramento,
+        statusRichiesta: "Eseguita",
+        certificatoAllegatoPath: filePath,
+        utente: req.body.idUtente,
+    };
 
-  if (req.body.tipologiaTesseramento === "Interno")
-    nuovaRichiesta.prezzoTesseramento = 12.0;
-  else nuovaRichiesta.prezzoTesseramento = 20.0;
+    if (req.body.tipologiaTesseramento === "Interno")
+        nuovaRichiesta.prezzoTesseramento = 12.0;
+    else nuovaRichiesta.prezzoTesseramento = 20.0;
 
-  await RichiestaTesseramento.create(nuovaRichiesta)
-    .then((result) => {
-      if (result) {
-        fs.mkdir("." + filePath, (err) => {
-          if (err) {
-            return res.status(400).json({
-              code: 400,
-              msg: "Errore nella creazione della directory",
-              success: false,
-            });
-          } else {
-            req.files.file.mv("." + filePath + "/certificato.pdf");
-            let nuovaFattura = {
-              intestatario: req.body.intestatarioCarta,
-              totalePagamento: result.prezzoTesseramento,
-              dataRilascio: new Date(new Date().getTime())
-                .toISOString()
-                .substring(0, 10),
-              statusFattura: "Pagata",
-              richiesta: result.idRichiesta_tesseramento,
-            };
+    await RichiestaTesseramento.create(nuovaRichiesta)
+        .then((result) => {
+            if (result) {
+                fs.mkdir("." + filePath, (err) => {
+                    if (err) {
+                        return res.status(400).json({
+                            code: 400,
+                            msg: "Errore nella creazione della directory",
+                            success: false,
+                        });
+                    } else {
+                        req.files.file.mv("." + filePath + "/certificato.pdf");
+                        let nuovaFattura = {
+                            intestatario: req.body.intestatarioCarta,
+                            totalePagamento: result.prezzoTesseramento,
+                            dataRilascio: new Date(new Date().getTime())
+                                .toISOString()
+                                .substring(0, 10),
+                            statusFattura: "Pagata",
+                            richiesta: result.idRichiesta_tesseramento,
+                        };
 
-            Fattura.create(nuovaFattura)
-              .then((reslt) => {
-                if (reslt){
-                  return res.status(200).json({
-                    code: 200,
-                    msg: "Operazione effettuata con successo",
-                    success: true,
-                  });
-                }
-              })
-          }
+                        Fattura.create(nuovaFattura)
+                            .then((reslt) => {
+                                if (reslt){
+                                    return res.status(200).json({
+                                        code: 200,
+                                        msg: "Operazione effettuata con successo",
+                                        success: true,
+                                    });
+                                }
+                            });
+                    }
+                });
+            } else {
+                return res.status(400).json({
+                    code: 400,
+                    msg: "Errore nella creazione della directory",
+                    success: false,
+                });
+            }
         });
-      } else {
-        return res.status(400).json({
-          code: 400,
-          msg: "Errore nella creazione della directory",
-          success: false,
-        });
-      }
-    })
 };
 
 /**
@@ -294,43 +294,43 @@ exports.effettuaTesseramento = async (req, res) => {
  * Autore : Matteo Della Rocca
  */
 exports.recuperoPassword = async (req, res) => {
-  //Check consistenza parametri richiesta
-  let erroriValidazione = validationResult(req);
-  if (!erroriValidazione.isEmpty()) {
-    return res
-      .status(400)
-      .json({ code: 400, error: erroriValidazione.array(), success: false });
-  }
+    //Check consistenza parametri richiesta
+    let erroriValidazione = validationResult(req);
+    if (!erroriValidazione.isEmpty()) {
+        return res
+            .status(400)
+            .json({ code: 400, error: erroriValidazione.array(), success: false });
+    }
 
-  let emailRicevuta = req.body.email;
-  let token = crypto
-    .createHash("sha512")
-    .update(emailRicevuta + new Date().toISOString())
-    .digest("hex");
+    let emailRicevuta = req.body.email;
+    let token = crypto
+        .createHash("sha512")
+        .update(emailRicevuta + new Date().toISOString())
+        .digest("hex");
 
-  Utente.update(
+    Utente.update(
     //Il token dura 24h
-    {
-      tokenRecuperoPassword: token,
-      dataScadenzaTokenRP: new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
-        .toISOString()
-        .substring(0, 10),
-    },
-    { where: { email: emailRicevuta } }
-  )
-    .then(async (result) => {
-      if (result) {
-        //try {
-          await senderEmail.sendEmailWithToken(emailRicevuta, token);
-          res
-            .status(200)
-            .json({
-              code: 200,
-              msg: "Invio email di recupero riuscito",
-              success: true,
-            })
-            .end();
-        } /*catch (err) {
+        {
+            tokenRecuperoPassword: token,
+            dataScadenzaTokenRP: new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
+                .toISOString()
+                .substring(0, 10),
+        },
+        { where: { email: emailRicevuta } }
+    )
+        .then(async (result) => {
+            if (result) {
+                //try {
+                await senderEmail.sendEmailWithToken(emailRicevuta, token);
+                res
+                    .status(200)
+                    .json({
+                        code: 200,
+                        msg: "Invio email di recupero riuscito",
+                        success: true,
+                    })
+                    .end();
+            } /*catch (err) {
           console.error(err);
           res.status(500).json({
             code: 500,
@@ -339,7 +339,7 @@ exports.recuperoPassword = async (req, res) => {
           });
         }
       } */
-    })
+        });
     /*.catch((err) => {
       console.error(err);
       res.status(500).json({ code: 500, msg: err, success: false });
@@ -354,53 +354,53 @@ exports.recuperoPassword = async (req, res) => {
  * Autore : Matteo Della Rocca
  */
 exports.resettaPasswordPerRecupero = async (req, res) => {
-  let erroriValidazione = validationResult(req);
-  if (!erroriValidazione.isEmpty()) {
-    return res
-      .status(400)
-      .json({ code: 400, error: erroriValidazione.array(), success: false });
-  }
+    let erroriValidazione = validationResult(req);
+    if (!erroriValidazione.isEmpty()) {
+        return res
+            .status(400)
+            .json({ code: 400, error: erroriValidazione.array(), success: false });
+    }
 
-  let token = req.params.token;
-  let passwordModificata = req.body.password;
+    let token = req.params.token;
+    let passwordModificata = req.body.password;
 
-  await Utente.findOne({
-    where: {
-      tokenRecuperoPassword: token,
-      dataScadenzaTokenRP: {
-        [Op.gt]: new Date().toISOString().substring(0, 10),
-      }, //Data Scadenza > DataOggi
-    },
-  })
-    .then((result) => {
-      if (!result) {
-        res
-          .status(400)
-          .json({
-            code: 400,
-            msg: "Token scaduto o non valido",
-            success: false,
-          })
-          .end();
-      } else {
-        Utente.update(
-          {
-            password: passwordModificata,
-            tokenRecuperoPassword: null,
-            dataScadenzaTokenRP: null,
-          }, //rendo di nuovo recuperabile la password
-          { individualHooks: true, where: { tokenRecuperoPassword: token } }
-        )
-          .then((result) => {
-            if (result) {
-              res.status(200).json({
-                code: 200,
-                msg: "Password modificata con successo",
-                success: true,
-              });
-            }
-          })
-      }  
+    await Utente.findOne({
+        where: {
+            tokenRecuperoPassword: token,
+            dataScadenzaTokenRP: {
+                [Op.gt]: new Date().toISOString().substring(0, 10),
+            }, //Data Scadenza > DataOggi
+        },
     })
+        .then((result) => {
+            if (!result) {
+                res
+                    .status(400)
+                    .json({
+                        code: 400,
+                        msg: "Token scaduto o non valido",
+                        success: false,
+                    })
+                    .end();
+            } else {
+                Utente.update(
+                    {
+                        password: passwordModificata,
+                        tokenRecuperoPassword: null,
+                        dataScadenzaTokenRP: null,
+                    }, //rendo di nuovo recuperabile la password
+                    { individualHooks: true, where: { tokenRecuperoPassword: token } }
+                )
+                    .then((result) => {
+                        if (result) {
+                            res.status(200).json({
+                                code: 200,
+                                msg: "Password modificata con successo",
+                                success: true,
+                            });
+                        }
+                    });
+            }  
+        });
   
 };

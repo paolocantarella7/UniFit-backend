@@ -21,5 +21,5 @@ describe('test per la build', function(){
                 res.should.have.status(200);
                 done();
             });
-    })
-})
+    });
+});

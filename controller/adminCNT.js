@@ -13,24 +13,24 @@ let fs = require("fs");
  * Autore : Matteo Della Rocca
  */
 exports.visualizzaUtentiRegistrati = async (req, res) => {
-  await Utente.findAll({
-    attributes: [
-      "idUtente",
-      "nome",
-      "cognome",
-      "email",
-      "isCancellato",
-      "isTesserato",
-    ],
-    where: { isAdmin: 0 }, //solo utenti registrati
-  }).then((result) => {
-    if (result) {
-      res
-        .status(200)
-        .json({ code: 200, utentiRegistrati: result, success: true });
-    }
-  });
-  /* .catch((err) => {
+    await Utente.findAll({
+        attributes: [
+            "idUtente",
+            "nome",
+            "cognome",
+            "email",
+            "isCancellato",
+            "isTesserato",
+        ],
+        where: { isAdmin: 0 }, //solo utenti registrati
+    }).then((result) => {
+        if (result) {
+            res
+                .status(200)
+                .json({ code: 200, utentiRegistrati: result, success: true });
+        }
+    });
+    /* .catch((err) => {
       console.error(err);
       res.status(500).json({
         code: 500,
@@ -48,33 +48,33 @@ exports.visualizzaUtentiRegistrati = async (req, res) => {
  * Autore : Matteo Della Rocca
  */
 exports.visualizzaRichiesteTesseramento = async (req, res) => {
-  await Richiesta_tesseramento.findAll({
-    attributes: [
-      "idRichiesta_tesseramento",
-      "tipologiaTesseramento",
-      "dataRichiesta",
-      "statusRichiesta",
-      "certificatoAllegatoPath",
-    ],
-    include: {
-      model: Utente,
-      as: "utenteRichiedente",
-      attributes: [
-        "idUtente",
-        "nome",
-        "cognome",
-        "email",
-        "isCancellato",
-        "isTesserato",
-      ],
-    },
-    where: { statusRichiesta: "Eseguita" }, //solo le richiesta da valutare
-  }).then((result) => {
-    if (result) {
-      res.status(200).json({ code: 200, richiesteTess: result, success: true });
-    }
-  });
-  /* .catch((err) => {
+    await Richiesta_tesseramento.findAll({
+        attributes: [
+            "idRichiesta_tesseramento",
+            "tipologiaTesseramento",
+            "dataRichiesta",
+            "statusRichiesta",
+            "certificatoAllegatoPath",
+        ],
+        include: {
+            model: Utente,
+            as: "utenteRichiedente",
+            attributes: [
+                "idUtente",
+                "nome",
+                "cognome",
+                "email",
+                "isCancellato",
+                "isTesserato",
+            ],
+        },
+        where: { statusRichiesta: "Eseguita" }, //solo le richiesta da valutare
+    }).then((result) => {
+        if (result) {
+            res.status(200).json({ code: 200, richiesteTess: result, success: true });
+        }
+    });
+    /* .catch((err) => {
       console.error(err);
       res.status(500).json({
         code: 500,
@@ -92,40 +92,40 @@ exports.visualizzaRichiesteTesseramento = async (req, res) => {
  * Autore : Matteo Della Rocca
  */
 exports.validaTesseramento = async (req, res) => {
-  let erroriValidazione = validationResult(req);
+    let erroriValidazione = validationResult(req);
 
-  if (!erroriValidazione.isEmpty()) {
-    return res
-      .status(400)
-      .json({ code: 400, error: erroriValidazione.array(), success: false });
-  }
+    if (!erroriValidazione.isEmpty()) {
+        return res
+            .status(400)
+            .json({ code: 400, error: erroriValidazione.array(), success: false });
+    }
 
-  let idUtente = req.body.idUtente;
-  let idRichiestaTess = req.body.idReqTess;
-  let azione = req.body.azione;
+    let idUtente = req.body.idUtente;
+    let idRichiestaTess = req.body.idReqTess;
+    let azione = req.body.azione;
 
-  if (azione === "accetta") {
+    if (azione === "accetta") {
     //caso di accettazione richiesta
-    await Richiesta_tesseramento.update(
-      { statusRichiesta: "Accettata" },
-      {
-        where: { idRichiesta_tesseramento: idRichiestaTess, utente: idUtente },
-        returning: true,
-        plain: true,
-      }
-    ).then((result) => {
-      if (result[1]) {
-        Utente.update(
-          { isTesserato: 1 },
-          { where: { idUtente: idUtente } }
-        ).then(
-          res.status(200).json({
-            code: 200,
-            msg: "Richiesta di tesseramento accettata con successo!",
-            success: true,
-          })
-        );
-        /*.catch((err) => {
+        await Richiesta_tesseramento.update(
+            { statusRichiesta: "Accettata" },
+            {
+                where: { idRichiesta_tesseramento: idRichiestaTess, utente: idUtente },
+                returning: true,
+                plain: true,
+            }
+        ).then((result) => {
+            if (result[1]) {
+                Utente.update(
+                    { isTesserato: 1 },
+                    { where: { idUtente: idUtente } }
+                ).then(
+                    res.status(200).json({
+                        code: 200,
+                        msg: "Richiesta di tesseramento accettata con successo!",
+                        success: true,
+                    })
+                );
+                /*.catch((err) => {
               console.error(err);
               res.status(500).json({
                 code: 500,
@@ -133,14 +133,14 @@ exports.validaTesseramento = async (req, res) => {
                 success: false,
               });
             });*/
-      } /*else {
+            } /*else {
           res.status(400).json({
             code: 400,
             msg: "Richiesta di tesseramento NON validata!",
             success: false,
           });
         }*/
-    });
+        });
     /* .catch((err) => {
         console.error(err);
         res.status(500).json({
@@ -149,21 +149,21 @@ exports.validaTesseramento = async (req, res) => {
           success: false,
         });
       });*/
-  } //rifiuto, la richiesta va cancellata
-  else {
-    await Richiesta_tesseramento.destroy({
-      where: { idRichiesta_tesseramento: idRichiestaTess, utente: idUtente },
-    });
+    } //rifiuto, la richiesta va cancellata
+    else {
+        await Richiesta_tesseramento.destroy({
+            where: { idRichiesta_tesseramento: idRichiestaTess, utente: idUtente },
+        });
 
-    //Cancello la cartella creata con il certificato "rifiutato" di quell'utente
-    fs.rmSync("./static/richieste_tesseramento/" + idUtente, {
-      recursive: true }, (err) =>{ console.log(err)});
+        //Cancello la cartella creata con il certificato "rifiutato" di quell'utente
+        fs.rmSync("./static/richieste_tesseramento/" + idUtente, {
+            recursive: true }, (err) => { console.log(err);});
 
-    res.status(200).json({
-      code: 200,
-      msg: "Richiesta di tesseramento rifiutata con successo!",
-      success: true,
-    });
+        res.status(200).json({
+            code: 200,
+            msg: "Richiesta di tesseramento rifiutata con successo!",
+            success: true,
+        });
 
     /* .catch((err) => {
         console.error(err);
@@ -173,6 +173,6 @@ exports.validaTesseramento = async (req, res) => {
           success: false,
         });
       });*/
-  }
+    }
 };
 

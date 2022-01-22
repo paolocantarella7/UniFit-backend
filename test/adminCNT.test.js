@@ -13,9 +13,9 @@ chai.use(chaiHttp);
 let RichiestaTesseramento = require('../model/Richiesta_tesseramento');
 let fs = require("fs");
 
-describe('Valida tesseramento', ()=>{
+describe('Valida tesseramento', () => {
 
-    it('Azione sconosciuta', (done) =>{
+    it('Azione sconosciuta', (done) => {
         let data = {
             "idUtente": 1,
             "idReqTess": 5,
@@ -23,32 +23,32 @@ describe('Valida tesseramento', ()=>{
         };
 
         chai.request(server)
-        .post('/admin/reqtess/validatesseramento')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .post('/admin/reqtess/validatesseramento')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
 
-    it('Richiesta di tesseramento non trovata', (done) =>{
-            let data = {
-                "idUtente": 1,
-                "idReqTess": 100,
-                "azione": "accetta" 
-            };
+    it('Richiesta di tesseramento non trovata', (done) => {
+        let data = {
+            "idUtente": 1,
+            "idReqTess": 100,
+            "azione": "accetta" 
+        };
 
-            chai.request(server)
+        chai.request(server)
             .post('/admin/reqtess/validatesseramento')
             .send(data)
-            .end((err, res) =>{
+            .end((err, res) => {
                 res.should.have.status(400);
                 done();
-            })
-        });
+            });
+    });
 
-    it('Dovrebbe validare il tesseramento', (done) =>{
+    it('Dovrebbe validare il tesseramento', (done) => {
         let data = {
             "idUtente": 1,
             "idReqTess": 5,
@@ -56,24 +56,24 @@ describe('Valida tesseramento', ()=>{
         };
 
         chai.request(server)
-        .post('/admin/reqtess/validatesseramento')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(200);
-            done();
-            RichiestaTesseramento.update({statusRichiesta: 'Effettuata'}, {
-                where:{
-                    idRichiesta_tesseramento: 5
-                }
-            });       
-        });
+            .post('/admin/reqtess/validatesseramento')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                done();
+                RichiestaTesseramento.update({statusRichiesta: 'Effettuata'}, {
+                    where:{
+                        idRichiesta_tesseramento: 5
+                    }
+                });       
+            });
     });
 
 });
 
-describe('Rifiuta tesseramento', ()=>{
+describe('Rifiuta tesseramento', () => {
 
-    it('Azione sconosciuta', (done) =>{
+    it('Azione sconosciuta', (done) => {
         let data = {
             "idUtente": 1,
             "idReqTess": 5,
@@ -81,32 +81,32 @@ describe('Rifiuta tesseramento', ()=>{
         };
 
         chai.request(server)
-        .post('/admin/reqtess/validatesseramento')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .post('/admin/reqtess/validatesseramento')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
 
-    it('Richiesta di tesseramento non trovata', (done) =>{
-            let data = {
-                "idUtente": 3,
-                "idReqTess": 13,
-                "azione": "rifiuta" 
-            };
+    it('Richiesta di tesseramento non trovata', (done) => {
+        let data = {
+            "idUtente": 3,
+            "idReqTess": 13,
+            "azione": "rifiuta" 
+        };
 
-            chai.request(server)
+        chai.request(server)
             .post('/admin/reqtess/validatesseramento')
             .send(data)
-            .end((err, res) =>{
+            .end((err, res) => {
                 res.should.have.status(400);
                 done();
-            })
-        });
+            });
+    });
 
-    it('Dovrebbe rifiutare il tesseramento', (done) =>{
+    it('Dovrebbe rifiutare il tesseramento', (done) => {
         let data = {
             "idUtente": 4,
             "idReqTess": 13,
@@ -121,51 +121,51 @@ describe('Rifiuta tesseramento', ()=>{
             'prezzoTesseramento': 12.00,
             'certificatoAllegatoPath': '/',
             'utente': 4
-          };
+        };
 
-          RichiestaTesseramento.create(nuovaRichiesta);
-          fs.mkdirSync("./static/richieste_tesseramento/4",{recursive: true}, (err) =>{
-              console.log(err);
-          });
-
-        chai.request(server)
-        .post('/admin/reqtess/validatesseramento')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(200);
-            done();
-            RichiestaTesseramento.create(nuovaRichiesta);
-            fs.mkdirSync("./static/richieste_tesseramento/4",{recursive: true}, (err) =>{
-                console.log(err);
-            });
+        RichiestaTesseramento.create(nuovaRichiesta);
+        fs.mkdirSync("./static/richieste_tesseramento/4", {recursive: true}, (err) => {
+            console.log(err);
         });
+
+        chai.request(server)
+            .post('/admin/reqtess/validatesseramento')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                done();
+                RichiestaTesseramento.create(nuovaRichiesta);
+                fs.mkdirSync("./static/richieste_tesseramento/4", {recursive: true}, (err) => {
+                    console.log(err);
+                });
+            });
     });
 
 });
 
-describe('Metodo che permette di visualizzare le richieste di tesseramento non ancora accettate', ()=>{
+describe('Metodo che permette di visualizzare le richieste di tesseramento non ancora accettate', () => {
 
-    it('Dovrebbe mostrare le richieste di tesseramento non accettate', (done) =>{
+    it('Dovrebbe mostrare le richieste di tesseramento non accettate', (done) => {
 
         chai.request(server)
-        .get('/admin/reqtess/visualizzareqtess')
-        .end((err, res) =>{
-            res.should.have.status(200);
-            done();
-        })
+            .get('/admin/reqtess/visualizzareqtess')
+            .end((err, res) => {
+                res.should.have.status(200);
+                done();
+            });
     });
 });
 
-describe('Metodo che permette di visualizzare gli utenti registrati (NON ADMIN)', ()=>{
+describe('Metodo che permette di visualizzare gli utenti registrati (NON ADMIN)', () => {
 
-    it('Dovrebbe mostrare la lista di utenti registrati (NON ADMIN)', (done) =>{
+    it('Dovrebbe mostrare la lista di utenti registrati (NON ADMIN)', (done) => {
 
         chai.request(server)
-        .get('/admin//utenti/visualizzautenti')
-        .end((err, res) =>{
-            res.should.have.status(200);
-            done();
-        })
+            .get('/admin//utenti/visualizzautenti')
+            .end((err, res) => {
+                res.should.have.status(200);
+                done();
+            });
     });
 });
 

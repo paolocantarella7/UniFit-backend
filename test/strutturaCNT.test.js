@@ -12,54 +12,54 @@ chai.use(require('chai-match'));
 chai.use(chaiHttp);
 let Struttura = require('../model/Struttura');
 
-describe('Visualizza dettagli struttura', () =>{
-    it('Dovrebbe visualizzare i dettagli della struttura', (done) =>{
+describe('Visualizza dettagli struttura', () => {
+    it('Dovrebbe visualizzare i dettagli della struttura', (done) => {
         let id = 1;
         chai.request(server)
-        .get('/admin/strutture/dettagliStruttura/' + id)
-        .end((err, res) =>{
-            res.should.have.status(200);
-            done();
-        })
+            .get('/admin/strutture/dettagliStruttura/' + id)
+            .end((err, res) => {
+                res.should.have.status(200);
+                done();
+            });
     });
 
-    it('Struttura non esistente', (done) =>{
+    it('Struttura non esistente', (done) => {
         let id = 1771;
         chai.request(server)
-        .get('/admin/strutture/dettagliStruttura/' + id)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .get('/admin/strutture/dettagliStruttura/' + id)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 });
 
-describe('Visualizza prenotazioni struttura', ()=>{
-    it('Dovrebbe visualizzare le prenotazioni di una struttura', (done) =>{
+describe('Visualizza prenotazioni struttura', () => {
+    it('Dovrebbe visualizzare le prenotazioni di una struttura', (done) => {
         let id = 1;
         chai.request(server)
-        .get('/admin/strutture/prenotazioniStruttura/' + id)
-        .end((err, res) =>{
-            res.should.have.status(200);
-            done();
-        })
+            .get('/admin/strutture/prenotazioniStruttura/' + id)
+            .end((err, res) => {
+                res.should.have.status(200);
+                done();
+            });
     });
 
-    it('Struttura non esistente', (done) =>{
+    it('Struttura non esistente', (done) => {
         let id = 1011212;
         chai.request(server)
-        .get('/admin/strutture/prenotazioniStruttura/' + id)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .get('/admin/strutture/prenotazioniStruttura/' + id)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
 });
 
-describe('Aggiungi struttura', () =>{
+describe('Aggiungi struttura', () => {
 
-    it('Dovrebbe aggiungere una struttura', (done) =>{
+    it('Dovrebbe aggiungere una struttura', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
@@ -74,15 +74,15 @@ describe('Aggiungi struttura', () =>{
         };
         
         chai.request(server)
-        .post('/admin/strutture/aggiungistruttura')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(201);
-            done();
-        });
+            .post('/admin/strutture/aggiungistruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(201);
+                done();
+            });
     });
 
-    it('Dovrebbe aggiungere una struttura', (done) =>{
+    it('Dovrebbe aggiungere una struttura', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
@@ -97,16 +97,16 @@ describe('Aggiungi struttura', () =>{
         };
         
         chai.request(server)
-        .post('/admin/strutture/aggiungistruttura')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(201);
-            done();
+            .post('/admin/strutture/aggiungistruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(201);
+                done();
    
-        })
+            });
     });
 
-    it('Dovrebbe aggiungere una struttura', (done) =>{
+    it('Dovrebbe aggiungere una struttura', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
@@ -121,15 +121,15 @@ describe('Aggiungi struttura', () =>{
         };
         
         chai.request(server)
-        .post('/admin/strutture/aggiungistruttura')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(201);
-            done();
-        })
+            .post('/admin/strutture/aggiungistruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(201);
+                done();
+            });
     });
 
-    it('Dovrebbe aggiungere una struttura', (done) =>{
+    it('Dovrebbe aggiungere una struttura', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
@@ -144,16 +144,16 @@ describe('Aggiungi struttura', () =>{
         };
         
         chai.request(server)
-        .post('/admin/strutture/aggiungistruttura')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(201);
-            done();
+            .post('/admin/strutture/aggiungistruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(201);
+                done();
 
-        })
+            });
     });
 
-    it('Dovrebbe aggiungere una struttura', (done) =>{
+    it('Dovrebbe aggiungere una struttura', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
@@ -168,15 +168,15 @@ describe('Aggiungi struttura', () =>{
         };
         
         chai.request(server)
-        .post('/admin/strutture/aggiungistruttura')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(201);
-            done();
-        })
+            .post('/admin/strutture/aggiungistruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(201);
+                done();
+            });
     });
 
-    it('Formato nome non corretto', (done) =>{
+    it('Formato nome non corretto', (done) => {
         let data = {
             'nome': 'Ciao.',
             'prezzoPerFascia': 20,
@@ -191,15 +191,15 @@ describe('Aggiungi struttura', () =>{
         };
         
         chai.request(server)
-        .post('/admin/strutture/aggiungistruttura')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .post('/admin/strutture/aggiungistruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
-    it('Formato prezzo non corretto', (done) =>{
+    it('Formato prezzo non corretto', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': '20t',
@@ -214,15 +214,15 @@ describe('Aggiungi struttura', () =>{
         };
         
         chai.request(server)
-        .post('/admin/strutture/aggiungistruttura')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .post('/admin/strutture/aggiungistruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
-    it('Formato capacita non corretto', (done) =>{
+    it('Formato capacita non corretto', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
@@ -237,15 +237,15 @@ describe('Aggiungi struttura', () =>{
         };
         
         chai.request(server)
-        .post('/admin/strutture/aggiungistruttura')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .post('/admin/strutture/aggiungistruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
-    it('Formato data non corretto', (done) =>{
+    it('Formato data non corretto', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
@@ -260,15 +260,15 @@ describe('Aggiungi struttura', () =>{
         };
         
         chai.request(server)
-        .post('/admin/strutture/aggiungistruttura')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .post('/admin/strutture/aggiungistruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
-    it('Formato data non corretto', (done) =>{
+    it('Formato data non corretto', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
@@ -283,15 +283,15 @@ describe('Aggiungi struttura', () =>{
         };
         
         chai.request(server)
-        .post('/admin/strutture/aggiungistruttura')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .post('/admin/strutture/aggiungistruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
-    it('Formato ora inizio mattina non corretto', (done) =>{
+    it('Formato ora inizio mattina non corretto', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
@@ -306,15 +306,15 @@ describe('Aggiungi struttura', () =>{
         };
         
         chai.request(server)
-        .post('/admin/strutture/aggiungistruttura')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .post('/admin/strutture/aggiungistruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
-    it('Formato ora inizio mattina non corretto', (done) =>{
+    it('Formato ora inizio mattina non corretto', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
@@ -329,15 +329,15 @@ describe('Aggiungi struttura', () =>{
         };
         
         chai.request(server)
-        .post('/admin/strutture/aggiungistruttura')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .post('/admin/strutture/aggiungistruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
-    it('Formato ora inizio mattina non corretto', (done) =>{
+    it('Formato ora inizio mattina non corretto', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
@@ -352,15 +352,15 @@ describe('Aggiungi struttura', () =>{
         };
         
         chai.request(server)
-        .post('/admin/strutture/aggiungistruttura')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .post('/admin/strutture/aggiungistruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
-    it('Formato ora fine mattina non corretto', (done) =>{
+    it('Formato ora fine mattina non corretto', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
@@ -375,15 +375,15 @@ describe('Aggiungi struttura', () =>{
         };
         
         chai.request(server)
-        .post('/admin/strutture/aggiungistruttura')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .post('/admin/strutture/aggiungistruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
-    it('Formato ora fine mattina non corretto', (done) =>{
+    it('Formato ora fine mattina non corretto', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
@@ -398,15 +398,15 @@ describe('Aggiungi struttura', () =>{
         };
         
         chai.request(server)
-        .post('/admin/strutture/aggiungistruttura')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .post('/admin/strutture/aggiungistruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
-    it('Orari di mattina non coincidono logicamente con durata', (done) =>{
+    it('Orari di mattina non coincidono logicamente con durata', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
@@ -421,15 +421,15 @@ describe('Aggiungi struttura', () =>{
         };
         
         chai.request(server)
-        .post('/admin/strutture/aggiungistruttura')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .post('/admin/strutture/aggiungistruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
-    it('Orari di mattina non coincidono logicamente con durata', (done) =>{
+    it('Orari di mattina non coincidono logicamente con durata', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
@@ -444,15 +444,15 @@ describe('Aggiungi struttura', () =>{
         };
         
         chai.request(server)
-        .post('/admin/strutture/aggiungistruttura')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .post('/admin/strutture/aggiungistruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
-    it('Orari di mattina non coincidono logicamente con durata', (done) =>{
+    it('Orari di mattina non coincidono logicamente con durata', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
@@ -467,15 +467,15 @@ describe('Aggiungi struttura', () =>{
         };
         
         chai.request(server)
-        .post('/admin/strutture/aggiungistruttura')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .post('/admin/strutture/aggiungistruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
-    it('Orari di mattina non coincidono logicamente con durata', (done) =>{
+    it('Orari di mattina non coincidono logicamente con durata', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
@@ -490,15 +490,15 @@ describe('Aggiungi struttura', () =>{
         };
         
         chai.request(server)
-        .post('/admin/strutture/aggiungistruttura')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .post('/admin/strutture/aggiungistruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
-    it('Formato ora inizio pomeriggio non corretto', (done) =>{
+    it('Formato ora inizio pomeriggio non corretto', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
@@ -513,15 +513,15 @@ describe('Aggiungi struttura', () =>{
         };
         
         chai.request(server)
-        .post('/admin/strutture/aggiungistruttura')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .post('/admin/strutture/aggiungistruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
-    it('Formato ora inizio pomeriggio non corretto', (done) =>{
+    it('Formato ora inizio pomeriggio non corretto', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
@@ -536,15 +536,15 @@ describe('Aggiungi struttura', () =>{
         };
         
         chai.request(server)
-        .post('/admin/strutture/aggiungistruttura')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .post('/admin/strutture/aggiungistruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
-    it('Formato ora fine pomeriggio non corretto', (done) =>{
+    it('Formato ora fine pomeriggio non corretto', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
@@ -559,15 +559,15 @@ describe('Aggiungi struttura', () =>{
         };
         
         chai.request(server)
-        .post('/admin/strutture/aggiungistruttura')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .post('/admin/strutture/aggiungistruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
-    it('Formato ora fine pomeriggio non corretto', (done) =>{
+    it('Formato ora fine pomeriggio non corretto', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
@@ -582,15 +582,15 @@ describe('Aggiungi struttura', () =>{
         };
         
         chai.request(server)
-        .post('/admin/strutture/aggiungistruttura')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .post('/admin/strutture/aggiungistruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
-    it('Orari di pomeriggio non coincidono logicamente con durata', (done) =>{
+    it('Orari di pomeriggio non coincidono logicamente con durata', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
@@ -605,15 +605,15 @@ describe('Aggiungi struttura', () =>{
         };
         
         chai.request(server)
-        .post('/admin/strutture/aggiungistruttura')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .post('/admin/strutture/aggiungistruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
-    it('Orari di pomeriggio non coincidono logicamente con durata', (done) =>{
+    it('Orari di pomeriggio non coincidono logicamente con durata', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
@@ -628,15 +628,15 @@ describe('Aggiungi struttura', () =>{
         };
         
         chai.request(server)
-        .post('/admin/strutture/aggiungistruttura')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .post('/admin/strutture/aggiungistruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
-    it('Orari di pomeriggio non coincidono logicamente con durata', (done) =>{
+    it('Orari di pomeriggio non coincidono logicamente con durata', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
@@ -651,15 +651,15 @@ describe('Aggiungi struttura', () =>{
         };
         
         chai.request(server)
-        .post('/admin/strutture/aggiungistruttura')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .post('/admin/strutture/aggiungistruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
-    it('Formato date chiusura non corretto', (done) =>{
+    it('Formato date chiusura non corretto', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
@@ -674,15 +674,15 @@ describe('Aggiungi struttura', () =>{
         };
         
         chai.request(server)
-        .post('/admin/strutture/aggiungistruttura')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .post('/admin/strutture/aggiungistruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
-    it('Orari di apertura non coincidono con durata fasce', (done) =>{
+    it('Orari di apertura non coincidono con durata fasce', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
@@ -697,20 +697,20 @@ describe('Aggiungi struttura', () =>{
         };
         
         chai.request(server)
-        .post('/admin/strutture/aggiungistruttura')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .post('/admin/strutture/aggiungistruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
 });
 
 
-describe('Modifica struttura', () =>{
+describe('Modifica struttura', () => {
 
-    it('Dovrebbe modificare una struttura', (done) =>{
+    it('Dovrebbe modificare una struttura', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
@@ -725,15 +725,15 @@ describe('Modifica struttura', () =>{
             'idStruttura': 5
         };
         chai.request(server)
-        .post('/admin/strutture/modificastruttura')  
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(200);
-            done();
-        })
+            .post('/admin/strutture/modificastruttura')  
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                done();
+            });
     });
 
-    it('Struttura non trovata', (done) =>{
+    it('Struttura non trovata', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
@@ -748,14 +748,14 @@ describe('Modifica struttura', () =>{
             'idStruttura': 523
         };
         chai.request(server)
-        .post('/admin/strutture/modificastruttura')   .send(data)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .post('/admin/strutture/modificastruttura')   .send(data)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
-    it('Formato nome non corretto', (done) =>{
+    it('Formato nome non corretto', (done) => {
         let data = {
             'nome': 'Ciao.',
             'prezzoPerFascia': 20,
@@ -771,14 +771,14 @@ describe('Modifica struttura', () =>{
         };
 
         chai.request(server)
-        .post('/admin/strutture/modificastruttura')   .send(data)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .post('/admin/strutture/modificastruttura')   .send(data)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
-    it('Formato prezzo non corretto', (done) =>{
+    it('Formato prezzo non corretto', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': '20t',
@@ -794,14 +794,14 @@ describe('Modifica struttura', () =>{
         };
 
         chai.request(server)
-        .post('/admin/strutture/modificastruttura')   .send(data)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .post('/admin/strutture/modificastruttura')   .send(data)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
-    it('Formato capacita non corretto', (done) =>{
+    it('Formato capacita non corretto', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
@@ -817,15 +817,15 @@ describe('Modifica struttura', () =>{
         };
         
         chai.request(server)
-        .post('/admin/strutture/modificastruttura')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .post('/admin/strutture/modificastruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
-    it('Formato data non corretto', (done) =>{
+    it('Formato data non corretto', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
@@ -841,15 +841,15 @@ describe('Modifica struttura', () =>{
         };
         
         chai.request(server)
-        .post('/admin/strutture/modificastruttura')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .post('/admin/strutture/modificastruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
-    it('Formato data non corretto', (done) =>{
+    it('Formato data non corretto', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
@@ -865,15 +865,15 @@ describe('Modifica struttura', () =>{
         };
 
         chai.request(server)
-        .post('/admin/strutture/modificastruttura')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .post('/admin/strutture/modificastruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
-    it('Formato ora inizio mattina non corretto', (done) =>{
+    it('Formato ora inizio mattina non corretto', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
@@ -889,15 +889,15 @@ describe('Modifica struttura', () =>{
         };
         
         chai.request(server)
-        .post('/admin/strutture/modificastruttura')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .post('/admin/strutture/modificastruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
-    it('Formato ora inizio mattina non corretto', (done) =>{
+    it('Formato ora inizio mattina non corretto', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
@@ -912,15 +912,15 @@ describe('Modifica struttura', () =>{
             'idStruttura': 5
         };
         chai.request(server)
-        .post('/admin/strutture/modificastruttura')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .post('/admin/strutture/modificastruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
-    it('Formato ora inizio mattina non corretto', (done) =>{
+    it('Formato ora inizio mattina non corretto', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
@@ -936,15 +936,15 @@ describe('Modifica struttura', () =>{
         };
         
         chai.request(server)
-        .post('/admin/strutture/modificastruttura')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .post('/admin/strutture/modificastruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
-    it('Formato ora fine mattina non corretto', (done) =>{
+    it('Formato ora fine mattina non corretto', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
@@ -960,15 +960,15 @@ describe('Modifica struttura', () =>{
         };
 
         chai.request(server)
-        .post('/admin/strutture/modificastruttura')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .post('/admin/strutture/modificastruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
-    it('Formato ora fine mattina non corretto', (done) =>{
+    it('Formato ora fine mattina non corretto', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
@@ -984,15 +984,15 @@ describe('Modifica struttura', () =>{
         };
         
         chai.request(server)
-        .post('/admin/strutture/modificastruttura')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .post('/admin/strutture/modificastruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
-    it('Formato ora inizio pomeriggio non corretto', (done) =>{
+    it('Formato ora inizio pomeriggio non corretto', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
@@ -1008,15 +1008,15 @@ describe('Modifica struttura', () =>{
         };
 
         chai.request(server)
-        .post('/admin/strutture/modificastruttura')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .post('/admin/strutture/modificastruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
-    it('Formato ora inizio pomeriggio non corretto', (done) =>{
+    it('Formato ora inizio pomeriggio non corretto', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
@@ -1032,15 +1032,15 @@ describe('Modifica struttura', () =>{
         };
         
         chai.request(server)
-        .post('/admin/strutture/modificastruttura')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .post('/admin/strutture/modificastruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
-    it('Formato ora fine pomeriggio non corretto', (done) =>{
+    it('Formato ora fine pomeriggio non corretto', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
@@ -1056,15 +1056,15 @@ describe('Modifica struttura', () =>{
         };
         
         chai.request(server)
-        .post('/admin/strutture/modificastruttura')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .post('/admin/strutture/modificastruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
-    it('Formato ora fine pomeriggio non corretto', (done) =>{
+    it('Formato ora fine pomeriggio non corretto', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
@@ -1080,15 +1080,15 @@ describe('Modifica struttura', () =>{
         };
         
         chai.request(server)
-        .post('/admin/strutture/modificastruttura')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .post('/admin/strutture/modificastruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
-    it('Formato date chiusura non corretto', (done) =>{
+    it('Formato date chiusura non corretto', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
@@ -1104,15 +1104,15 @@ describe('Modifica struttura', () =>{
         };
         
         chai.request(server)
-        .post('/admin/strutture/modificastruttura')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .post('/admin/strutture/modificastruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
-    it('Orari apertura non coincidono con durata fasce', (done) =>{
+    it('Orari apertura non coincidono con durata fasce', (done) => {
         let data = {
             'nome': 'Campo da basket',
             'prezzoPerFascia': 20,
@@ -1128,60 +1128,60 @@ describe('Modifica struttura', () =>{
         };
 
         chai.request(server)
-        .post('/admin/strutture/modificastruttura')
-        .send(data)
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
+            .post('/admin/strutture/modificastruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
     });
 
 
 });
 
-describe('Elimina struttura', () =>{
+describe('Elimina struttura', () => {
 
-    it('Struttura non esistente', (done) =>{
+    it('Struttura non esistente', (done) => {
         let data = {
             'idStrutt': 300
         };
 
         chai.request(server)
-        .get('/admin/strutture/eliminastruttura')
-        .query(data)   
-        .end((err, res) =>{
-            res.should.have.status(400);
-            done();
-        })
-    })
+            .get('/admin/strutture/eliminastruttura')
+            .query(data)   
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
+    });
 
 
-    it('Dovrebbe eliminare la struttura', (done) =>{
+    it('Dovrebbe eliminare la struttura', (done) => {
         let data = {
             'idStrutt': 20
         };
         
         chai.request(server)
-        .get('/admin/strutture/eliminastruttura')
-        .query(data)
-        .end((err, res) =>{
-            res.should.have.status(200);
-            done();
-            Struttura.update({isCancellata :0}, {where:{
-                idStruttura : data.idStrutt
-            }});
-        });
+            .get('/admin/strutture/eliminastruttura')
+            .query(data)
+            .end((err, res) => {
+                res.should.have.status(200);
+                done();
+                Struttura.update({isCancellata :0}, {where:{
+                    idStruttura : data.idStrutt
+                }});
+            });
     });
 });
 
-describe('Visualizza strutture', () =>{
-    it('Dovrebbe visualizzare le strutture', (done) =>{
+describe('Visualizza strutture', () => {
+    it('Dovrebbe visualizzare le strutture', (done) => {
         chai.request(server)
-        .get('/admin/strutture/visualizzastrutture')
-        .end((err, res) =>{
-            res.should.have.status(200);
-            done();
-        });
+            .get('/admin/strutture/visualizzastrutture')
+            .end((err, res) => {
+                res.should.have.status(200);
+                done();
+            });
     });
 });
 
