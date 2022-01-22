@@ -28,7 +28,7 @@ let Struttura = singleton.define("struttura", {
   },
   isCancellata: {
     type: DataTypes.TINYINT,
-    allowNull: false,
+    allowNull: true,
     default: 0,
   },
   oraInizioMattina: {
