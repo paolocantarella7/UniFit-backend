@@ -100,7 +100,7 @@ exports.validaTesseramento = async (req, res) => {
       .json({ code: 400, error: erroriValidazione.array(), success: false });
   }
 
-
+  let idUtente = req.body.idUtente;
   let idRichiestaTess = req.body.idReqTess;
   let azione = req.body.azione;
 
