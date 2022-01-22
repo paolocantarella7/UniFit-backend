@@ -8,6 +8,7 @@ let Prenotazione = require("../model/Prenotazione");
 let Utente = require("../model/Utente");
 let Struttura = require("../model/Struttura");
 let generatoreFasce = require("../utils/generatoreFasce");
+let strutturaCNT = require("../controller/strutturaCNT");
 
 let validazione = {
   email: /[a-zA-Z0-9\._-]+[@][a-zA-Z0-9\._-]+[.][a-zA-Z]{2,6}/,
@@ -19,7 +20,7 @@ let validazione = {
 };
 
 router.get("/dettagliPrenotazione", prenotazioneCNT.getPrenotazioneById);
-
+router.get("/struttureDisponibili", strutturaCNT.visualizzaStruttureDisponibili);
 router.get(
   "/prenotazioniUtente",
   [
