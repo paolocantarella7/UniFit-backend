@@ -156,7 +156,7 @@ exports.validaTesseramento = async (req, res) => {
     });
 
     //Cancello la cartella creata con il certificato "rifiutato" di quell'utente
-    fs.rmSync("./static/richieste_tesseramento/" + idUtente, {
+    fs.rm("./static/richieste_tesseramento/" + idUtente, {
       recursive: true }, (err) =>{ console.log(err)});
 
     res.status(200).json({
