@@ -108,6 +108,27 @@ exports.visualizzaStrutture = async (req, res) => {
 };
 
 /**
+ * Nome metodo: visualizzaStruttureDisponibili
+ * Descrizione: Metodo che permette all'utente di visualizzare la lista di strutture disponibili
+ * Parametri: void
+ * Return: Codice, lista strutture, boolean true/false in base alla riuscita dell'operazione
+ * Autore : Matteo Della Rocca
+ */
+ exports.visualizzaStruttureDisponibili = async (req, res) => {
+    await Struttura.findAll({where : { isCancellata: 0}}).then((result) => {
+      if (result) {
+        res.status(200).json({ code: 200, strutture: result, success: true });
+      } 
+    });
+    /* .catch((err) => {
+          console.error(err);
+          res
+            .status(500)
+            .json({ code: 500, msg: "Qualcosa è andato storto..", success: false });
+        });*/
+  };
+
+/**
  * Nome metodo: eliminaStruttura
  * Descrizione: Metodo che permette all'amministratore di cancellare (logicamente) una struttura dal db
  * Parametri: ID Struttura

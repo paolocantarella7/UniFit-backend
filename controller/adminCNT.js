@@ -176,3 +176,29 @@ exports.validaTesseramento = async (req, res) => {
     }
 };
 
+/**
+ * Nome metodo: downloadCertificato
+ * Descrizione: Metodo che permette all'amministratore di scaricare il file in allegato nella richiesta
+ * Parametri: ID Richiesta Tesseramento
+ * Return: Codice, File/Messaggio d'errore, boolean true/false in base alla riuscita dell'operazione
+ * Autore : Matteo Della Rocca
+ */
+exports.downloadCertificato = async (req,res) =>{
+    
+    let idReq = Number(req.params.idReq).toString();
+  
+    await Richiesta_tesseramento.findOne({
+    where : {
+      idRichiesta_tesseramento: idReq
+    }}).then((result)=>{
+      if(result){
+        let certificato = fs.readFileSync('.'+result.certificatoAllegatoPath+"/certificato.pdf");
+        res.status(200).contentType("application/pdf").send(certificato);
+        }else{
+            res.status(400).json({code: 400, msg: "Richiesta di tesseramento non trovata", success : false})
+        }
+        
+      }
+    )
+  
+  };

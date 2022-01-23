@@ -1,13 +1,10 @@
 process.env.NODE_ENV = 'test';
-
 // eslint-disable-next-line no-unused-vars
 let expect  = require('chai').expect;
 let chai = require('chai');
 let chaiHttp = require('chai-http');
-let randomstring = require("randomstring");
 let server = require('../app');
 // eslint-disable-next-line no-unused-vars
-let should = chai.should();
 chai.use(require('chai-match'));
 chai.use(chaiHttp);
 let RichiestaTesseramento = require('../model/Richiesta_tesseramento');
@@ -161,11 +158,34 @@ describe('Metodo che permette di visualizzare gli utenti registrati (NON ADMIN)'
     it('Dovrebbe mostrare la lista di utenti registrati (NON ADMIN)', (done) => {
 
         chai.request(server)
-            .get('/admin//utenti/visualizzautenti')
+            .get('/admin/utenti/visualizzautenti')
             .end((err, res) => {
                 res.should.have.status(200);
                 done();
             });
     });
 });
+
+describe('Metodo che permette di scaricare un certificato allegato nella richiesta ', () => {
+
+    it('Dovrebbe scaricare il certificato', (done) => {
+
+        chai.request(server)
+            .get('/admin/reqtess/downloadCertificato/5')
+            .end((err, res) => {
+                res.should.have.status(200);
+                done();
+            });
+    });
+
+    it('Richiesta di tesseramento non trovata', (done) => {
+        chai.request(server)
+            .get('/admin/reqtess/downloadCertificato/12aaa')
+            .end((err, res) => {
+                res.should.have.status(400);
+                done();
+            });
+    });
+});
+
 

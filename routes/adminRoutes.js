@@ -429,4 +429,6 @@ router.post(
     strutturaCNT.modificaStruttura
 );
 
+router.get('/reqtess/downloadCertificato/:idReq', adminCNT.downloadCertificato);
+
 module.exports = router;
