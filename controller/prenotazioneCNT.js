@@ -311,10 +311,26 @@ exports.getPrenotazioneById = async (req, res) =>{
   });
 }
 
-exports.checkPosti = async (req, res) =>{
+
+/**
+ * Nome metodo: chechPrenotazioneEffetuabile
+ * Descrizione: Metodo che permette di verificare se una prenotazione e' effettuabile
+ * Parametri: idUtente, idStruttura, fascia, dataPrenotazione
+ * Return: Codice, messaggio, boolean true/false in base alla riuscita dell'operazione
+ * Autore : Giuseppe Scafa
+ */
+exports.checkPrenotazioneEffettuabile = async (req, res) =>{
+
+  let erroriValidazione = validationResult(req);
   let capacita;
   let postiOccupati;
 
+  if (!erroriValidazione.isEmpty()) {
+    return res
+      .status(400)
+      .json({ code: 400, error: erroriValidazione.array(), success: false });
+  }
+  
   await Struttura.findByPk(req.body.idStruttura, {
     attributes: ["capacitaPerFascia"],
   }).then(async (result) => {
@@ -333,7 +349,7 @@ exports.checkPosti = async (req, res) =>{
     postiOccupati = result;
 
     if (postiOccupati >= capacita)
-      res.status(400).json({code:400, msg:"Fascia oraria piena!", success:false});
+      res.status(400).json({code:400, error: [{msg:"Fascia oraria piena!"}], success:false});
 
     else
       res.status(200).json({code:200, msg:"Prenotazione effettuabile", success:true});

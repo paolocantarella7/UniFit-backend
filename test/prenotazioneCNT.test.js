@@ -1109,6 +1109,211 @@ describe('Visualizza dettagli prenotazione', ()=>{
   });
 });
 
+describe("Metodo che permette di controllare se una prenotazione e' effettuabile", () => {
+  it("Dovrebbe indicare la prenotazione come prenotabile", (done) => {
+    
+    let parametri = {
+      idStruttura: 1,
+      dataPrenotazione: "2022-12-18",
+      fascia: "10:00-11:00",
+      idUtente: 1
+    };
+
+    chai
+      .request(server)
+      .post("/prenotazione/checkPosti")
+      .send(parametri)
+      .end((err, res) => {
+        res.should.have.status(200);
+        done();
+
+      });
+  });
+
+  it("Struttura non trovata", (done) => {
+    let parametri = {
+      idStruttura: "1323",
+      dataPrenotazione: "2022-12-18",
+      fascia: "10:00-11:00",
+      idUtente: 1,
+    };
+
+    chai
+      .request(server)
+      .post("/prenotazione/checkPosti")
+      .send(parametri)
+      .end((err, res) => {
+        res.should.have.status(400);
+        done();
+      });
+  });
+
+  it("Data prenotazione non valida (nel passato)", (done) => {
+    let parametri = {
+      idStruttura: "1",
+      dataPrenotazione: "2018-02-10",
+      fascia: "10:00-11:00",
+      idUtente: "1",
+    };
+
+    chai
+      .request(server)
+      .post("/prenotazione/checkPosti")
+      .send(parametri)
+      .end((err, res) => {
+        res.should.have.status(400);
+        done();
+      });
+  });
+
+  it("Data prenotazione non valida (FORMATO)", (done) => {
+    let parametri = {
+      idStruttura: "1",
+      dataPrenotazione: "2021/02/10",
+      fascia: "10:00-11:00",
+      idUtente: "1",
+    };
+
+    chai
+      .request(server)
+      .post("/prenotazione/checkPosti")
+      .send(parametri)
+      .end((err, res) => {
+        res.should.have.status(400);
+        done();
+      });
+  });
+
+  it("Data prenotazione non valida (Struttura chiusa in quella data)", (done) => {
+    let parametri = {
+      idStruttura: "1",
+      dataPrenotazione: "2021-12-25",
+      fascia: "10:00-11:00",
+      idUtente: "1",
+    };
+
+    chai
+      .request(server)
+      .post("/prenotazione/checkPosti")
+      .send(parametri)
+      .end((err, res) => {
+        res.should.have.status(400);
+        done();
+      });
+  });
+
+  it("Fascia oraria non valida (FORMATO)", (done) => {
+    let parametri = {
+      idStruttura: "1",
+      dataPrenotazione: "2021-12-25",
+      intestatarioCarta: "Matteo Scafa",
+      numeroCarta: "1234567891234567",
+      cvvCarta: "123",
+      scadenzaCarta: "2025-12-20",
+      fascia: "pollo",
+      idUtente: "3",
+    };
+
+    chai
+      .request(server)
+      .post("/prenotazione/checkPosti")
+      .send(parametri)
+      .end((err, res) => {
+        res.should.have.status(400);
+        done();
+      });
+  });
+
+  it("Fascia oraria non valida (FORMATO)", (done) => {
+    let parametri = {
+      idStruttura: "1",
+      dataPrenotazione: "2022-02-01",
+      fascia: "1000-1035",
+      idUtente: "1",
+    };
+
+    chai
+      .request(server)
+      .post("/prenotazione/checkPosti")
+      .send(parametri)
+      .end((err, res) => {
+        res.should.have.status(400);
+        done();
+      });
+  });
+
+  it("Fascia oraria non valida (Slot non esistente)", (done) => {
+    let parametri = {
+      idStruttura: "1",
+      dataPrenotazione: "2021-12-25",
+      fascia: "10:00-13:00",
+      idUtente: "1",
+    };
+
+    chai
+      .request(server)
+      .post("/prenotazione/checkPosti")
+      .send(parametri)
+      .end((err, res) => {
+        res.should.have.status(400);
+        done();
+      });
+  });
+
+  it("Fascia oraria non valida (Slot pieno)", (done) => {
+    let parametri = {
+      idStruttura: "5",
+      dataPrenotazione: "2022-02-25",
+      fascia: "18:00-19:00",
+      idUtente: "11",
+    };
+
+    chai
+      .request(server)
+      .post("/prenotazione/checkPosti")
+      .send(parametri)
+      .end((err, res) => {
+        res.should.have.status(400);
+        done();
+      });
+  });
+
+  it("Utente non tesserato", (done) => {
+    let parametri = {
+      idStruttura: "4",
+      fascia: "10:00-11:00",
+      idUtente: "3212",
+    };
+
+    chai
+      .request(server)
+      .post("/prenotazione/checkPosti")
+      .send(parametri)
+      .end((err, res) => {
+        res.should.have.status(400);
+        done();
+      });
+  });
+
+  it("Utente non trovato", (done) => {
+    let parametri = {
+      idStruttura: "1",
+      dataPrenotazione: "2021-12-25",
+      fascia: "10:00-11:00",
+      idUtente: "3212",
+    };
+
+    chai
+      .request(server)
+      .post("/prenotazione/checkPosti")
+      .send(parametri)
+      .end((err, res) => {
+        res.should.have.status(400);
+        done();
+      });
+  });
+});
+
 
 });
 
