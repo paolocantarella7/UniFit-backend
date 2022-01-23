@@ -60,7 +60,7 @@ describe('Valida tesseramento', () => {
                 done();
                 RichiestaTesseramento.update({statusRichiesta: 'Effettuata'}, {
                     where:{
-                        idRichiesta_tesseramento: 5
+                        'idRichiesta_tesseramento': 5
                     }
                 });       
             });

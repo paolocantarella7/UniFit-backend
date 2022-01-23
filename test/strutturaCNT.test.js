@@ -4,7 +4,6 @@ process.env.NODE_ENV = 'test';
 let expect  = require('chai').expect;
 let chai = require('chai');
 let chaiHttp = require('chai-http');
-let randomstring = require("randomstring");
 let server = require('../app');
 // eslint-disable-next-line no-unused-vars
 let  should = chai.should();

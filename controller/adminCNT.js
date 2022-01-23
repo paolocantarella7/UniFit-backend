@@ -1,5 +1,5 @@
 let Utente = require("../model/Utente");
-let Richiesta_tesseramento = require("../model/Richiesta_tesseramento");
+let RichiestaTesseramento = require("../model/Richiesta_tesseramento");
 let { validationResult } = require("express-validator");
 let fs = require("fs");
 
@@ -48,7 +48,7 @@ exports.visualizzaUtentiRegistrati = async (req, res) => {
  * Autore : Matteo Della Rocca
  */
 exports.visualizzaRichiesteTesseramento = async (req, res) => {
-    await Richiesta_tesseramento.findAll({
+    await RichiestaTesseramento.findAll({
         attributes: [
             "idRichiesta_tesseramento",
             "tipologiaTesseramento",
@@ -106,10 +106,10 @@ exports.validaTesseramento = async (req, res) => {
 
     if (azione === "accetta") {
     //caso di accettazione richiesta
-        await Richiesta_tesseramento.update(
+        await RichiestaTesseramento.update(
             { statusRichiesta: "Accettata" },
             {
-                where: { idRichiesta_tesseramento: idRichiestaTess, utente: idUtente },
+                where: { 'idRichiesta_tesseramento': idRichiestaTess, utente: idUtente },
                 returning: true,
                 plain: true,
             }
@@ -151,8 +151,8 @@ exports.validaTesseramento = async (req, res) => {
       });*/
     } //rifiuto, la richiesta va cancellata
     else {
-        await Richiesta_tesseramento.destroy({
-            where: { idRichiesta_tesseramento: idRichiestaTess, utente: idUtente },
+        await RichiestaTesseramento.destroy({
+            where: { 'idRichiesta_tesseramento': idRichiestaTess, utente: idUtente },
         });
 
         //Cancello la cartella creata con il certificato "rifiutato" di quell'utente
@@ -183,22 +183,22 @@ exports.validaTesseramento = async (req, res) => {
  * Return: Codice, File/Messaggio d'errore, boolean true/false in base alla riuscita dell'operazione
  * Autore : Matteo Della Rocca
  */
-exports.downloadCertificato = async (req,res) =>{
+exports.downloadCertificato = async (req, res) => {
     
     let idReq = Number(req.params.idReq).toString();
   
-    await Richiesta_tesseramento.findOne({
-    where : {
-      idRichiesta_tesseramento: idReq
-    }}).then((result)=>{
-      if(result){
-        let certificato = fs.readFileSync('.'+result.certificatoAllegatoPath+"/certificato.pdf");
-        res.status(200).contentType("application/pdf").send(certificato);
+    await RichiestaTesseramento.findOne({
+        where : {
+            'idRichiesta_tesseramento': idReq
+        }}).then((result) => {
+        if(result){
+            let certificato = fs.readFileSync('.'+result.certificatoAllegatoPath+"/certificato.pdf");
+            res.status(200).contentType("application/pdf").send(certificato);
         }else{
-            res.status(400).json({code: 400, msg: "Richiesta di tesseramento non trovata", success : false})
+            res.status(400).json({code: 400, msg: "Richiesta di tesseramento non trovata", success : false});
         }
         
-      }
-    )
+    }
+    );
   
-  };
+};

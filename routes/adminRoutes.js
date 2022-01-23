@@ -48,7 +48,7 @@ router.post(
             let idUtente = Number(req.body.idUtente).toString();
 
             return await RichiestaTesseramento.findOne({
-                where: { idRichiesta_tesseramento: idRT, utente: idUtente },
+                where: { 'idRichiesta_tesseramento': idRT, utente: idUtente },
             }).then((result) => {
                 if (!result || (result  && result.statusRichiesta === "Accettata")) {
                     //richieste non trovate o già accettate

@@ -114,11 +114,11 @@ exports.visualizzaStrutture = async (req, res) => {
  * Return: Codice, lista strutture, boolean true/false in base alla riuscita dell'operazione
  * Autore : Matteo Della Rocca
  */
- exports.visualizzaStruttureDisponibili = async (req, res) => {
+exports.visualizzaStruttureDisponibili = async (req, res) => {
     await Struttura.findAll({where : { isCancellata: 0}}).then((result) => {
-      if (result) {
-        res.status(200).json({ code: 200, strutture: result, success: true });
-      } 
+        if (result) {
+            res.status(200).json({ code: 200, strutture: result, success: true });
+        } 
     });
     /* .catch((err) => {
           console.error(err);
@@ -126,7 +126,7 @@ exports.visualizzaStrutture = async (req, res) => {
             .status(500)
             .json({ code: 500, msg: "Qualcosa è andato storto..", success: false });
         });*/
-  };
+};
 
 /**
  * Nome metodo: eliminaStruttura

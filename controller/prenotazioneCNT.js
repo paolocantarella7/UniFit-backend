@@ -1,10 +1,7 @@
 let Utente = require("../model/Utente");
-let RichiestaTesseramento = require("../model/Richiesta_tesseramento");
 let Prenotazione = require("../model/Prenotazione");
-let Chiusura = require("../model/Chiusura");
 let Struttura = require("../model/Struttura");
 let Fattura = require("../model/Fattura");
-let { Sequelize } = require("../singleton/singleton");
 let senderEmail = require("../utils/sendEmail");
 let { validationResult } = require("express-validator");
 let generatoreFasce = require("../utils/generatoreFasce");
@@ -18,24 +15,24 @@ let moment = require("moment");
  * Autore : Giuseppe Scafa
  */
 exports.getPrenotazioniByUtente = async (req, res) => {
-  let erroriValidazione = validationResult(req);
-  if (!erroriValidazione.isEmpty()) {
-    return res
-      .status(400)
-      .json({ code: 400, error: erroriValidazione.array(), success: false });
-  }
+    let erroriValidazione = validationResult(req);
+    if (!erroriValidazione.isEmpty()) {
+        return res
+            .status(400)
+            .json({ code: 400, error: erroriValidazione.array(), success: false });
+    }
 
-  await Prenotazione.findAll({
-    include: {
-      model: Struttura,
-      as: "strutturaPrenotata",
-      attributes: ["nome"],
-    },
-    where: { utente: Number(req.query.idUtente).toString() },
-  }).then((result) => {
-    if (result)
-      res.status(200).json({ code: 200, prenotazioni: result, success: true });
-  });
+    await Prenotazione.findAll({
+        include: {
+            model: Struttura,
+            as: "strutturaPrenotata",
+            attributes: ["nome"],
+        },
+        where: { utente: Number(req.query.idUtente).toString() },
+    }).then((result) => {
+        if (result)
+            res.status(200).json({ code: 200, prenotazioni: result, success: true });
+    });
 };
 
 /**
@@ -47,36 +44,36 @@ exports.getPrenotazioniByUtente = async (req, res) => {
  */
 
 exports.getFasceOrarie = async (req, res) => {
-  let erroriValidazione = validationResult(req);
-  if (!erroriValidazione.isEmpty()) {
-    return res
-      .status(400)
-      .json({ code: 400, error: erroriValidazione.array(), success: false });
-  }
-
-  let listaFasce;
-  await Struttura.findByPk(req.query.idStruttura, {
-    attributes: [
-      "oraInizioMattina",
-      "oraFineMattina",
-      "oraInizioPomeriggio",
-      "oraFinePomeriggio",
-      "durataPerFascia",
-    ],
-  }).then((result) => {
-    if (result) {
-      listaFasce = generatoreFasce.getListaFasce(
-        result.oraInizioMattina,
-        result.oraFineMattina,
-        result.oraInizioPomeriggio,
-        result.oraFinePomeriggio,
-        result.durataPerFascia
-      );
-      res
-        .status(200)
-        .json({ code: 200, listaFasce: listaFasce, success: true });
+    let erroriValidazione = validationResult(req);
+    if (!erroriValidazione.isEmpty()) {
+        return res
+            .status(400)
+            .json({ code: 400, error: erroriValidazione.array(), success: false });
     }
-  });
+
+    let listaFasce;
+    await Struttura.findByPk(req.query.idStruttura, {
+        attributes: [
+            "oraInizioMattina",
+            "oraFineMattina",
+            "oraInizioPomeriggio",
+            "oraFinePomeriggio",
+            "durataPerFascia",
+        ],
+    }).then((result) => {
+        if (result) {
+            listaFasce = generatoreFasce.getListaFasce(
+                result.oraInizioMattina,
+                result.oraFineMattina,
+                result.oraInizioPomeriggio,
+                result.oraFinePomeriggio,
+                result.durataPerFascia
+            );
+            res
+                .status(200)
+                .json({ code: 200, listaFasce: listaFasce, success: true });
+        }
+    });
 };
 
 /**
@@ -88,70 +85,70 @@ exports.getFasceOrarie = async (req, res) => {
  */
 
 exports.effettuaPrenotazione = async (req, res) => {
-  let erroriValidazione = validationResult(req);
-  let capacita, prezzo, postiOccupati;
-  if (!erroriValidazione.isEmpty()) {
-    return res
-      .status(400)
-      .json({ code: 400, error: erroriValidazione.array(), success: false });
-  }
-
-  await Struttura.findByPk(req.body.idStruttura, {
-    attributes: ["capacitaPerFascia", "prezzoPerFascia"],
-  }).then((result) => {
-    if (result) {
-      capacita = result.capacitaPerFascia;
-      prezzo = result.prezzoPerFascia;
+    let erroriValidazione = validationResult(req);
+    let capacita, prezzo, postiOccupati;
+    if (!erroriValidazione.isEmpty()) {
+        return res
+            .status(400)
+            .json({ code: 400, error: erroriValidazione.array(), success: false });
     }
-  });
 
-  let fasciaOraria = req.body.fascia.split("-");
-  await Prenotazione.count({
-    where: {
-      struttura: req.body.idStruttura,
-      dataPrenotazione: req.body.dataPrenotazione,
-      oraInizio: fasciaOraria[0],
-      oraFine: fasciaOraria[1],
-    },
-  }).then((result) => {
-    postiOccupati = result;
-  });
-
-  if (postiOccupati < capacita) {
-    let newPrenotazione = {
-      dataPrenotazione: req.body.dataPrenotazione,
-      oraInizio: fasciaOraria[0],
-      oraFine: fasciaOraria[1],
-      totalePagato: prezzo,
-      utente: req.body.idUtente,
-      struttura: req.body.idStruttura,
-    };
-    await Prenotazione.create(newPrenotazione).then(async (result) => {
-      if (result) {
-        let nuovaFattura = {
-          intestatario: req.body.intestatarioCarta,
-          totalePagamento: result.totalePagato,
-          dataRilascio: new Date(new Date().getTime())
-            .toISOString()
-            .substring(0, 10),
-          statusFattura: "Pagata",
-          prenotazione: result.idPrenotazione,
-        };
-        await Fattura.create(nuovaFattura).then((reslt) => {
-          if (reslt)
-            return res.status(200).json({
-              code: 200,
-              msg: "Operazione effettuata con successo",
-              success: true,
-            });
-        });
-      }
+    await Struttura.findByPk(req.body.idStruttura, {
+        attributes: ["capacitaPerFascia", "prezzoPerFascia"],
+    }).then((result) => {
+        if (result) {
+            capacita = result.capacitaPerFascia;
+            prezzo = result.prezzoPerFascia;
+        }
     });
-  } else {
-    return res
-      .status(400)
-      .json({ code: 400, msg: "Fascia oraria piena!", success: false });
-  }
+
+    let fasciaOraria = req.body.fascia.split("-");
+    await Prenotazione.count({
+        where: {
+            struttura: req.body.idStruttura,
+            dataPrenotazione: req.body.dataPrenotazione,
+            oraInizio: fasciaOraria[0],
+            oraFine: fasciaOraria[1],
+        },
+    }).then((result) => {
+        postiOccupati = result;
+    });
+
+    if (postiOccupati < capacita) {
+        let newPrenotazione = {
+            dataPrenotazione: req.body.dataPrenotazione,
+            oraInizio: fasciaOraria[0],
+            oraFine: fasciaOraria[1],
+            totalePagato: prezzo,
+            utente: req.body.idUtente,
+            struttura: req.body.idStruttura,
+        };
+        await Prenotazione.create(newPrenotazione).then(async (result) => {
+            if (result) {
+                let nuovaFattura = {
+                    intestatario: req.body.intestatarioCarta,
+                    totalePagamento: result.totalePagato,
+                    dataRilascio: new Date(new Date().getTime())
+                        .toISOString()
+                        .substring(0, 10),
+                    statusFattura: "Pagata",
+                    prenotazione: result.idPrenotazione,
+                };
+                await Fattura.create(nuovaFattura).then((reslt) => {
+                    if (reslt)
+                        return res.status(200).json({
+                            code: 200,
+                            msg: "Operazione effettuata con successo",
+                            success: true,
+                        });
+                });
+            }
+        });
+    } else {
+        return res
+            .status(400)
+            .json({ code: 400, msg: "Fascia oraria piena!", success: false });
+    }
 };
 
 /**
@@ -162,56 +159,56 @@ exports.effettuaPrenotazione = async (req, res) => {
  * Autore : Giuseppe Scafa
  */
 exports.modificaPrenotazione = async (req, res) => {
-  let erroriValidazione = validationResult(req);
-  let capacita, postiOccupati;
+    let erroriValidazione = validationResult(req);
+    let capacita, postiOccupati;
 
-  if (!erroriValidazione.isEmpty()) {
-    return res
-      .status(400)
-      .json({ code: 400, error: erroriValidazione.array(), success: false });
-  }
-
-  await Struttura.findByPk(req.body.idStruttura, {
-    attributes: ["capacitaPerFascia"],
-  }).then(async (result) => {
-    capacita = result.capacitaPerFascia;
-  });
-
-  let fasciaOraria = req.body.fascia.split("-");
-  await Prenotazione.count({
-    where: {
-      struttura: req.body.idStruttura,
-      dataPrenotazione: req.body.dataPrenotazione,
-      oraInizio: fasciaOraria[0],
-      oraFine: fasciaOraria[1],
-    },
-  }).then(async (result) => {
-    postiOccupati = result;
-
-    if (postiOccupati < capacita) {
-      await Prenotazione.update(
-        {
-          oraInizio: fasciaOraria[0],
-          oraFine: fasciaOraria[1],
-        },
-        {
-          where: {
-            idPrenotazione: req.body.idPrenotazione,
-          },
-        }
-      ).then(() => {
-        return res.status(200).json({
-          code: 200,
-          msg: "Modifica effettuata con successo!",
-          success: true,
-        });
-      });
-    } else {
-      return res
-        .status(400)
-        .json({ code: 400, msg: "Fascia oraria piena!", success: false });
+    if (!erroriValidazione.isEmpty()) {
+        return res
+            .status(400)
+            .json({ code: 400, error: erroriValidazione.array(), success: false });
     }
-  });
+
+    await Struttura.findByPk(req.body.idStruttura, {
+        attributes: ["capacitaPerFascia"],
+    }).then(async (result) => {
+        capacita = result.capacitaPerFascia;
+    });
+
+    let fasciaOraria = req.body.fascia.split("-");
+    await Prenotazione.count({
+        where: {
+            struttura: req.body.idStruttura,
+            dataPrenotazione: req.body.dataPrenotazione,
+            oraInizio: fasciaOraria[0],
+            oraFine: fasciaOraria[1],
+        },
+    }).then(async (result) => {
+        postiOccupati = result;
+
+        if (postiOccupati < capacita) {
+            await Prenotazione.update(
+                {
+                    oraInizio: fasciaOraria[0],
+                    oraFine: fasciaOraria[1],
+                },
+                {
+                    where: {
+                        idPrenotazione: req.body.idPrenotazione,
+                    },
+                }
+            ).then(() => {
+                return res.status(200).json({
+                    code: 200,
+                    msg: "Modifica effettuata con successo!",
+                    success: true,
+                });
+            });
+        } else {
+            return res
+                .status(400)
+                .json({ code: 400, msg: "Fascia oraria piena!", success: false });
+        }
+    });
 };
 
 /**
@@ -223,58 +220,58 @@ exports.modificaPrenotazione = async (req, res) => {
  */
 
 exports.cancellaPrenotazione = async (req, res) => {
-  let erroriValidazione = validationResult(req);
-  let reslt;
-  if (!erroriValidazione.isEmpty()) {
-    return res
-      .status(400)
-      .json({ code: 400, error: erroriValidazione.array(), success: false });
-  }
-
-  reslt = await Prenotazione.findByPk(req.body.idPrenotazione, {
-    attributes: ["totalePagato", "dataPrenotazione", "oraInizio"],
-  });
-
-  let dataPrenotazione = moment(
-    new Date(reslt.dataPrenotazione).setHours(
-      reslt.oraInizio.split(":")[0],
-      reslt.oraInizio.split(":")[1],
-      0,
-      0
-    )
-  );
-  let dataOggi = moment(new Date());
-  let utentePerEmail;
-
-  await Prenotazione.destroy({
-    where: {
-      idPrenotazione: req.body.idPrenotazione,
-    },
-  }).then(async (result) => {
-    if (result) {
-      utentePerEmail = await Utente.findByPk(req.body.idUtente, {
-        attributes: ["email"],
-      });
-
-      if (
-        dataPrenotazione.diff(dataOggi, "hours") > 24 //Rimborso soltanto se la data si differenzia di 24h dalla data prenotata
-      ) {
-        effettuaRimborso(utentePerEmail.email, reslt.totalePagato).then(() => {
-          return res.status(200).json({
-            code: 200,
-            msg: "Cancellazione con rimborso avvenuta con successo!",
-            success: true,
-          });
-        });
-      } else {
-        return res.status(200).json({
-          code: 200,
-          msg: "Cancellazione senza rimborso avvenuta con successo!",
-          success: true,
-        });
-      }
+    let erroriValidazione = validationResult(req);
+    let reslt;
+    if (!erroriValidazione.isEmpty()) {
+        return res
+            .status(400)
+            .json({ code: 400, error: erroriValidazione.array(), success: false });
     }
-  });
+
+    reslt = await Prenotazione.findByPk(req.body.idPrenotazione, {
+        attributes: ["totalePagato", "dataPrenotazione", "oraInizio"],
+    });
+
+    let dataPrenotazione = moment(
+        new Date(reslt.dataPrenotazione).setHours(
+            reslt.oraInizio.split(":")[0],
+            reslt.oraInizio.split(":")[1],
+            0,
+            0
+        )
+    );
+    let dataOggi = moment(new Date());
+    let utentePerEmail;
+
+    await Prenotazione.destroy({
+        where: {
+            idPrenotazione: req.body.idPrenotazione,
+        },
+    }).then(async (result) => {
+        if (result) {
+            utentePerEmail = await Utente.findByPk(req.body.idUtente, {
+                attributes: ["email"],
+            });
+
+            if (
+                dataPrenotazione.diff(dataOggi, "hours") > 24 //Rimborso soltanto se la data si differenzia di 24h dalla data prenotata
+            ) {
+                effettuaRimborso(utentePerEmail.email, reslt.totalePagato).then(() => {
+                    return res.status(200).json({
+                        code: 200,
+                        msg: "Cancellazione con rimborso avvenuta con successo!",
+                        success: true,
+                    });
+                });
+            } else {
+                return res.status(200).json({
+                    code: 200,
+                    msg: "Cancellazione senza rimborso avvenuta con successo!",
+                    success: true,
+                });
+            }
+        }
+    });
 };
 
 /**
@@ -285,7 +282,7 @@ exports.cancellaPrenotazione = async (req, res) => {
  * Autore : Giuseppe Scafa
  */
 let effettuaRimborso = async (email, importo) => {
-  await senderEmail.sendRimborsoEmail(email, importo);
+    await senderEmail.sendRimborsoEmail(email, importo);
 };
 
 /**
@@ -296,46 +293,46 @@ let effettuaRimborso = async (email, importo) => {
  * Autore : Giuseppe Scafa
  */
 exports.checkPrenotazioneEffettuabile = async (req, res) => {
-  let erroriValidazione = validationResult(req);
-  let capacita;
-  let postiOccupati;
+    let erroriValidazione = validationResult(req);
+    let capacita;
+    let postiOccupati;
 
-  if (!erroriValidazione.isEmpty()) {
-    return res
-      .status(400)
-      .json({ code: 400, error: erroriValidazione.array(), success: false });
-  }
-
-  await Struttura.findByPk(req.body.idStruttura, {
-    attributes: ["capacitaPerFascia"],
-  }).then(async (result) => {
-    capacita = result.capacitaPerFascia;
-  });
-  let fasciaOraria = req.body.fascia.split("-");
-  await Prenotazione.count({
-    where: {
-      struttura: req.body.idStruttura,
-      dataPrenotazione: req.body.dataPrenotazione,
-      oraInizio: fasciaOraria[0],
-      oraFine: fasciaOraria[1],
-    },
-  }).then(async (result) => {
-    postiOccupati = result;
-
-    if (postiOccupati >= capacita) {
-      res
-        .status(400)
-        .json({
-          code: 400,
-          error: [{ msg: "Fascia oraria piena!" }],
-          success: false,
-        });
-    } else {
-      res
-        .status(200)
-        .json({ code: 200, msg: "Prenotazione effettuabile", success: true });
+    if (!erroriValidazione.isEmpty()) {
+        return res
+            .status(400)
+            .json({ code: 400, error: erroriValidazione.array(), success: false });
     }
-  });
+
+    await Struttura.findByPk(req.body.idStruttura, {
+        attributes: ["capacitaPerFascia"],
+    }).then(async (result) => {
+        capacita = result.capacitaPerFascia;
+    });
+    let fasciaOraria = req.body.fascia.split("-");
+    await Prenotazione.count({
+        where: {
+            struttura: req.body.idStruttura,
+            dataPrenotazione: req.body.dataPrenotazione,
+            oraInizio: fasciaOraria[0],
+            oraFine: fasciaOraria[1],
+        },
+    }).then(async (result) => {
+        postiOccupati = result;
+
+        if (postiOccupati >= capacita) {
+            res
+                .status(400)
+                .json({
+                    code: 400,
+                    error: [{ msg: "Fascia oraria piena!" }],
+                    success: false,
+                });
+        } else {
+            res
+                .status(200)
+                .json({ code: 200, msg: "Prenotazione effettuabile", success: true });
+        }
+    });
 };
 
 /**
@@ -346,21 +343,21 @@ exports.checkPrenotazioneEffettuabile = async (req, res) => {
  * Autore : Giuseppe Scafa
  */
 exports.getPrenotazioneById = async (req, res) => {
-  Prenotazione.findByPk(Number(req.query.idPrenotazione).toString()).then(
-    (result) => {
-      if (result) {
-        res
-          .status(200)
-          .json({ code: 200, listaPrenotazioni: result, success: true });
-      } else {
-        res
-          .status(400)
-          .json({
-            code: 400,
-            msg: "Prenotazione non trovata!",
-            success: false,
-          });
-      }
-    }
-  );
+    Prenotazione.findByPk(Number(req.query.idPrenotazione).toString()).then(
+        (result) => {
+            if (result) {
+                res
+                    .status(200)
+                    .json({ code: 200, listaPrenotazioni: result, success: true });
+            } else {
+                res
+                    .status(400)
+                    .json({
+                        code: 400,
+                        msg: "Prenotazione non trovata!",
+                        success: false,
+                    });
+            }
+        }
+    );
 };
