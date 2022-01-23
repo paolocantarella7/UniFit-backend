@@ -19,6 +19,63 @@ let validazione = {
   fasciaOraria: /^[0-9]+:[0-9]+-[0-9]+:[0-9]+$/,
 };
 
+router.post("/checkPosti",  [
+  body("idUtente").custom(async (value) => {
+    await Utente.findByPk(value).then((result) => {
+      if (!result || (result && result.isCancellato)) throw new Error("Utente non esistente");
+      if (result && !result.isTesserato) throw new Error("Utente non tesserato!");
+    });
+  }).bail(),
+  body("idStruttura").custom(async (value) => {
+    await Struttura.findByPk(value).then((result) => {
+      if (!result || result.isCancellata)
+        throw new Error("Struttura non esistente");
+    });
+  }),
+  body("fascia")
+    .matches(validazione.fasciaOraria)
+    .withMessage("Formato fascia oraria non valido!")
+    .bail()
+    .custom(async (value, { req }) => {
+      let strut;
+
+      strut = await Struttura.findByPk(req.body.idStruttura);
+
+      let listaFasce = generatoreFasce.getListaFasce(
+        strut.oraInizioMattina,
+        strut.oraFineMattina,
+        strut.oraInizioPomeriggio,
+        strut.oraFinePomeriggio,
+        strut.durataPerFascia
+      );
+      if (!listaFasce.includes(value))
+        throw new Error("Fascia oraria non valida!");
+    }),
+  body("dataPrenotazione")
+    .matches(validazione.data)
+    .withMessage("Formato data prenotazione non valido")
+    .bail()
+    .custom(async (value, { req }) => {
+      return await Chiusura.count({
+        where: {
+          struttura: req.body.idStruttura,
+          dataChiusura: value,
+        },
+      }).then((result) => {
+        if (result > 0)
+          throw new Error("Struttura chiusa nel giorno selezionato");
+      });
+    })
+    .bail()
+    .custom(async (value) => {
+      if (new Date(new Date().getTime()) > new Date(new Date(value))) {
+        throw new Error("Data prenotazione e' nel passato");
+      }
+    }),
+  
+],
+prenotazioneCNT.checkPrenotazioneEffettuabile);
+
 router.get("/dettagliPrenotazione", prenotazioneCNT.getPrenotazioneById);
 router.get("/struttureDisponibili", strutturaCNT.visualizzaStruttureDisponibili);
 router.get(
