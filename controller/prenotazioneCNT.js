@@ -30,8 +30,8 @@ exports.getPrenotazioniByUtente = async (req, res) => {
         },
         where: { utente: Number(req.query.idUtente).toString() },
     }).then((result) => {
-        if (result)
-            res.status(200).json({ code: 200, prenotazioni: result, success: true });
+        // if (result)
+        res.status(200).json({ code: 200, prenotazioni: result, success: true });
     });
 };
 
@@ -61,18 +61,18 @@ exports.getFasceOrarie = async (req, res) => {
             "durataPerFascia",
         ],
     }).then((result) => {
-        if (result) {
-            listaFasce = generatoreFasce.getListaFasce(
-                result.oraInizioMattina,
-                result.oraFineMattina,
-                result.oraInizioPomeriggio,
-                result.oraFinePomeriggio,
-                result.durataPerFascia
-            );
-            res
-                .status(200)
-                .json({ code: 200, listaFasce: listaFasce, success: true });
-        }
+        // if (result) {
+        listaFasce = generatoreFasce.getListaFasce(
+            result.oraInizioMattina,
+            result.oraFineMattina,
+            result.oraInizioPomeriggio,
+            result.oraFinePomeriggio,
+            result.durataPerFascia
+        );
+        res
+            .status(200)
+            .json({ code: 200, listaFasce: listaFasce, success: true });
+        //  }
     });
 };
 
@@ -96,10 +96,10 @@ exports.effettuaPrenotazione = async (req, res) => {
     await Struttura.findByPk(req.body.idStruttura, {
         attributes: ["capacitaPerFascia", "prezzoPerFascia"],
     }).then((result) => {
-        if (result) {
-            capacita = result.capacitaPerFascia;
-            prezzo = result.prezzoPerFascia;
-        }
+        // if (result) {
+        capacita = result.capacitaPerFascia;
+        prezzo = result.prezzoPerFascia;
+        //}
     });
 
     let fasciaOraria = req.body.fascia.split("-");
@@ -124,25 +124,25 @@ exports.effettuaPrenotazione = async (req, res) => {
             struttura: req.body.idStruttura,
         };
         await Prenotazione.create(newPrenotazione).then(async (result) => {
-            if (result) {
-                let nuovaFattura = {
-                    intestatario: req.body.intestatarioCarta,
-                    totalePagamento: result.totalePagato,
-                    dataRilascio: new Date(new Date().getTime())
-                        .toISOString()
-                        .substring(0, 10),
-                    statusFattura: "Pagata",
-                    prenotazione: result.idPrenotazione,
-                };
-                await Fattura.create(nuovaFattura).then((reslt) => {
-                    if (reslt)
-                        return res.status(200).json({
-                            code: 200,
-                            msg: "Operazione effettuata con successo",
-                            success: true,
-                        });
+            // if (result) {
+            let nuovaFattura = {
+                intestatario: req.body.intestatarioCarta,
+                totalePagamento: result.totalePagato,
+                dataRilascio: new Date(new Date().getTime())
+                    .toISOString()
+                    .substring(0, 10),
+                statusFattura: "Pagata",
+                prenotazione: result.idPrenotazione,
+            };
+            await Fattura.create(nuovaFattura).then(() => {
+                
+                return res.status(200).json({
+                    code: 200,
+                    msg: "Operazione effettuata con successo",
+                    success: true,
                 });
-            }
+            });
+            
         });
     } else {
         return res
@@ -247,30 +247,30 @@ exports.cancellaPrenotazione = async (req, res) => {
         where: {
             idPrenotazione: req.body.idPrenotazione,
         },
-    }).then(async (result) => {
-        if (result) {
-            utentePerEmail = await Utente.findByPk(req.body.idUtente, {
-                attributes: ["email"],
-            });
+    }).then(async () => {
+        
+        utentePerEmail = await Utente.findByPk(req.body.idUtente, {
+            attributes: ["email"],
+        });
 
-            if (
-                dataPrenotazione.diff(dataOggi, "hours") > 24 //Rimborso soltanto se la data si differenzia di 24h dalla data prenotata
-            ) {
-                effettuaRimborso(utentePerEmail.email, reslt.totalePagato).then(() => {
-                    return res.status(200).json({
-                        code: 200,
-                        msg: "Cancellazione con rimborso avvenuta con successo!",
-                        success: true,
-                    });
-                });
-            } else {
+        if (
+            dataPrenotazione.diff(dataOggi, "hours") > 24 //Rimborso soltanto se la data si differenzia di 24h dalla data prenotata
+        ) {
+            effettuaRimborso(utentePerEmail.email, reslt.totalePagato).then(() => {
                 return res.status(200).json({
                     code: 200,
-                    msg: "Cancellazione senza rimborso avvenuta con successo!",
+                    msg: "Cancellazione con rimborso avvenuta con successo!",
                     success: true,
                 });
-            }
+            });
+        } else {
+            return res.status(200).json({
+                code: 200,
+                msg: "Cancellazione senza rimborso avvenuta con successo!",
+                success: true,
+            });
         }
+        
     });
 };
 

@@ -29,12 +29,7 @@ exports.visualizzaDettagliStruttura = async (req, res) => {
                 .json({ code: 400, msg: "Struttura non trovata!", success: false });
         }
     });
-    /* .catch((err) => {
-        console.error(err);
-        res
-          .status(500)
-          .json({ code: 500, msg: "Qualcosa è andato storto..", success: false });
-      });*/
+   
 };
 
 /**
@@ -78,12 +73,7 @@ exports.visualizzaPrenotazioniStruttura = async (req, res) => {
                 .json({ code: 400, msg: "Struttura non trovata!", success: false });
         }
     });
-    /*  .catch((err) => {
-        console.error(err);
-        res
-          .status(500)
-          .json({ code: 500, msg: "Qualcosa è andato storto..", success: false });
-      });*/
+    
 };
 
 /**
@@ -95,16 +85,10 @@ exports.visualizzaPrenotazioniStruttura = async (req, res) => {
  */
 exports.visualizzaStrutture = async (req, res) => {
     await Struttura.findAll().then((result) => {
-        if (result) {
-            res.status(200).json({ code: 200, strutture: result, success: true });
-        }
+        res.status(200).json({ code: 200, strutture: result, success: true });
+    
     });
-    /* .catch((err) => {
-        console.error(err);
-        res
-          .status(500)
-          .json({ code: 500, msg: "Qualcosa è andato storto..", success: false });
-      });*/
+    
 };
 
 /**
@@ -116,16 +100,9 @@ exports.visualizzaStrutture = async (req, res) => {
  */
 exports.visualizzaStruttureDisponibili = async (req, res) => {
     await Struttura.findAll({where : { isCancellata: 0}}).then((result) => {
-        if (result) {
-            res.status(200).json({ code: 200, strutture: result, success: true });
-        } 
+        res.status(200).json({ code: 200, strutture: result, success: true });
     });
-    /* .catch((err) => {
-          console.error(err);
-          res
-            .status(500)
-            .json({ code: 500, msg: "Qualcosa è andato storto..", success: false });
-        });*/
+    
 };
 
 /**
@@ -149,28 +126,22 @@ exports.eliminaStruttura = async (req, res) => {
     await Struttura.update(
         { isCancellata: 1 },
         { where: { idStruttura: idStruttura.toString() }, returning: true, plain: true }
-    ).then((result) => {
-        if (result[1]) {
-            //result contiene un campo che è 1 quando la riga è modificata, 0 altrimenti
-            res.status(200).json({
-                code: 200,
-                msg: "Cancellazione struttura riuscita",
-                success: true,
-            });
-        }
-    });
-    /* .catch((err) => {
-        console.error(err);
-        res.status(500).json({
-          code: 500,
-          msg: "Qualcosa è andato storto...",
-          success: false,
+    ).then(() => {
+       
+            
+        res.status(200).json({
+            code: 200,
+            msg: "Cancellazione struttura riuscita",
+            success: true,
         });
-      });*/
+        
+    });
+   
 };
 
 exports.aggiungiStruttura = async (req, res) => {
     let erroriValidazione = validationResult(req);
+    let message = "";
     if (!erroriValidazione.isEmpty()) {
         return res
             .status(400)
@@ -181,36 +152,31 @@ exports.aggiungiStruttura = async (req, res) => {
     let dateChiusura = JSON.parse(req.body.dateChiusura).dateChiusura;
 
     await Struttura.create(strutturaDaCreare).then((result) => {
-        if (result) {
-            if (dateChiusura !== []) {
-                //Ci sono date chiusure da inserire nel DB
+        
+        if (dateChiusura.length != 0) {
+            message = "Struttura creata con successo";
+            //Ci sono date chiusure da inserire nel DB
 
-                dateChiusura.forEach((dataChiusura) => {
-                    let chiusura = {
-                        dataChiusura: dataChiusura,
-                        struttura: result.idStruttura,
-                    };
-                    Chiusura.create(chiusura);
-                });
-            }
-
-            res.status(201).json({
-                code: 201,
-                msg: "Struttura creata con successo",
-                success: true,
+            dateChiusura.forEach((dataChiusura) => {
+                let chiusura = {
+                    dataChiusura: dataChiusura,
+                    struttura: result.idStruttura,
+                };
+                Chiusura.create(chiusura);
             });
-        } /*else {
-          res
-            .status(400)
-            .json({ code: 400, msg: "Struttura NON creata", success: false });
-        }*/
+        }
+        else //caso in cui non sono state inserite date di chiusura
+            message = "Struttura creata con successo";
+            
+
+        res.status(201).json({
+            code: 201,
+            msg: message,
+            success: true,
+        });
+       
     });
-    /* .catch((err) => {
-        console.error(err);
-        res
-          .status(500)
-          .json({ code: 500, msg: "Qualcosa è andato storto..", success: false });
-      });*/
+   
 };
 
 exports.modificaStruttura = async (req, res) => {
@@ -237,14 +203,7 @@ exports.modificaStruttura = async (req, res) => {
                 struttura: idStruttura,
             };
             Chiusura.create(chiusura);
-            /* .catch((err) => {
-            console.error(err);
-            res.status(500).json({
-              code: 500,
-              msg: "Qualcosa è andato storto..",
-              success: false,
-            });
-          });*/
+           
         });
 
         res.status(200).json({
@@ -253,10 +212,5 @@ exports.modificaStruttura = async (req, res) => {
             success: true,
         });
     });
-    /*.catch((err) => {
-        console.error(err);
-        res
-          .status(500)
-          .json({ code: 500, msg: "Qualcosa è andato storto..", success: false });
-      });*/
+    
 };

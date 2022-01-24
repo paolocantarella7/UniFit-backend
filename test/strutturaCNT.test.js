@@ -81,6 +81,29 @@ describe('Aggiungi struttura', () => {
             });
     });
 
+    it('Dovrebbe aggiungere una struttura (NO Chiusure)', (done) => {
+        let data = {
+            'nome': 'Campo da basket',
+            'prezzoPerFascia': 20,
+            'capacitaPerFascia': 30,
+            'dataInizioDisponibilita': '2069-07-20',
+            'oraInizioMattina': '07:00',
+            'oraFineMattina': '12:00',
+            'oraInizioPomeriggio': '14:00',
+            'oraFinePomeriggio': '21:00',
+            'durataPerFascia': 1,
+            'dateChiusura': '{ \"dateChiusura\" : []  }'
+        };
+        
+        chai.request(server)
+            .post('/admin/strutture/aggiungistruttura')
+            .send(data)
+            .end((err, res) => {
+                res.should.have.status(201);
+                done();
+            });
+    });
+
     it('Dovrebbe aggiungere una struttura', (done) => {
         let data = {
             'nome': 'Campo da basket',

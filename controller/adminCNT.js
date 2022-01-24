@@ -24,20 +24,11 @@ exports.visualizzaUtentiRegistrati = async (req, res) => {
         ],
         where: { isAdmin: 0 }, //solo utenti registrati
     }).then((result) => {
-        if (result) {
-            res
-                .status(200)
-                .json({ code: 200, utentiRegistrati: result, success: true });
-        }
+        res
+            .status(200)
+            .json({ code: 200, utentiRegistrati: result, success: true });
+        
     });
-    /* .catch((err) => {
-      console.error(err);
-      res.status(500).json({
-        code: 500,
-        msg: "Qualcosa è andato storto...",
-        success: false,
-      });
-    });*/
 };
 
 /**
@@ -70,18 +61,10 @@ exports.visualizzaRichiesteTesseramento = async (req, res) => {
         },
         where: { statusRichiesta: "Eseguita" }, //solo le richiesta da valutare
     }).then((result) => {
-        if (result) {
-            res.status(200).json({ code: 200, richiesteTess: result, success: true });
-        }
+        
+        res.status(200).json({ code: 200, richiesteTess: result, success: true });
+        
     });
-    /* .catch((err) => {
-      console.error(err);
-      res.status(500).json({
-        code: 500,
-        msg: "Qualcosa è andato storto...",
-        success: false,
-      });
-    });*/
 };
 
 /**
@@ -113,42 +96,22 @@ exports.validaTesseramento = async (req, res) => {
                 returning: true,
                 plain: true,
             }
-        ).then((result) => {
-            if (result[1]) {
-                Utente.update(
-                    { isTesserato: 1 },
-                    { where: { idUtente: idUtente } }
-                ).then(
-                    res.status(200).json({
-                        code: 200,
-                        msg: "Richiesta di tesseramento accettata con successo!",
-                        success: true,
-                    })
-                );
-                /*.catch((err) => {
-              console.error(err);
-              res.status(500).json({
-                code: 500,
-                msg: "Qualcosa è andato storto...",
-                success: false,
-              });
-            });*/
-            } /*else {
-          res.status(400).json({
-            code: 400,
-            msg: "Richiesta di tesseramento NON validata!",
-            success: false,
-          });
-        }*/
-        });
-    /* .catch((err) => {
-        console.error(err);
-        res.status(500).json({
-          code: 500,
-          msg: "Qualcosa è andato storto...",
-          success: false,
-        });
-      });*/
+        ).then(() => {
+            
+            Utente.update(
+                { isTesserato: 1 },
+                { where: { idUtente: idUtente } }
+            ).then(
+                res.status(200).json({
+                    code: 200,
+                    msg: "Richiesta di tesseramento accettata con successo!",
+                    success: true,
+                })
+            );
+           
+        }
+        );
+   
     } //rifiuto, la richiesta va cancellata
     else {
         await RichiestaTesseramento.destroy({
@@ -165,14 +128,6 @@ exports.validaTesseramento = async (req, res) => {
             success: true,
         });
 
-    /* .catch((err) => {
-        console.error(err);
-        res.status(500).json({
-          code: 500,
-          msg: "Qualcosa è andato storto...",
-          success: false,
-        });
-      });*/
     }
 };
 

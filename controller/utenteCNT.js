@@ -93,24 +93,24 @@ exports.registrazione = async (req, res) => {
                         },
                     }
                 )
-                    .then((result) => {
-                        if (result)
-                            res.status(201).json({
-                                code: 201,
-                                msg: "Registrazione effettuata con successo",
-                                success: true,
-                            });
+                    .then(() => {
+                        
+                        res.status(201).json({
+                            code: 201,
+                            msg: "Registrazione effettuata con successo",
+                            success: true,
+                        });
                     });
             } else {
                 await Utente.create(utenteDaRegistrare)
-                    .then((result) => {
-                        if (result) {
-                            res.status(201).json({
-                                code: 201,
-                                msg: "Registrazione effettuata con successo",
-                                success: true,
-                            });
-                        }
+                    .then(() => {
+                        
+                        res.status(201).json({
+                            code: 201,
+                            msg: "Registrazione effettuata con successo",
+                            success: true,
+                        });
+                        
                     });
             }
         });
@@ -139,14 +139,14 @@ exports.modificaPassword = async (req, res) => {
         { password: passwordModificata },
         { individualHooks: true, where: { idUtente: idUtente } }
     )
-        .then((result) => {
-            if (result) {
-                res.status(200).json({
-                    code: 200,
-                    msg: "Password modificata con successo",
-                    success: true,
-                });
-            }
+        .then(() => {
+            
+            res.status(200).json({
+                code: 200,
+                msg: "Password modificata con successo",
+                success: true,
+            });
+            
         });
 };
 
@@ -244,45 +244,39 @@ exports.effettuaTesseramento = async (req, res) => {
 
     await RichiestaTesseramento.create(nuovaRichiesta)
         .then((result) => {
-            if (result) {
-                fs.mkdir("." + filePath, (err) => {
-                    if (err) {
-                        return res.status(400).json({
-                            code: 400,
-                            msg: "Errore nella creazione della directory",
-                            success: false,
-                        });
-                    } else {
-                        req.files.file.mv("." + filePath + "/certificato.pdf");
-                        let nuovaFattura = {
-                            intestatario: req.body.intestatarioCarta,
-                            totalePagamento: result.prezzoTesseramento,
-                            dataRilascio: new Date(new Date().getTime())
-                                .toISOString()
-                                .substring(0, 10),
-                            statusFattura: "Pagata",
-                            richiesta: result.idRichiesta_tesseramento,
-                        };
+           
+            fs.mkdir("." + filePath, (err) => {
+                if (err) {
+                    return res.status(400).json({
+                        code: 400,
+                        msg: "Errore nella creazione della directory",
+                        success: false,
+                    });
+                } else {
+                    req.files.file.mv("." + filePath + "/certificato.pdf");
+                    let nuovaFattura = {
+                        intestatario: req.body.intestatarioCarta,
+                        totalePagamento: result.prezzoTesseramento,
+                        dataRilascio: new Date(new Date().getTime())
+                            .toISOString()
+                            .substring(0, 10),
+                        statusFattura: "Pagata",
+                        richiesta: result.idRichiesta_tesseramento,
+                    };
 
-                        Fattura.create(nuovaFattura)
-                            .then((reslt) => {
-                                if (reslt){
-                                    return res.status(200).json({
-                                        code: 200,
-                                        msg: "Operazione effettuata con successo",
-                                        success: true,
-                                    });
-                                }
-                            });
-                    }
-                });
-            } else {
-                return res.status(400).json({
-                    code: 400,
-                    msg: "Errore nella creazione della directory",
-                    success: false,
-                });
-            }
+                    Fattura.create(nuovaFattura)
+                        .then((reslt) => {
+                            if (reslt){
+                                return res.status(200).json({
+                                    code: 200,
+                                    msg: "Operazione effettuata con successo",
+                                    success: true,
+                                });
+                            }
+                        });
+                }
+            });
+            
         });
 };
 
@@ -318,32 +312,20 @@ exports.recuperoPassword = async (req, res) => {
         },
         { where: { email: emailRicevuta } }
     )
-        .then(async (result) => {
-            if (result) {
-                //try {
-                await senderEmail.sendEmailWithToken(emailRicevuta, token);
-                res
-                    .status(200)
-                    .json({
-                        code: 200,
-                        msg: "Invio email di recupero riuscito",
-                        success: true,
-                    })
-                    .end();
-            } /*catch (err) {
-          console.error(err);
-          res.status(500).json({
-            code: 500,
-            msg: "Invio email di recupero NON riuscito",
-            success: false,
-          });
-        }
-      } */
+        .then(async () => {
+            
+            await senderEmail.sendEmailWithToken(emailRicevuta, token);
+            res
+                .status(200)
+                .json({
+                    code: 200,
+                    msg: "Invio email di recupero riuscito",
+                    success: true,
+                })
+                .end();
+            
         });
-    /*.catch((err) => {
-      console.error(err);
-      res.status(500).json({ code: 500, msg: err, success: false });
-    });*/
+    
 };
 
 /**
@@ -391,15 +373,16 @@ exports.resettaPasswordPerRecupero = async (req, res) => {
                     }, //rendo di nuovo recuperabile la password
                     { individualHooks: true, where: { tokenRecuperoPassword: token } }
                 )
-                    .then((result) => {
-                        if (result) {
-                            res.status(200).json({
-                                code: 200,
-                                msg: "Password modificata con successo",
-                                success: true,
-                            });
-                        }
-                    });
+                    .then(() => {
+                        
+                        res.status(200).json({
+                            code: 200,
+                            msg: "Password modificata con successo",
+                            success: true,
+                        });
+                    }
+                       
+                    );
             }  
         });
   
