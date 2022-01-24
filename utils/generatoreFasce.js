@@ -8,12 +8,13 @@
 
  exports.getListaFasce = (oraInizioMattina, oraFineMattina, oraInizioPomeriggio, oraFinePomeriggio, durataPerFascia) =>{
     let listaFasce = [];
-    let inizioFascia, fineFascia;
+    let inizioFascia, fineFascia; 
     fineFascia = oraInizioMattina;
+    let minuti = fineFascia.slice(3,5);
         do{
             
             inizioFascia = fineFascia.slice(0,5);
-            fineFascia = (parseInt(fineFascia.slice(0,2)) + durataPerFascia).toString().concat(":00");
+            fineFascia = (parseInt(fineFascia.slice(0,2)) + durataPerFascia).toString().concat(":"+minuti);
            
             if(fineFascia > oraFineMattina.slice(0,5))
                 fineFascia = oraFineMattina.slice(0,5);
@@ -23,10 +24,11 @@
         
 
         fineFascia = oraInizioPomeriggio;
+        minuti = fineFascia.slice(3,5);
         do{
             
             inizioFascia = fineFascia.slice(0,5);
-            fineFascia = (parseInt(fineFascia.slice(0,2)) + durataPerFascia).toString().concat(":00");
+            fineFascia = (parseInt(fineFascia.slice(0,2)) + durataPerFascia).toString().concat(":"+minuti);
            
             if(fineFascia > oraFinePomeriggio.slice(0,5))
                 fineFascia = oraFinePomeriggio.slice(0,5);
@@ -36,4 +38,3 @@
         }while(fineFascia != oraFinePomeriggio.slice(0,5));
         return listaFasce;
 }
-
