@@ -16,8 +16,10 @@
             inizioFascia = fineFascia.slice(0,5);
             fineFascia = (parseInt(fineFascia.slice(0,2)) + durataPerFascia).toString().concat(":"+minuti);
            
-            if(fineFascia > oraFineMattina.slice(0,5))
+            if(parseInt(fineFascia.slice(0,2))> parseInt(oraFineMattina.slice(0,2)))
                 fineFascia = oraFineMattina.slice(0,5);
+            if(fineFascia.charAt(1) == ':')
+                fineFascia = "0" + fineFascia;
             listaFasce.push(inizioFascia + "-" + fineFascia);
             
         }while(fineFascia != oraFineMattina.slice(0,5));
@@ -30,8 +32,10 @@
             inizioFascia = fineFascia.slice(0,5);
             fineFascia = (parseInt(fineFascia.slice(0,2)) + durataPerFascia).toString().concat(":"+minuti);
            
-            if(fineFascia > oraFinePomeriggio.slice(0,5))
+            if(parseInt(fineFascia.slice(0,2))> parseInt(oraFinePomeriggio.slice(0,2)))
                 fineFascia = oraFinePomeriggio.slice(0,5);
+            if(fineFascia.charAt(1) == ':')
+                fineFascia = "0" + fineFascia;
             listaFasce.push(inizioFascia + "-" + fineFascia);
 
             
