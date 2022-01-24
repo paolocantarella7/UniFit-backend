@@ -348,14 +348,14 @@ exports.getPrenotazioneById = async (req, res) => {
             if (result) {
                 res
                     .status(200)
-                    .json({ code: 200, listaPrenotazioni: result, success: true });
+                    .json({ code: 200, dettagli: result, success: true });
             } else {
                 res
                     .status(400)
                     .json({
                         code: 400,
                         msg: "Prenotazione non trovata!",
-                        success: false,
+                        success: false
                     });
             }
         }

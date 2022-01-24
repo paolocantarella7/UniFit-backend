@@ -188,9 +188,20 @@ router.post(
                 });
             })
             .bail()
-            .custom(async (value) => {
-                if (new Date(new Date().getTime()) > new Date(new Date(value))) {
-                    throw new Error("Data prenotazione e' nel passato");
+            .custom(async (value, { req }) => {
+                let dataOggi = moment().format("YYYY-MM-DDTHH:mm:ssZ");
+                let oraInizio = req.body.fascia.split("-")[0];
+                let dataPrenotazione = moment(
+                    new Date(value).setHours(
+                        oraInizio.split(":")[0],
+                        oraInizio.split(":")[1],
+                        0,
+                        0
+                    )
+                ).format("YYYY-MM-DDTHH:mm:ssZ");
+
+                if (moment(dataPrenotazione).isBefore(dataOggi)) {
+                    throw new Error("Data o fascia oraria non prenotabile!");
                 }
             }),
         body("scadenzaCarta")
