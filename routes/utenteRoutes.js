@@ -17,6 +17,7 @@ let validazione = {
     cognome: /^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/,
     data: /^\d{4}(-\d\d(-\d\d(T\d\d:\d\d(:\d\d)?(\.\d+)?(([+-]\d\d:\d\d)|Z)?)?)?)?$/,
     dataLimite: new Date().setHours(0, 0, 0, 0),
+    dataLimiteInferiore: new Date("01/01/1900"),
     numeroCarta: /^([0-9]{16})$/,
     cvvCarta: /^[0-9]{3,4}$/,
 };
@@ -77,11 +78,15 @@ router.post(
             .matches(validazione.data)
             .withMessage("Formato data non valido, formato supportato yyyy-mm-gg")
             .bail()
-            .custom(async (dataNascita) => {
+            .custom(async (value) => {
+
+                let dataNascita = moment(value);
+                let dataLimite = moment(validazione.dataLimite);
+                let dataLimiteInferiore = moment(validazione.dataLimiteInferiore);
                 if (
                     !moment(dataNascita).isValid() ||
-          Date.parse(dataNascita) > Date.parse(new Date(validazione.dataLimite))
-                ) {
+          moment(dataNascita).isAfter(moment(dataLimite)) ||  moment(dataNascita).isBefore(moment(dataLimiteInferiore)))
+                 {
                     throw new Error("Formato data non valido!");
                 }
             }),

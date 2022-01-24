@@ -93,7 +93,7 @@ router.post(
         body("dataInizioDisponibilita")
             .matches(validazione.data)
             .bail()
-            .withMessage("Formato data non valido, formato supportato yyyy-mm-gg")
+            .withMessage("Formato data non valido, formato supportato yyyy-mm-gg").bail()
             .custom(async (dataInizioDisponibilita) => {
                 if (
                     !moment(dataInizioDisponibilita).isValid() ||
@@ -105,7 +105,7 @@ router.post(
             }),
         body("oraInizioMattina")
             .matches(validazione.orario)
-            .withMessage("Formato ora non valido")
+            .withMessage("Formato ora non valido").bail()
             .custom(async (oraInizioMattina, { req }) => {
                 let oraIMatt = new Date().setHours(
                     oraInizioMattina.split(":")[0],
@@ -124,13 +124,13 @@ router.post(
                     throw new Error("Le strutture aprono dopo le 07:00");
                 } else if (oraIMatt >= oraFineMattina) {
                     throw new Error(
-                        "'Ora inizio mattina' non può essere più grande di 'Ora fine mattina'!"
+                        "Orario mattina non logicamente valido!"
                     );
                 }
             }),
         body("oraFineMattina")
             .matches(validazione.orario)
-            .withMessage("Formato ora non valido")
+            .withMessage("Formato ora non valido").bail()
             .custom(async (oraFineMattina, { req }) => {
                 let oraFMatt = new Date().setHours(
                     oraFineMattina.split(":")[0],
@@ -147,7 +147,7 @@ router.post(
 
                 if (oraFMatt >= oraInizioPomeriggio) {
                     throw new Error(
-                        "'Ora Fine Mattina' non può essere >= di 'Ora Inizio Pomeriggio'!"
+                        "Ora pomeriggio non logicamente valida!"
                     );
                 }
             })
@@ -192,11 +192,11 @@ router.post(
 
                 if (oraIPom <= oraFineMattina) {
                     throw new Error(
-                        "'Ora Inizio Pomeriggio' non può essere <= di 'Ora Fine Mattina'!"
+                        "Ora pomeriggio non logicamente valida!"
                     );
                 } else if (oraIPom >= oraFinePomeriggio) {
                     throw new Error(
-                        "'Ora Inizio Pomeriggio' non può essere >= di 'Ora Fine Pomeriggio'!"
+                        "Ora pomeriggio non logicamente valida!"
                     );
                 }
             })
