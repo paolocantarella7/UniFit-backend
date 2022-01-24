@@ -248,6 +248,22 @@ router.post(
                 );
                 if (!listaFasce.includes(value))
                     throw new Error("Fascia oraria non valida!");
+            }).bail()
+            .custom(async (value, { req }) => {
+                let dataOggi = moment().format("YYYY-MM-DDTHH:mm:ssZ");
+                let oraInizio = value.split("-")[0];
+                let dataPrenotazione = moment(
+                    new Date(req.body.dataPrenotazione).setHours(
+                        oraInizio.split(":")[0],
+                        oraInizio.split(":")[1],
+                        0,
+                        0
+                    )
+                ).format("YYYY-MM-DDTHH:mm:ssZ");
+
+                if (moment(dataPrenotazione).isBefore(dataOggi)) {
+                    throw new Error("Data o fascia oraria non prenotabile!");
+                }
             }),
         body("idPrenotazione").custom(async (value, { req }) => {
             await Prenotazione.findOne({
