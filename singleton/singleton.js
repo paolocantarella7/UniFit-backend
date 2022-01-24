@@ -3,6 +3,7 @@ let db = require('./db.json');
 
 let sequelize = new Sequelize('unifit', db.username, db.password, {
     host : db.host,
+    port: db.port,
     dialect: 'mysql',
     define: {
         timestamps: false, //utile per non permenttere l'aggiunta di info inutili nelle entità
