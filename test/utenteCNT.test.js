@@ -367,7 +367,7 @@ describe("Metodo che permette di effettuare una richiesta di tesseramento", func
                 RichiestaTesseramento.destroy({
                     where: { utente: 14 },
                 });
-                fs.rm("./static/richieste_tesseramento/14", {
+                fs.rmdir("./static/richieste_tesseramento/14", {
                     recursive: true }, (err) => { console.log(err);});
         
             });
@@ -400,7 +400,7 @@ describe("Metodo che permette di effettuare una richiesta di tesseramento", func
                 RichiestaTesseramento.destroy({
                     where: { utente: 13 }
                 });
-                fs.rm("./static/richieste_tesseramento/13", {
+                fs.rmdir("./static/richieste_tesseramento/13", {
                     recursive: true}, (err) => { console.log(err);});
         
             });
