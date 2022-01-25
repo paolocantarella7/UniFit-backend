@@ -10,7 +10,7 @@ let should = chai.should();
 chai.use(require("chai-match"));
 chai.use(chaiHttp);
 let fs = require("fs");
-let RichiestaTesseramento = require("../model/Richiesta_tesseramento");
+//let RichiestaTesseramento = require("../model/Richiesta_tesseramento");
 let Utente = require("../model/Utente");
 
 describe("Recupero password", () => {
@@ -341,7 +341,7 @@ describe("Metodo che permette di visualizzare i dati di un utente", function () 
 
 describe("Metodo che permette di effettuare una richiesta di tesseramento", function () {
    
-   /* it("Richiesta di tesseramento riuscita da interno", (done) => {
+    /* it("Richiesta di tesseramento riuscita da interno", (done) => {
         let richiesta = {
             tipologiaTesseramento: "Interno",
             idUtente: 14,
@@ -374,7 +374,7 @@ describe("Metodo che permette di effettuare una richiesta di tesseramento", func
             });
     });*/
 
-    
+
     /**it("Richiesta di tesseramento riuscita da esterno", (done) => {
         let richiesta = {
             tipologiaTesseramento: "Esterno",
