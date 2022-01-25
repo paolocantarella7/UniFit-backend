@@ -31,7 +31,7 @@ CREATE TABLE `chiusura` (
   PRIMARY KEY (`idChiusura`),
   KEY `fk4_idx` (`struttura`),
   CONSTRAINT `fk_4` FOREIGN KEY (`struttura`) REFERENCES `struttura` (`idStruttura`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2637 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2637 DEFAULT CHARSET=utf8 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -64,7 +64,7 @@ CREATE TABLE `fattura` (
   KEY `fk6_idx` (`prenotazione`),
   CONSTRAINT `fk5` FOREIGN KEY (`richiesta`) REFERENCES `richiesta_tesseramento` (`idRichiesta_tesseramento`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk6` FOREIGN KEY (`prenotazione`) REFERENCES `prenotazione` (`idPrenotazione`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=652 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=652 DEFAULT CHARSET=utf8 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -97,7 +97,7 @@ CREATE TABLE `prenotazione` (
   KEY `fk3_idx` (`struttura`),
   CONSTRAINT `fk2` FOREIGN KEY (`utente`) REFERENCES `utente` (`idUtente`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk3` FOREIGN KEY (`struttura`) REFERENCES `struttura` (`idStruttura`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=283 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=283 DEFAULT CHARSET=utf8 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -128,7 +128,7 @@ CREATE TABLE `richiesta_tesseramento` (
   PRIMARY KEY (`idRichiesta_tesseramento`),
   KEY `fk1_idx` (`utente`),
   CONSTRAINT `fk1` FOREIGN KEY (`utente`) REFERENCES `utente` (`idUtente`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=428 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=428 DEFAULT CHARSET=utf8 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -161,7 +161,7 @@ CREATE TABLE `struttura` (
   `oraFinePomeriggio` time NOT NULL,
   `dataInizioDisponibilita` date NOT NULL,
   PRIMARY KEY (`idStruttura`)
-) ENGINE=InnoDB AUTO_INCREMENT=766 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=766 DEFAULT CHARSET=utf8 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -200,7 +200,7 @@ CREATE TABLE `utente` (
   PRIMARY KEY (`idUtente`),
   UNIQUE KEY `codiceFiscale_UNIQUE` (`codiceFiscale`),
   UNIQUE KEY `email_UNIQUE` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=212 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=212 DEFAULT CHARSET=utf8 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
