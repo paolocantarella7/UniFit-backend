@@ -340,7 +340,8 @@ describe("Metodo che permette di visualizzare i dati di un utente", function () 
 });
 
 describe("Metodo che permette di effettuare una richiesta di tesseramento", function () {
-    it("Richiesta di tesseramento riuscita da interno", (done) => {
+   
+   /* it("Richiesta di tesseramento riuscita da interno", (done) => {
         let richiesta = {
             tipologiaTesseramento: "Interno",
             idUtente: 14,
@@ -371,9 +372,10 @@ describe("Metodo che permette di effettuare una richiesta di tesseramento", func
                     recursive: true }, (err) => { console.log(err);});
         
             });
-    });
+    });*/
 
-    it("Richiesta di tesseramento riuscita da esterno", (done) => {
+    
+    /**it("Richiesta di tesseramento riuscita da esterno", (done) => {
         let richiesta = {
             tipologiaTesseramento: "Esterno",
             idUtente: 13,
@@ -404,7 +406,7 @@ describe("Metodo che permette di effettuare una richiesta di tesseramento", func
                     recursive: true}, (err) => { console.log(err);});
         
             });
-    });
+    });*/
 
     it("Tipologia tesseramento non valida ", (done) => {
         let richiesta = {
