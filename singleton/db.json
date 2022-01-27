@@ -1,5 +1,7 @@
 {
-    "host" : "localhost",
-    "username" : "root",
-    "password" : ""
+    "host": "localhost",
+    "username": "root",
+    "password": "",
+    "gmail_user": "",
+    "gmail_password": ""
 }

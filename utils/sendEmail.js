@@ -1,8 +1,8 @@
 let nodemailer = require("nodemailer");
-
+let db = require('../singleton/db.json');
 let host = "http://localhost:3000";
-let emailUniFit = "unifit2022@gmail.com"; //inserire email UniFit gmail
-let passwordUniFit = "UniFit2022@#"; //inserire password UniFit gmail
+let emailUniFit = db.gmail_user; //inserire email UniFit gmail
+let passwordUniFit = db.gmail_password; //inserire password UniFit gmail
 
 /**
  * Nome metodo: sendEmailWithToken
@@ -22,7 +22,7 @@ exports.sendEmailWithToken = (email, token) => {
     });
  
     let mailOptions = {
-        from: 'unifit2022@gmail.com',
+        from: db.gmail_user,
         to: email,
         subject: 'Reset Password Link - UniFit.it',
         html: '<p>Gentile Utente, <br>' 
@@ -54,7 +54,7 @@ exports.sendRimborsoEmail = (email, importo) =>{
     });
 
     let mailOptions = {
-        from: 'unifit2022@gmail.com',
+        from: db.gmail_user,
         to: email,
         subject: 'Avviso di rimborso',
         html: '<p>Gentile Utente, <br>' 
