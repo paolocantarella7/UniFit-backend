@@ -272,16 +272,16 @@ router.post(
             .withMessage("Formato durata non valido"),
         body("dataInizioDisponibilita")
             .matches(validazione.data)
-            .withMessage("Formato data non valido, formato supportato yyyy-mm-gg")
-            .custom(async (dataInizioDisponibilita) => {
-                if (
-                    !moment(dataInizioDisponibilita).isValid() ||
-          Date.parse(dataInizioDisponibilita) <
-            Date.parse(new Date(validazione.dataLimite))
-                ) {
-                    throw new Error("Formato data non valido!");
-                }
-            }),
+            .withMessage("Formato data non valido, formato supportato yyyy-mm-gg"),
+        //     .custom(async (dataInizioDisponibilita) => {
+        //         if (
+        //             !moment(dataInizioDisponibilita).isValid() ||
+        //   Date.parse(dataInizioDisponibilita) <
+        //     Date.parse(new Date(validazione.dataLimite))
+        //         ) {
+        //             throw new Error("Formato data non valido!");
+        //         }
+        //     }),
         body("oraInizioMattina")
             .matches(validazione.orario)
             .withMessage("Formato ora non valido")
