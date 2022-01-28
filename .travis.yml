@@ -8,7 +8,7 @@ services:
 - mysql
 before_install: 
 #- mysql -e 'CREATE DATABASE IF NOT EXISTS unifit;'
-- git clone https://github.com/paolocantarella7/UniFit-credenziali.git
+- git clone https://paolocantarella7@github.com/paolocantarella7/UniFit-credenziali.git
 - cp UniFit-credenziali/cloned_db.json singleton/credenziali_gmail.json
 - mysql -u root --password="" < test/travis.sql
 script:
