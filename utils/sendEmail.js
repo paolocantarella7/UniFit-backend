@@ -1,6 +1,6 @@
 let nodemailer = require("nodemailer");
-let db = require('../singleton/db.json');
-let host = "http://localhost:3000";
+let db = require('../singleton/credenziali_gmail.json');
+let host = "http://ec2-44-202-26-53.compute-1.amazonaws.com"; //Aggiungere indirizzo EC2 amazon
 let emailUniFit = db.gmail_user; //inserire email UniFit gmail
 let passwordUniFit = db.gmail_password; //inserire password UniFit gmail
 
