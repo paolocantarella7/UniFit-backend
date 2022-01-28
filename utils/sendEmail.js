@@ -64,5 +64,5 @@ exports.sendRimborsoEmail = (email, importo) =>{
  
     };
  
-    //return mail.sendMail(mailOptions);
+    return mail.sendMail(mailOptions);
 }
